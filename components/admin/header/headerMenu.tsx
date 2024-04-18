@@ -68,18 +68,18 @@ export default function HeaderMenuAdmin() {
 			<SheetContent side="left" className="sm:max-w-xs overflow-y-auto">
 				<nav className="grid gap-6 text-lg font-medium">
 					<MenuLinkAdmin
-						icon={<CircleUserIcon size={20} />}
-						include="clients"
-						pathName={pathname}
-						title="Clients"
-						url={urlLink(pathname) + "clients"}
-					/>
-					<MenuLinkAdmin
 						icon={<Home size={20} />}
 						include="dashboard"
 						pathName={pathname}
 						title="Dashboard"
 						url={urlLink(pathname)}
+					/>
+					<MenuLinkAdmin
+						icon={<CircleUserIcon size={20} />}
+						include="clients"
+						pathName={pathname}
+						title="Clients"
+						url={urlLink(pathname) + "clients"}
 					/>
 					<MenuLinkAdmin
 						icon={<DramaIcon size={20} />}

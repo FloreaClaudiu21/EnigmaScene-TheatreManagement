@@ -25,7 +25,7 @@ const HeaderComponent = () => {
 				<div className="flex items-center gap-4 md:hidden">
 					<HeaderMenuAdmin />
 					<Link className="block flex-shrink-0 md:hidden" href="/">
-						<p className="font-bold text-md">Enigma Scene</p>
+						<p className="font-bold text-md">Enigma Scene Theatre</p>
 						<p className="text-gray-400 text-sm">
 							Theatrical Journey Beyond Imagination
 						</p>
@@ -47,9 +47,8 @@ const HeaderComponent = () => {
 							{pathNames.map((val: string, index: number) => {
 								if (index < 4) return <></>;
 								const isLast = index === pathNames.length - 1;
-								console.log(isLast);
 								return (
-									<BreadcrumbItem key={val + index + "bb"}>
+									<BreadcrumbItem key={val + index}>
 										{!isLast ? (
 											<>
 												<BreadcrumbLink asChild>
