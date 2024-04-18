@@ -40,7 +40,7 @@ export default function VerifiyAccountEmail({
 					<Heading as="h2">{name},</Heading>
 					{lang === "en" ? (
 						<>
-							<Text>Thank you for registering with Enigma Scene Threatre.</Text>
+							<Text>Thank you for registering with Enigma Scene Theatre.</Text>
 							<Text>
 								To confirm your email address, please click the link below:
 								<Button

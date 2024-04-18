@@ -11,7 +11,7 @@ const roboto = Roboto({
 });
 
 export const metadata: Metadata = {
-	title: "Enigma Scene - A Theatrical Journey Beyond Imagination",
+	title: "Enigma Scene Theatre - A Theatrical Journey Beyond Imagination",
 	description:
 		"Step into the realm of mystery and wonder as the curtains rise on the enigmatic stage. Enigma Scene invites you to embark on a theatrical journey that transcends imagination. Delve into a world of intrigue, luxury, and adventure, where every scene unfolds like a mesmerizing enigma waiting to be solved.",
 	keywords: [
