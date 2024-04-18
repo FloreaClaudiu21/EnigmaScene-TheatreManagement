@@ -1,0 +1,266 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Client {
+  id                     String           @id @default(cuid())
+  firstName              String
+  lastName               String
+  email                  String           @unique
+  emailVerified          DateTime?        @db.Date
+  emailVerifySignature   String?          @db.Text
+  createdAt              DateTime         @default(now())
+  updatedAt              DateTime         @updatedAt
+  createdWithProvider    String?
+  birthDate              String
+  profileImage           String?          @db.Text
+  phone                  String
+  password               String
+  passwordResetSignature String?          @db.Text
+  terms                  Boolean          @default(true)
+  providers              Provider[]
+  billingAddresses       BillingAddress[]
+  adminUser              Boolean          @default(false)
+  favorites              ShowFavorite[]
+  tickesBuyed            TicketSold[]
+  payments               Payment[]
+  invoices               Invoice[]
+}
+
+model Provider {
+  id                String   @id @default(cuid())
+  name              String
+  linkedWith        String
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  providerAccountId String   @unique @db.VarChar(255)
+  providerEmail     String
+  providerFirstName String
+  providerLastName  String
+  client            Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  clientId          String
+}
+
+model BillingAddress {
+  id           String  @id @default(cuid())
+  country      String
+  city         String
+  address      String
+  zipCode      String
+  observations String? @db.VarChar(255)
+  client       Client  @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  clientId     String
+}
+
+model ExchangeRate {
+  id         String   @id @default(cuid())
+  currency   String
+  value      Float
+  multiplier Int
+  date       DateTime
+  createdAt  DateTime @default(now())
+}
+
+model Show {
+  id             String                       @id @default(cuid())
+  date           DateTime
+  image          String
+  title          String
+  title_en       String
+  createdAt      DateTime                     @default(now())
+  updatedAt      DateTime                     @updatedAt
+  description_en String                       @db.VarChar(255)
+  description    String                       @db.VarChar(255)
+  distributionId String
+  distribution   Distribution                 @relation(fields: [distributionId], references: [id], onDelete: Cascade)
+  seasonId       String
+  season         Season                       @relation(fields: [seasonId], references: [id], onDelete: Cascade)
+  showTypeId     String
+  showType       ShowType                     @relation(fields: [showTypeId], references: [id], onDelete: Cascade)
+  showRoomId     String
+  showRoom       ShowRoom                     @relation(fields: [showRoomId], references: [id], onDelete: Cascade)
+  favorites      ShowFavorite[]
+  ticketsSold    TicketSold[]
+  materials      ShowMaterialDecorationUsed[]
+}
+
+model ShowFavorite {
+  id       String @id @default(cuid())
+  client   Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  show     Show   @relation(fields: [showId], references: [id], onDelete: Cascade)
+  showId   String
+  clientId String
+}
+
+model Distribution {
+  id        String   @id @default(cuid())
+  name      String
+  name_en   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  shows     Show[]
+}
+
+model ShowType {
+  id        String   @id @default(cuid())
+  name      String
+  name_en   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  shows     Show[]
+}
+
+model Season {
+  id        String   @id @default(cuid())
+  name      String
+  name_en   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  shows     Show[]
+}
+
+model ShowRoom {
+  id           String         @id @default(cuid())
+  number       String
+  observations String?        @db.VarChar(255)
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  seats        ShowRoomSeat[]
+  ticketsSold  TicketSold[]
+  shows        Show[]
+}
+
+model ShowRoomSeat {
+  id          String       @id @default(cuid())
+  showRoomId  String
+  showRoom    ShowRoom     @relation(fields: [showRoomId], references: [id], onDelete: Cascade)
+  type        String
+  price       Float
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  ticketsSold TicketSold[]
+}
+
+model TicketSold {
+  id              String           @id @default(cuid())
+  show            Show             @relation(fields: [showId], references: [id])
+  client          Client           @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  clientId        String
+  showRoom        ShowRoom         @relation(fields: [showRoomId], references: [id], onDelete: Cascade)
+  showRoomId      String
+  seat            ShowRoomSeat     @relation(fields: [seatId], references: [id], onDelete: Cascade)
+  seatId          String
+  soldPrice       Float
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  showId          String
+  ticketsVerified TicketVerified[]
+  payment         Payment?
+  invoice         Invoice?
+}
+
+model TicketVerified {
+  id           String     @id @default(cuid())
+  ticketSold   TicketSold @relation(fields: [ticketSoldId], references: [id])
+  ticketSoldId String
+  verifiedAt   DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+}
+
+model Payment {
+  id             String        @id @default(cuid())
+  amount         Int
+  currency       String
+  currencyAmount Int
+  currencyDate   DateTime
+  status         PaymentStatus @default(ACCEPTED)
+  paidAt         DateTime      @default(now())
+  type           PaymentType   @default(DEBIT_CARD)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  client         Client        @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  clientId       String
+  ticket         TicketSold?   @relation(fields: [ticketId], references: [id], onDelete: SetNull)
+  ticketId       String?       @unique
+  invoice        Invoice?
+}
+
+enum PaymentStatus {
+  ACCEPTED
+  REJECTED
+}
+
+enum PaymentType {
+  DEBIT_CARD
+}
+
+model Invoice {
+  id             String      @id @default(cuid())
+  billingAddress String
+  firstName      String
+  lastName       String
+  phone          String
+  email          String
+  invoiceSeries  String      @default("ENIGMA")
+  invoiceNumber  String
+  issueDate      DateTime    @default(now())
+  dueDate        DateTime
+  totalAmount    Float
+  extraFees      Float
+  amount         Int
+  currency       String
+  currencyAmount Float
+  currencyDate   DateTime
+  status         String      @default("paid")
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+  client         Client      @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  ticket         TicketSold? @relation(fields: [ticketId], references: [id], onDelete: SetNull)
+  payment        Payment     @relation(fields: [paymentId], references: [id], onDelete: Cascade)
+  ticketId       String?     @unique
+  paymentId      String      @unique
+  clientId       String
+}
+
+model ShowMaterialDecoration {
+  id         String                         @id @default(cuid())
+  name       String
+  name_en    String
+  stock      Int
+  buyDate    DateTime
+  buyPrice   Float
+  producer   String
+  categoryId String
+  category   ShowMaterialDecorationCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  createdAt  DateTime                       @default(now())
+  updatedAt  DateTime                       @updatedAt
+  materials  ShowMaterialDecorationUsed[]
+}
+
+model ShowMaterialDecorationCategory {
+  id                  String                   @id @default(cuid())
+  name                String
+  name_en             String
+  createdAt           DateTime                 @default(now())
+  updatedAt           DateTime                 @updatedAt
+  materialDecorations ShowMaterialDecoration[]
+}
+
+model ShowMaterialDecorationUsed {
+  id           String                 @id @default(cuid())
+  materialId   String
+  material     ShowMaterialDecoration @relation(fields: [materialId], references: [id], onDelete: Cascade)
+  show         Show                   @relation(fields: [showId], references: [id], onDelete: Cascade)
+  showId       String
+  usedDate     DateTime
+  quantity     Int
+  leftQuantity Int
+  createdAt    DateTime               @default(now())
+  updatedAt    DateTime               @updatedAt
+  observations String?                @db.VarChar(255)
+}

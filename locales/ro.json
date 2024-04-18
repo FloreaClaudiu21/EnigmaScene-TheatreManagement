@@ -1,0 +1,669 @@
+{
+	"invoice": {
+		"footer": {
+			"title": "Pagina 1 din 1",
+			"nosignature": "Factura este valabilă fără semnătură și ștampilă, conform Articolului 319 alineatul 29 din Legea 227/2015."
+		},
+		"labels": {
+			"invoice": "FACTURĂ",
+			"series": "Serie: noua nr.",
+			"date": "Data:",
+			"vatRate": "Rată TVA: 19%",
+			"vatOnReceipt": "TVA la încasare"
+		},
+		"supplier": {
+			"label": "Furnizor",
+			"address": "Adresă: Str. SUBLOCOTENENT ADAM, Nr. 1, Bacău, România",
+			"bank": "Bancă: BANCA TRANSILVANIA",
+			"phone": "Telefon: +400723334521",
+			"email": "Email: contact@eurocarsbusiness.website",
+			"socialCapital": "Capital social: 23200 lei"
+		},
+		"client": {
+			"label": "Client",
+			"billingAddress": "Adresă de facturare:",
+			"phone": "Telefon:",
+			"email": "Email:"
+		},
+		"table": {
+			"number": "Nr. crt",
+			"productService": "Descriere Produs/Serviciu",
+			"unitMeasure": "U.M.",
+			"quantity": "Cantitate",
+			"unitPriceExVAT": "Preț Unitar (Fără TVA)",
+			"value": "Valoare",
+			"vatValue": "Valoare TVA",
+			"unitPriceIncVAT": "Preț Unitar (Incl. TVA)",
+			"rentOnDate": "Închiriere la dată",
+			"rent": "Închiriere",
+			"vatOnCollection": "TVA la colectare"
+		},
+		"total": "TOTAL",
+		"totalPayment": "Total Plată",
+		"dispatchDate": "Data Expedierii",
+		"by": "De:",
+		"dispatchedInOurPresence": "Expediat în prezența noastră la",
+		"signatures": "Semnături",
+		"receivingSignature": "Semnătura de primire"
+	},
+	"forms": {
+		"labels": {
+			"firstName": "Prenume*",
+			"lastName": "Nume*",
+			"email": "Email*",
+			"phone": "Telefon*",
+			"address": "Adresă*",
+			"city": "Oraș*",
+			"zipCode": "Cod Poștal*",
+			"country": "Țară*",
+			"observations": "Observații",
+			"comment": "Comentariu*",
+			"birthDate": "Data Nașterii*",
+			"password_op": "Parolă",
+			"password": "Parolă*",
+			"repassword": "Confirmare Parolă*",
+			"billAddress": "Adresă de facturare",
+			"signIn": "Autentificare",
+			"signOut": "Deconectare",
+			"register": "Înregistrare",
+			"selectAddress": "Selectare Adresă",
+			"selectCurrency": "Selectare Monedă",
+			"manufacturers": "Producători",
+			"models": "Modele",
+			"doors": "Uși",
+			"seats": "Locuri",
+			"ratings": "Evaluări",
+			"fuelTypes": "Tip Combustibil",
+			"fuelPolicy": "Politică Combustibil",
+			"locationType": "Tip Locație",
+			"carCategory": "Categorie Mașină",
+			"transmission": "Transmisie",
+			"priceUp": "Preț ▲",
+			"priceDown": "Preț ▼",
+			"ratingsUp": "Evaluări ▲",
+			"ratingsDown": "Evaluări ▼",
+			"found": "Găsit",
+			"day": "zi",
+			"days": "zile",
+			"cancel": "Anulare"
+		},
+		"placeholder": {
+			"searchRentById": "Caută închirierea după ID...",
+			"searchInvoiceById": "Caută factura după ID...",
+			"searchPaymentById": "Caută plata după ID...",
+			"searchHistoryRentById": "Caută istoricul închirierii după ID..."
+		}
+	},
+	"columns": {
+		"id": "ID",
+		"userId": "ID Utilizator",
+		"carId": "ID Mașină",
+		"paymentId": "ID Plată",
+		"invoiceId": "ID Factură",
+		"amount": "Sumă",
+		"customer": "Client",
+		"payId": "ID Plată",
+		"invoiceNumber": "Număr Factură",
+		"invoiceSeries": "Serie Factură",
+		"paidAt": "Plătit la",
+		"totalAmount": "Sumă Totală",
+		"extraFees": "Taxe Suplimentare",
+		"currency": "Monedă",
+		"currencyDate": "Data Monedei",
+		"currencyAmount": "Sumă Monedă",
+		"billingAddress": "Adresă de Facturare",
+		"daysOfRent": "Zile Închiriate",
+		"pickupDate": "Data Ridicării",
+		"pickUpLocation": "Locația Ridicării",
+		"dropOffDate": "Data Predării",
+		"dropOffLocation": "Locația Predării",
+		"rentPrice": "Preț Închiriere",
+		"carNumberPlate": "Număr de Înmatriculare al Mașinii",
+		"carManufacturer": "Producător Mașină",
+		"carModel": "Model Mașină",
+		"createdAt": "Creat la",
+		"updatedAt": "Actualizat la"
+	},
+	"messages": {
+		"error": {
+			"notFound": "Nu a fost găsit",
+			"noResults": "Nu au fost găsite rezultate.",
+			"unknownError": "A apărut o eroare necunoscută"
+		}
+	},
+
+	"sections": {
+		"title": {
+			"loading": "Încărcare...",
+			"myPayments": "Plățile Mele",
+			"myInvoices": "Facturile Mele",
+			"historyRents": "Închirierile Anterioare",
+			"currentRents": "Închirierile Curente",
+			"totalPrice": "Preț Total",
+			"extraPackets": "Pachete Suplimentare",
+			"periodChoosen": "Perioada Aleasă",
+			"billingAddress": "Adresele de Facturare",
+			"paymentDetails": "Detalii Plată",
+			"associatedAccounts": "Conturi Asociate",
+			"favoriteCars": "Mașini Favorite",
+			"sortBy": "Sortare După",
+			"carFeatures": "Caracteristici Mașină",
+			"warranty": "Garanție",
+			"paymentMethodWithCard": "Metodă de Plată cu Card de Debit",
+			"optionalPackets": "Alegeți Pachete Opționale",
+			"newUsedCars": "Mașini Noi și Second-Hand de Închiriat",
+			"showingCars": "Se afișează {cars} mașini dintr-un total de {cars1} mașini."
+		},
+		"desc": {
+			"cardNo": "Număr Card*:",
+			"expiryDate": "Data Expirării*:",
+			"pricePerDay": "Preț Pe Zi:",
+			"verifyingEmail": "Se verifică adresa dvs. de email...",
+			"checkResetToken": "Se verifică tokenul de resetare...",
+			"redirectAccountPage": "Vă redirecționăm către pagina de setări a contului...",
+			"warrantyDesc": "Depozitul reprezintă responsabilitatea dvs. în caz de daune sau furt. Este blocat pe cardul dvs. de credit la preluarea mașinii și va fi deblocat la returnarea acesteia în aceleași condiții. Puteți opta pentru limitarea valorii depozitului selectând una dintre cele două opțiuni de asigurare suplimentară, mai multe detalii la recepție."
+		}
+	},
+	"buttons": {
+		"ok": "OK",
+		"no": "NU",
+		"yes": "DA",
+		"save": "Salvare",
+		"cancel": "Anulare",
+		"reset": "Resetare",
+		"search": "Căutare",
+		"showAll": "Afișare Tot",
+		"viewAll": "Vizualizare Tot",
+		"register": "Înregistrare",
+		"print": "Imprimare",
+		"started": "Începeți",
+		"like": "Îmi place această mașină",
+		"unlike": "Nu îmi mai place această mașină",
+		"sendMsg": "Trimite Mesaj",
+		"startExplore": "Începeți Explorarea",
+		"clearAllFilters": "Ștergeți Toate Filtrele",
+		"deleteAccount": "Ștergeți Contul",
+		"backtomainpage": "Înapoi la pagina principală",
+		"linkGoogle": "Link cu Google",
+		"signInGoogle": "Autentificare cu Google",
+		"cancelRent": "Anulare Închiriere",
+		"forgotPass": "Ați uitat parola?",
+		"viewInvoice": "Vizualizare Factură",
+		"acceptTerms": "Accept Termenii și Condițiile.",
+		"confirmPayment": "CONFIRMARE PLATĂ A {cost} {currency} ȘI ÎNCHIRIEREA ACESTEI MAȘINI",
+		"titles": {
+			"deleteAddress": "Ștergere adresă",
+			"addAddress": "Adăugare adresă"
+		}
+	},
+	"navbar": {
+		"links": {
+			"home": "Acasă",
+			"rent": "Închiriază Mașini",
+			"services": "Servicii",
+			"faqs": "Întrebări Frecvente",
+			"about": "Despre Noi",
+			"contact": "Contact",
+			"terms": "Termeni și Condiții",
+			"privacy": "Notă de Confidențialitate"
+		},
+		"details": "Detalii Cont"
+	},
+	"footer": {
+		"section_company": "Companie",
+		"section_quick": "Linkuri Rapide",
+		"section_ourBrands": "Brandurile Noastre",
+		"section_vehicleType": "Tipul de Mașină",
+		"section_connect": "Conectează-te Cu Noi"
+	},
+	"accountPage": {
+		"title": "Setări Cont",
+		"providers": {
+			"name": "Nume Furnizor:",
+			"main": "Cont Principal:",
+			"associated": "Email Asociat:",
+			"linked": "Legat de Cont:"
+		},
+		"nav_links": {
+			"myRents": "Închirierile Mele",
+			"myPayments": "Plățile Mele",
+			"myInvoices": "Facturile Mele",
+			"accountSettings": "Setări Cont"
+		},
+		"noAddress": "Nu s-au găsit adrese de facturare, începeți prin adăugarea lor, apăsând pe butonul plus."
+	},
+
+	"snackbar": {
+		"titles": {
+			"removeFavorite": "Ștergeți Mașina Favorită",
+			"addFavorite": "Adăugați Mașina Favorită",
+			"addAddress": "Adăugare Adresă de Facturare",
+			"deleteAddress": "Ștergere Adresă de Facturare",
+			"logoutAccount": "Deconectare Cont",
+			"deleteAccount": "Ștergere Cont",
+			"passReset": "Resetare Parolă",
+			"confirmRent": "Confirmare Închiriere",
+			"unlinkAccount": "Dezlegare Cont Furnizor",
+			"updateAccount": "Actualizare Detalii Cont",
+			"linkAccount": "Legare Cont Furnizor",
+			"emailVerify": "Verificare Email",
+			"passResetEmail": "Email de Resetare Parolă",
+			"passResetVerify": "Verificare Resetare Parolă",
+			"accountRegistration": "Înregistrare Cont",
+			"accountVerification": "Verificare Cont",
+			"accountLogin": "Accesați Contul Dvs."
+		},
+		"desc": {
+			"notOkPayment": "Nu s-a putut salva plata și închirierea în baza de date, vă rugăm să contactați administratorul.",
+			"okPayment": "Plata dvs. a fost înregistrată, ați închiriat mașina: `{model}` pentru `{days}` zile.",
+			"notokRemoveFavorite": "Mașina favorită nu a putut fi eliminată, încercați din nou mai târziu.",
+			"notokAddFavorite": "Mașina favorită nu a putut fi adăugată, încercați din nou mai târziu.",
+			"notokAddAddress": "Adresa de facturare nu a putut fi adăugată, încercați din nou mai târziu.",
+			"notokDeleteAddress": "Adresa de facturare nu a putut fi ștearsă, încercați din nou mai târziu.",
+			"noPassword": "Trebuie să specificați parola.",
+			"acceptTerms": "Trebuie să acceptați termenii și condițiile înainte de a încerca să vă înregistrați!",
+			"accountLoginok": "Autentificare cu succes cu contul asociat adresei de email: {email}.",
+			"accountLogoutok": "V-ați deconectat cu succes din contul dvs.!",
+			"okDeleteAddress": "Adresa de facturare '{add}' a fost ștearsă cu succes.",
+			"okAddAddress": "Adresa de facturare '{add}' a fost adăugată cu succes.",
+			"okAddFavorite": "Mașina favorită '{favCar}' a fost adăugată cu succes.",
+			"okRemoveFavorite": "Mașina favorită '{favCar}' a fost eliminată cu succes."
+		}
+	},
+	"email": {
+		"titles": {
+			"rentCar": "Închirierea pentru mașina {model} a fost înregistrată!"
+		}
+	},
+	"modals": {
+		"titles": {
+			"invoiceId": "ID Factură: #{id}",
+			"deleteAddress": "Ștergere Adresă de Facturare",
+			"deleteAccount": "Ștergere Cont",
+			"cancelRent": "Anulare Închiriere",
+			"createAccount": "Creare Cont",
+			"confirmRent": "Confirmare închiriere a mașinii: {man} {model}",
+			"selectLanguage": "Selectare Limbă și Monedă",
+			"resetPass": "Resetare parolă pentru contul dvs. cu emailul: `{user}`",
+			"cancelRentGeneral": "Anulare închiriere #{id} pentru mașina: `{plate}`"
+		},
+		"desc": {
+			"okCancelRent": "Închirierea cu ID-ul #{id} a fost anulată, returnați mașina la locul de predare.",
+			"confirmDeleteAccount": "Sunteți sigur că doriți să ștergeți contul dvs., această acțiune nu poate fi anulată!",
+			"confirmCancelRent": "Sunteți sigur că doriți să anulați închirierea, această acțiune nu poate fi anulată, trebuie să returnați mașina la locul de predare în maximum 12 ore.",
+			"confirmDeleteAddress": "Sunteți siguri că doriți să ștergeți adresa de facturare cu ID-ul {addId}?"
+		}
+	},
+	"carCard": {
+		"rented": "închiriat",
+		"rentNow": "Închiriați acum pentru {price} - {days} zile",
+		"rating": "evaluare",
+		"ratings": "evaluări",
+		"noratings": "Nu există evaluări.",
+		"addedAt": "Adăugată la:",
+		"seats": "locuri",
+		"bags": "bagaje",
+		"doors": "uși",
+		"air": "Aer condiționat",
+		"noair": "Fără aer condiționat",
+		"fuelPolicy": "Politica de Combustibil",
+		"pickUpLocation": "Locație de Ridicare",
+		"viewList": "caracteristici ale mașinii - Faceți clic pentru a vedea lista",
+		"rentedByYouNow": "Închiriată de dvs. acum",
+		"lastRent": "Ultima dvs. închiriere: {date}",
+		"rentedBefore": "Închiriată anterior",
+		"rentedTill": "Închiriată! Până la {date}",
+		"rating_bad": "Slabă",
+		"rating_exceptional": "Excepțională",
+		"rating_good": "Bună",
+		"rating_verygood": "Foarte bună",
+		"rating_satisfactory": "Satisfăcătoare"
+	},
+	"pages": {
+		"privacy": {
+			"title": "Notificare de Confidențialitate",
+			"sections": {
+				"section1": {
+					"title": "1. Informații Colectate",
+					"content": "Colectăm informații personale cum ar fi numele, adresa de email, numărul de telefon și detaliile de plată atunci când ne furnizați voluntar în scopuri precum rezervarea unei închirieri auto."
+				},
+				"section2": {
+					"title": "2. Utilizarea Informațiilor",
+					"content": "Putem utiliza informațiile pe care le colectăm în diferite scopuri, inclusiv: Procesarea rezervărilor de închirieri auto, Comunicarea cu dvs. despre rezervările dvs., Îmbunătățirea serviciilor noastre, Scopuri de marketing și promoționale."
+				},
+				"section3": {
+					"title": "3. Securitatea Datelor",
+					"content": "Implementăm măsuri de securitate pentru a proteja informațiile dvs. personale împotriva accesului sau modificării neautorizate, inclusiv utilizarea tehnologiei de criptare și a protocolului secure socket layer (SSL)."
+				},
+				"section4": {
+					"title": "4. Cookie-uri",
+					"content": "Putem utiliza cookie-uri și tehnologii similare de urmărire pentru a îmbunătăți experiența dvs. pe site-ul nostru web și pentru a analiza modelele de utilizare. Puteți controla cookie-urile prin setările browserului dvs."
+				},
+				"section5": {
+					"title": "5. Link-uri către Terțe Părți",
+					"content": "Site-ul nostru web poate conține link-uri către site-uri web ale terțelor părți. Nu suntem responsabili pentru practicile de confidențialitate sau conținutul acestor site-uri web. Vă încurajăm să revizuiți politicile de confidențialitate ale acestor site-uri web."
+				},
+				"section6": {
+					"title": "6. Păstrarea Datelor",
+					"content": "Vom păstra informațiile dvs. personale doar pentru cât timp este necesar pentru a îndeplini scopurile pentru care au fost colectate și conform legilor și reglementărilor aplicabile."
+				},
+				"section7": {
+					"title": "7. Drepturile Utilizatorului",
+					"content": "Aveți dreptul de a accesa, actualiza sau șterge informațiile dvs. personale. Dacă doriți să exercitați aceste drepturi, vă rugăm să ne contactați folosind informațiile furnizate mai jos."
+				},
+				"section8": {
+					"title": "8. Divulgarea Informațiilor",
+					"content": "Putem dezvălui informațiile dvs. personale către terțe părți, inclusiv furnizorii de servicii și autoritățile legale, conform legii sau pentru a proteja drepturile și interesele noastre."
+				},
+				"section9": {
+					"title": "9. Conformitatea cu Cerințele Legale",
+					"content": "Vom coopera cu guvernul și autoritățile de aplicare a legii pentru a aplica și respecta legea. Putem dezvălui orice informație despre dvs. autorităților guvernamentale sau de aplicare a legii dacă noi, în discreția noastră exclusivă, considerăm necesar sau adecvat să răspundem la solicitări și procese legale."
+				},
+				"section 10": {
+					"title": "10. Modificări ale Acestei Politici",
+					"content": "Putem actualiza această Politică de Confidențialitate din când în când. Orice modificări vor fi reflectate pe această pagină, iar data de intrare în vigoare va fi actualizată în consecință."
+				},
+				"section11": {
+					"title": "11. Contactați-ne",
+					"content": "Dacă aveți întrebări sau nelămuriri cu privire la Politica noastră de Confidențialitate, vă rugăm să ne contactați la contact@eurocarsbusiness.com."
+				}
+			}
+		},
+		"terms": {
+			"title": "Termeni și Condiții",
+			"sections": {
+				"section1": {
+					"title": "1. Acord de Închiriere",
+					"content": "Prin închirierea unui vehicul de la Euro Cars Business, sunteți de acord să respectați termenii stipulați în acordul de închiriere furnizat la momentul închirierii."
+				},
+				"section2": {
+					"title": "2. Eligibilitate",
+					"content": "Pentru a închiria un vehicul, trebuie să aveți cel puțin 21 de ani și să dețineți un permis de conducere valabil."
+				},
+				"section3": {
+					"title": "3. Rezervare și Plată",
+					"content": "Rezervările de vehicule sunt supuse disponibilității. Plata este necesară în momentul efectuării rezervării prin card de credit sau alte metode de plată acceptate."
+				},
+				"section4": {
+					"title": "4. Anulare și Rambursări",
+					"content": "Politica de anulare variază în funcție de tipul de rezervare și poate implica taxe de anulare. Rambursările sunt supuse termenilor specificați în politica de anulare."
+				},
+				"section5": {
+					"title": "5. Durata Închirierii",
+					"content": "Durata de închiriere începe și se încheie conform specificațiilor din acordul de închiriere. Prolungarea duratei de închiriere este supusă disponibilității și taxelor suplimentare."
+				},
+				"section6": {
+					"title": "6. Utilizarea Vehiculului",
+					"content": "Vehiculul închiriat trebuie utilizat numai în scopuri legale și în conformitate cu legile de circulație. Orice utilizare neautorizată a vehiculului poate duce la rezilierea acordului de închiriere."
+				},
+				"section7": {
+					"title": "7. Asigurare",
+					"content": "Vehiculul închiriat poate fi acoperit de asigurare, în conformitate cu termenii și condițiile poliței de asigurare. Acoperirea suplimentară de asigurare poate fi achiziționată la discreția chiriașului."
+				},
+				"section8": {
+					"title": "8. Întreținere și Reparații",
+					"content": "Euro Cars Business este responsabilă de menținerea vehiculului închiriat în condiții de funcționare adecvate. Chiriașul trebuie să raporteze prompt orice probleme mecanice sau daune la Euro Cars Business."
+				},
+				"section9": {
+					"title": "9. Răspunderea",
+					"content": "Euro Cars Business nu este responsabilă pentru nicio pierdere sau deteriorare a bunurilor personale lăsate în vehiculul închiriat. Chiriașul este responsabil pentru orice daune sau responsabilități survenite în timpul perioadei de închiriere."
+				},
+				"section10": {
+					"title": "10. Terminare",
+					"content": "Euro Cars Business își rezervă dreptul de a rezilia acordul de închiriere în orice moment pentru încălcarea acestor Termeni sau pentru orice alt motiv valid."
+				},
+				"section11": {
+					"title": "11. Modificări",
+					"content": "Euro Cars Business poate actualiza sau modifica acești Termeni din când în când fără notificare prealabilă. Este responsabilitatea dvs. să revizuiți periodic acești Termeni pentru orice modificări."
+				},
+				"section12": {
+					"title": "12. Legislație Aplicabilă",
+					"content": "Acești Termeni sunt guvernați de legile României, fără a ține cont de principiile sale de conflicte."
+				},
+				"section13": {
+					"title": "13. Contactați-ne",
+					"content": "Dacă aveți întrebări sau nelămuriri cu privire la acești Termeni, vă rugăm să ne contactați la contact@eurocarsbusiness.com."
+				}
+			}
+		},
+		"home": {
+			"hero": {
+				"subtitle": "Găsiți mașini de închiriat în apropierea dvs.",
+				"title": "Găsiți Mașina Perfectă",
+				"pickupDetails": "Detalii Ridicare:",
+				"dropOffDetails": "Detalii Predare:",
+				"featuredTitle": "Sau Explorați Modelul Recomandat"
+			},
+			"brands": { "title": "Explorați Brandurile Noastre Premium" },
+			"mostRented": {
+				"title": "Explorați Vehiculele Cele Mai Închiriate"
+			},
+			"chooseUs": {
+				"title": "De Ce Să Ne Alegeți Pe Noi Și Serviciile Noastre"
+			},
+			"newestCars": {
+				"title": "Explorați Cele Mai Noi Vehicule"
+			},
+			"browse": {
+				"title": "Închiriați mașini exclusive, fie că sunteți în parcare sau în mișcare",
+				"caption": "Închiriați mașini exclusive cu servicii excepționale, prețuri competitive și o gamă largă de opțiuni - fie că sunteți în parc sau în mișcare."
+			},
+			"started": {
+				"title": "Obțineți un preț corect pentru închirierea mașinii dvs. de la noi astăzi",
+				"caption": "Ne angajăm să oferim clienților noștri servicii excepționale, prețuri competitive și o gamă largă de.",
+				"check1": "Suntem cel mai mare furnizor din România, cu mai multe patrule în mai multe locuri",
+				"check2": "Obțineți asistență rutieră 24/7",
+				"check3": "Închiriem 4 din 5 mașini pe zi",
+				"brag1": "MAȘINI DE ÎNCHIRIAT",
+				"brag2": "RECENZII DE LA CLIENȚI",
+				"brag3": "VIZITATORI PE ZI",
+				"brag4": "ÎNCHIRIERI CONFIRMATE"
+			},
+			"faqs": {
+				"title": "Întrebări Frecvente"
+			},
+			"aboutus": {
+				"title": "Despre Noi",
+				"caption": "Noi ne respectăm clienții și dorim să aibă o experiență plăcută",
+				"text": "Euro Cars Business este o companie de închirieri auto cu sediul în România, oferind servicii premium de închiriere auto pentru clienții săi exigenți. Cu o flotă diversificată de mașini de înaltă calitate, de la compacte elegante până la SUV-uri de lux și limuzine de clasă superioară, ne străduim să satisfacem toate nevoile și preferințele clienților noștri. Ceea ce ne diferențiază de alte companii de închirieri auto este angajamentul nostru ferm față de calitate și servicii excepționale. Fiecare mașină din flota noastră este întreținută riguros și curățată în mod regulat pentru a ne asigura că clienții noștri se bucură de o experiență de conducere fără probleme și fără griji. Echipa noastră dedicată de profesioniști este întotdeauna pregătită să ofere asistență și sfaturi personalizate pentru a ajuta clienții să aleagă mașina perfectă pentru nevoile lor specifice. Indiferent dacă călătoriți în scopuri de afaceri sau de agrement, avem soluția ideală pentru fiecare situație. La Euro Cars Business, ne mândrim cu transparența și profesionalismul nostru. Nu există costuri ascunse sau surprize neplăcute - prețurile noastre sunt clare și competitive, iar procesul de închiriere este simplu și eficient. În plus, suntem întotdeauna disponibili pentru clienții noștri, oferind servicii flexibile și convenabile de închiriere auto. Indiferent dacă aveți nevoie de o mașină pentru o zi sau pentru o perioadă mai lungă, suntem aici pentru a oferi soluția perfectă la prețuri accesibile. În concluzie, Euro Cars Business este partenerul ideal pentru oricine apreciază confortul, siguranța și calitatea atunci când vine vorba de închirierea unei mașini. Cu noi, călătoria dvs. devine mai plăcută și relaxantă, iar experiența de conducere devine memorabilă și fără griji."
+			},
+			"contact": {
+				"title": "Contact",
+				"contactDetails": {
+					"title": "Detalii de Contact",
+					"phone": "Telefon:",
+					"email": "Email:",
+					"address": "Adresă:"
+				}
+			}
+		}
+	},
+	"backend": {
+		"existsAccountProvider": {
+			"error": "A apărut o eroare în timpul verificării existenței providerului de cont.",
+			"notFound": "Utilizatorul nu a fost găsit.",
+			"providerExists": "Providerul de cont există deja."
+		},
+		"deleteMainAccountProvider": {
+			"error": "A apărut o eroare în timpul ștergerii providerului principal de cont.",
+			"notFound": "Utilizatorul nu a fost găsit.",
+			"noPassword": "Trebuie să setați o parolă pentru contul dvs. înainte de a elimina providerul principal.",
+			"providerNotFound": "Providerul nu a fost găsit.",
+			"success": "Providerul de cont principal '{providerEmail}' a fost șters cu succes."
+		},
+		"deleteAccountProvider": {
+			"error": "A apărut o eroare în timpul ștergerii providerului de cont.",
+			"notFound": "Utilizatorul nu a fost găsit.",
+			"providerNotFound": "Providerul nu a fost găsit.",
+			"success": "Providerul de cont '{providerEmail}' a fost șters cu succes."
+		},
+		"createAccountProvider": {
+			"error": "A apărut o eroare în timpul creării providerului de cont.",
+			"existsAccount": "Nu puteți asocia contul dvs. cu un altul care deja există.",
+			"alreadyAssociated": "Contul este deja asociat cu un alt email '{existingEmail}'.",
+			"success": "Contul dvs. a fost asociat cu succes cu emailul '{email}' și providerul '{provider}'."
+		},
+		"loginWithProvider": {
+			"error": "Utilizatorul cu emailul '{email}' nu a fost găsit!",
+			"success": "Autentificare cu providerul reușită pentru utilizatorul '{email}'."
+		},
+		"loginWithCredentials": {
+			"error": "Utilizatorul cu emailul '{email}' nu a fost găsit!",
+			"noPassword": "Contul asociat cu emailul '{email}' nu are o parolă.",
+			"incorrectPassword": "Parolă incorectă pentru utilizatorul '{email}'."
+		},
+		"deleteAccountUser": {
+			"notFound": "Utilizatorul nu a putut fi șters, încercați din nou mai târziu.",
+			"success": "Contul '{email}' a fost șters din baza de date."
+		},
+		"updateDetailsUser": {
+			"notFound": "Utilizatorul nu a putut fi actualizat, încercați din nou mai târziu.",
+			"success": "Detaliile utilizatorului pentru contul '{email}' au fost actualizate!"
+		},
+		"registerWithCredentialsorProvider": {
+			"emailExists": "Utilizatorul cu emailul '{email}' deja există.",
+			"associationExists": "Utilizatorul cu emailul '{email}' este asociat cu un alt cont.",
+			"createSuccess": "Contul a fost creat cu succes pentru emailul '{email}' cu providerul '{provider}'.",
+			"encryptError": "A apărut o eroare în timpul criptării parolei.",
+			"emailSendError": "A apărut o eroare în timpul trimiterii emailului de verificare.",
+			"verifyEmail": "Contul a fost creat cu succes, verificați-vă emailul pentru a vă activa contul.",
+			"unknownError": "A apărut o eroare necunoscută"
+		},
+		"resetPasswordUser": {
+			"notFound": "Utilizatorul cu emailul '{email}' nu a fost găsit!",
+			"success": "Parola pentru contul '{email}' a fost actualizată cu succes!"
+		},
+		"createCarBrands": {
+			"alreadyExists": "Marca mașinii cu producătorul '{manufacturer}' și modelul '{model}' există deja.",
+			"success": "Marca mașinii a fost creată cu succes.",
+			"unknownError": "A apărut o eroare necunoscută în timpul creării mărcii mașinii."
+		},
+		"updateCarBrand": {
+			"notFound": "Marca mașinii nu a putut fi găsită.",
+			"success": "Marca mașinii cu ID-ul '{id}' a fost actualizată cu succes.",
+			"unknownError": "A apărut o eroare necunoscută în timpul actualizării mărcii mașinii."
+		},
+		"deleteCarBrand": {
+			"notFound": "Marca mașinii nu a fost găsită.",
+			"success": "Marca mașinii cu ID-ul '{id}' a fost ștearsă.",
+			"unknownError": "Aapărut o eroare necunoscută în timpul ștergerii mărcii mașinii."
+		},
+		"deleteRentForCar": {
+			"notFound": "Închirierea nu a fost găsită!",
+			"success": "Închirierea a fost ștearsă!",
+			"unknownError": "Eroare necunoscută, vă rugăm să încercați din nou mai târziu!"
+		},
+		"createCar": {
+			"brandNotFound": "Marca mașinii cu ID-ul {brandId} nu a fost găsită!",
+			"success": "Mașina a fost creată cu succes.",
+			"unknownError": "A apărut o eroare necunoscută"
+		},
+		"updateCar": {
+			"brandNotFound": "Marca mașinii cu ID-ul {brandId} nu a fost găsită!",
+			"success": "Mașina a fost actualizată cu succes.",
+			"unknownError": "A apărut o eroare necunoscută"
+		},
+		"deleteCar": {
+			"notFound": "Mașina nu a fost găsită!",
+			"success": "Mașina cu ID-ul '{id}' a fost ștearsă.",
+			"unknownError": "Eroare necunoscută, vă rugăm să încercați din nou mai târziu!"
+		},
+		"verifyAccountIsActivated": {
+			"userNotFound": "Niciun utilizator găsit cu emailul furnizat.",
+			"accountActivated": "Contul este deja activat.",
+			"invalidSignature": "Semnătură invalidă!",
+			"accountNotActivated": "Contul nu este încă activat, verificați-vă emailul și accesați linkul de activare.",
+			"accountActivationExpired": "Contul nu a fost activat în termen de 24 de ore, contul dvs. va fi șters.",
+			"unknownError": "A apărut o eroare necunoscută, vă rugăm să încercați din nou mai târziu!"
+		},
+		"sendEmailContact": {
+			"subject": "Mesaj nou de la un oaspete primit!",
+			"successMessage": "Mesajul a fost trimis, echipa noastră vă va contacta în curând!"
+		},
+		"verifyAccountActivationSignature": {
+			"invalidSignature": "Semnătură invalidă!",
+			"userNotFound": "Niciun utilizator găsit cu emailul și linkul de activare furnizate.",
+			"accountActivationExpired": "Linkul de activare a contului a expirat, contul dvs. a fost șters.",
+			"accountActivated": "Contul dvs. a fost activat, puteți începe să utilizați contul acum!"
+		},
+		"verifyPasswordResetSignature": {
+			"invalidSignature": "Semnătură invalidă!",
+			"userNotFound": "Niciun utilizator găsit cu emailul și linkul de resetare furnizate.",
+			"resetLinkExpired": "Linkul de resetare a parolei a expirat, încercați să trimiteți un altul.",
+			"validLink": "Linkul de resetare a parolei este valid, puteți să vă resetați parola acum!"
+		},
+		"sendPasswordForgotEmail": {
+			"subject": "Confirmare resetare parolă",
+			"successMessage": "Un email de resetare a parolei a fost trimis la adresa de email asociată contului dvs.",
+			"emailNotSpecified": "Trebuie să specificați adresa de email la care doriți să trimiteți linkul de resetare.",
+			"resetRequested": "A fost inițiată deja o cerere de resetare a parolei pentru această adresă de email. Verificați-vă inboxul și urmați linkul de resetare furnizat pentru a continua.",
+			"accountNotFound": "Contul cu adresa de email '{email}' nu a fost găsit!",
+			"noPassword": "Contul cu adresa de email '{email}' nu are o parolă, ar putea fi asociat cu un provider!",
+			"notActivated": "Contul cu adresa de email '{email}' nu a fost încă activat!",
+			"emailSent": "Un email de resetare a parolei a fost trimis la adresa de email asociată contului dvs."
+		},
+		"sendVerifyAccountEmail": {
+			"invalidEmailAddress": "Email invalid",
+			"subject": "Confirmare activare cont",
+			"successMessage": "Emailul de activare a fost trimis la adresa de email asociată contului dvs.",
+			"emailNotSpecified": "Trebuie să specificați adresa de email la care doriți să trimiteți linkul de verificare.",
+			"accountNotFoundOrActivated": "Contul cu adresa de email '{email}' nu a fost găsit sau este deja activat!",
+			"activationEmailSent": "Emailul de activare a fost trimis la adresa de email asociată contului dvs.",
+			"activationEmailFailed": "Emailul de activare nu a putut fi trimis, contul asociat cu adresa dvs. de email a fost șters."
+		},
+		"sendEmail": {
+			"emailSent": "Emailul a fost trimis cu succes.",
+			"unknownError": "A apărut o eroare necunoscută, vă rugăm să încercați din nou mai târziu!"
+		},
+		"createExtraAdds": {
+			"error": "Funcționalitatea extra adițională cu numele '{name}' există deja.",
+			"success": "Funcționalitatea extra adițională a fost creată cu succes.",
+			"unknownError": "A apărut o eroare necunoscută în timpul creării funcționalității extra adiționale."
+		},
+		"updateExtraAdds": {
+			"error": "Funcționalitatea extra adițională nu a putut fi găsită!",
+			"success": "Funcționalitatea extra adițională cu ID-ul '{id}' a fost actualizată cu succes.",
+			"unknownError": "A apărut o eroare necunoscută în timpul actualizării funcționalității extra adiționale."
+		},
+		"deleteExtraAdd": {
+			"error": "Funcționalitatea extra adițională nu a fost găsită!",
+			"message": "Funcționalitatea extra adițională cu ID-ul '{id}' a fost ștearsă.",
+			"unknownError": "A apărut o eroare necunoscută în timpul ștergerii funcționalității extra adiționale."
+		},
+		"createRentAdmin": {
+			"carNotFound": "Mașina nu a fost găsită!",
+			"userNotFound": "Utilizatorul nu a fost găsit!",
+			"rentCreatedSuccess": "Închirierea cu ID-ul '{rentId}' a fost creată!",
+			"unknownError": "A apărut o eroare necunoscută în timpul creării închirierii, vă rugăm să încercați din nou mai târziu!"
+		},
+		"updateRentAdmin": {
+			"carNotFound": "Mașina nu a fost găsită!",
+			"userNotFound": "Utilizatorul nu a fost găsit!",
+			"rentNotFound": "Închirierea nu a fost găsită!",
+			"rentUpdatedSuccess": "Închirierea cu ID-ul '{rentId}' a fost actualizată!",
+			"unknownError": "A apărut o eroare necunoscută în timpul actualizării închirierii, vă rugăm să încercați din nou mai târziu!"
+		},
+		"deleteRentAdmin": {
+			"rentNotFound": "Închirierea nu a fost găsită!",
+			"paymentNotFound": "Plata nu a fost găsită!",
+			"rentDeletedSuccess": "Închirierea cu ID-ul '{rentId}' a fost ștearsă.",
+			"unknownError": "A apărut o eroare necunoscută în timpul ștergerii închirierii, vă rugăm să încercați din nou mai târziu!"
+		},
+		"createUser": {
+			"userWithEmailExists": "Utilizatorul cu emailul '{email}' deja există.",
+			"emailAssociatedWithAnotherAccount": "Utilizatorul cu emailul '{email}' este asociat cu un alt cont.",
+			"accountCreatedSuccess": "Contul a fost creat cu succes.",
+			"unknownError": "A apărut o eroare necunoscută în timpul creării utilizatorului. Vă rugăm să încercați din nou mai târziu."
+		},
+		"updateUser": {
+			"userWithEmailNotFound": "Utilizatorul cu emailul '{email}' nu există.",
+			"accountUpdatedSuccess": "Contul a fost actualizat cu succes.",
+			"unknownError": "A apărut o eroare necunoscută în timpul actualizării utilizatorului. Vă rugăm să încercați din nou mai târziu."
+		},
+		"deleteUser": {
+			"userNotFound": "Utilizatorul nu a fost găsit!",
+			"userDeletedSuccess": "Utilizatorul cu ID-ul '{userId}' a fost șters.",
+			"unknownError": "A apărut o eroare necunoscută în timpul ștergerii utilizatorului. Vă rugăm să încercați din nou mai târziu."
+		}
+	}
+}

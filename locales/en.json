@@ -1,0 +1,714 @@
+{
+	"invoice": {
+		"footer": {
+			"title": "Page 1 of 1",
+			"nosignature": "The invoice is valid without signature and stamp, according to Article 319 paragraph 29 of Law 227/2015."
+		},
+		"labels": {
+			"invoice": "INVOICE",
+			"series": "Series: new no.",
+			"date": "Date:",
+			"vatRate": "VAT Rate: 19%",
+			"vatOnReceipt": "VAT on cash receipt"
+		},
+		"supplier": {
+			"label": "Supplier",
+			"address": "Address: Str. SUBLOCOTENENT ADAM Street, No. 1, Bacau, Romania",
+			"bank": "Bank: BANCA TRANSILVANIA",
+			"phone": "Phone: +400723334521",
+			"email": "Email: contact@enigmascene.website",
+			"socialCapital": "Social capital: 23200 lei"
+		},
+		"client": {
+			"label": "Client",
+			"billingAddress": "Billing Address:",
+			"phone": "Phone:",
+			"email": "Email:"
+		},
+		"table": {
+			"number": "Nr. crt",
+			"productService": "Product/Service Description",
+			"unitMeasure": "U.M.",
+			"quantity": "Quantity",
+			"unitPriceExVAT": "Unit Price (Excl. VAT)",
+			"value": "Value",
+			"vatValue": "VAT Value",
+			"unitPriceIncVAT": "Unit Price (Incl. VAT)",
+			"rentOnDate": "Rent on date",
+			"rent": "Rent",
+			"vatOnCollection": "VAT on collection"
+		},
+		"total": "TOTAL",
+		"totalPayment": "Total Payment",
+		"dispatchDate": "Dispatch Date",
+		"by": "By:",
+		"dispatchedInOurPresence": "Dispatched in our presence on",
+		"signatures": "Signatures",
+		"receivingSignature": "Receiving Signature"
+	},
+	"forms": {
+		"labels": {
+			"firstName": "First Name*",
+			"lastName": "Last Name*",
+			"email": "Email*",
+			"phone": "Phone*",
+			"address": "Address*",
+			"city": "City*",
+			"zipCode": "Zip Code*",
+			"country": "Country*",
+			"observations": "Observations",
+			"comment": "Comment*",
+			"birthDate": "Birth Date*",
+			"password_op": "Password",
+			"password": "Password*",
+			"repassword": "Confirm Password*",
+			"billAddress": "Billing address",
+			"signIn": "Sign In",
+			"signOut": "Sign Out",
+			"register": "Register",
+			"selectAddress": "Select Address",
+			"selectCurrency": "Select Currency",
+			"manufacturers": "Manufacturers",
+			"models": "Models",
+			"doors": "Doors",
+			"seats": "Seats",
+			"ratings": "Ratings",
+			"fuelTypes": "Fuel Type",
+			"fuelPolicy": "Fuel Policy",
+			"locationType": "Location Type",
+			"carCategory": "Car Category",
+			"transmission": "Transmission",
+			"priceUp": "Price ▲",
+			"priceDown": "Price ▼",
+			"ratingsUp": "Ratings ▲",
+			"ratingsDown": "Ratings ▼",
+			"found": "Found",
+			"day": "day",
+			"days": "days",
+			"cancel": "Cancel"
+		},
+		"placeholder": {
+			"searchRentById": "Search rent by ID...",
+			"searchInvoiceById": "Search invoice by ID...",
+			"searchPaymentById": "Search payment by ID...",
+			"searchHistoryRentById": "Search history rent by ID..."
+		}
+	},
+	"columns": {
+		"id": "ID",
+		"clientId": "Client Id",
+		"carId": "Car Id",
+		"paymentId": "Payment Id",
+		"invoiceId": "Invoice Id",
+		"amount": "Amount",
+		"customer": "Customer",
+		"payId": "Payment Id",
+		"invoiceNumber": "Invoice Number",
+		"invoiceSeries": "Invoice Series",
+		"paidAt": "Paid At",
+		"totalAmount": "Total Amount",
+		"extraFees": "Extra Fees",
+		"currency": "Currency",
+		"currencyDate": "Curreny Date",
+		"currencyAmount": "Currency Amount",
+		"billingAddress": "Billing Address",
+		"daysOfRent": "Days Of Rent",
+		"pickupDate": "Pickup Date",
+		"pickUpLocation": "Pick Up Location",
+		"dropOffDate": "Drop Off Date",
+		"dropOffLocation": "Drop Off Location",
+		"rentPrice": "Rent Price",
+		"carNumberPlate": "Car Number Plate",
+		"carManufacturer": "Car Manufacturer",
+		"carModel": "Car Model",
+		"createdAt": "Created At",
+		"updatedAt": "Updated At"
+	},
+	"messages": {
+		"error": {
+			"notFound": "Not Found",
+			"noResults": "No results have been found.",
+			"unknownError": "Unknown error occured, try again later."
+		}
+	},
+	"sections": {
+		"title": {
+			"loading": "Loading...",
+			"myPayments": "My Payments",
+			"myInvoices": "My Invoices",
+			"historyRents": "History Rents",
+			"currentRents": "Current Rents",
+			"totalPrice": "Total Price",
+			"extraPackets": "Extra Packets",
+			"periodChoosen": "Choosed Period",
+			"billingAddress": "Billing Addresses",
+			"paymentDetails": "Payment Details",
+			"associatedAccounts": "Associated Accounts",
+			"favoriteCars": "Favorite Cars",
+			"sortBy": "Sort By",
+			"carFeatures": "Car Features",
+			"warranty": "Warranty",
+			"paymentMethodWithCard": "Payment Method With Debit Card",
+			"optionalPackets": "Choose Optional Packets",
+			"newUsedCars": "New and Client Cars For Rent",
+			"showingCars": "Showing {cars} cars out of {cars1} cars."
+		},
+		"desc": {
+			"cardNo": "Card number*:",
+			"expiryDate": "Expiry Date*:",
+			"pricePerDay": "Price per day:",
+			"verifyingEmail": "Verifying your email address...",
+			"checkResetToken": "Checking your reset token...",
+			"redirectAccountPage": "Redirecting you to the account settings page...",
+			"warrantyDesc": "Deposit represents your responsibility in case of damage or theft. It is blocked on your credit card upon picking up the car and will be unblocked upon returning it in the same conditions. You can choose to limit the deposit value by selecting one of the two additional insurance options, more details at the reception."
+		}
+	},
+	"buttons": {
+		"ok": "OK",
+		"no": "NO",
+		"yes": "YES",
+		"save": "Save",
+		"cancel": "Cancel",
+		"reset": "Reset",
+		"search": "Search",
+		"showAll": "Show All",
+		"viewAll": "View All",
+		"register": "Register",
+		"print": "Print",
+		"started": "Get Started",
+		"like": "Like this car",
+		"unlike": "Unlike this car",
+		"sendMsg": "Send Message",
+		"startExplore": "Start Exploring",
+		"clearAllFilters": "Clear All Filters",
+		"deleteAccount": "Delete Account",
+		"backtomainpage": "Back to home page",
+		"linkGoogle": "Link with Google",
+		"signInGoogle": "Sign In with Google",
+		"cancelRent": "Cancel Rent",
+		"forgotPass": "Forgot Password?",
+		"viewInvoice": "View Invoice",
+		"acceptTerms": "I accept Terms & Conditions.",
+		"confirmPayment": "CONFIRM PAYMENT OF {cost} {currency} AND RENTING OF THIS CAR",
+		"titles": {
+			"deleteAddress": "Delete address",
+			"addAddress": "Add address"
+		}
+	},
+	"navbar": {
+		"links": {
+			"home": "Home",
+			"rent": "Rent Cars",
+			"services": "Services",
+			"faqs": "FAQs",
+			"about": "About Us",
+			"contact": "Contact",
+			"terms": "Terms & Conditions",
+			"privacy": "Privacy Notice"
+		},
+		"details": "Account Details"
+	},
+	"footer": {
+		"section_company": "Company",
+		"section_quick": "Quick Links",
+		"section_ourBrands": "Our Brands",
+		"section_vehicleType": "Vehicle Type",
+		"section_connect": "Connect With Us"
+	},
+	"accountPage": {
+		"title": "Account Settings",
+		"providers": {
+			"name": "Provider Name:",
+			"main": "Main Account:",
+			"associated": "Associated Email:",
+			"linked": "Linked With Account:"
+		},
+		"nav_links": {
+			"myRents": "My Rents",
+			"myPayments": "My Payments",
+			"myInvoices": "My Invoices",
+			"accountSettings": "Account Settings"
+		},
+		"noAddress": "No billing addresses have been found, start by adding them, click on the plus button."
+	},
+	"snackbar": {
+		"titles": {
+			"removeFavorite": "Remove Favorite Car",
+			"addFavorite": "Add Favorite Car",
+			"addAddress": "Add Billing Address",
+			"deleteAddress": "Delete Billing Address",
+			"logoutAccount": "SignOut Account",
+			"deleteAccount": "Delete Account",
+			"passReset": "Password Reset",
+			"confirmRent": "Confirm Rent",
+			"unlinkAccount": "Unlink Provider Account",
+			"updateAccount": "Update Account Details",
+			"linkAccount": "Link Provider Account",
+			"emailVerify": "Email Verification",
+			"passResetEmail": "Password Reset Email",
+			"passResetVerify": "Password Reset Verification",
+			"accountRegistration": "Account Registration",
+			"accountVerification": "Account Verification",
+			"accountLogin": "Access Your Account"
+		},
+		"desc": {
+			"notOkPayment": "Couldn't save the and payment rent into the database, please contact the administrator.",
+			"okPayment": "Your payment have been registered, you rented the car: `{model}` for `{days}` days.",
+			"notokRemoveFavorite": "Favorite car couldn't be removed, try again later.",
+			"notokAddFavorite": "Favorite car couldn't be added, try again later.",
+			"notokAddAddress": "Billing address couldn't be added, try again later.",
+			"notokDeleteAddress": "Billing address couldn't be deleted, try again later.",
+			"noPassword": "You must specify the password.",
+			"acceptTerms": "You must accept the terms and conditions before trying to register!",
+			"accountLoginok": "Successfully logged in with the account associated with the email address: {email}.",
+			"accountLogoutok": "You successfully logged out from your account!",
+			"okDeleteAddress": "Billing address '{add}' have been deleted successfully.",
+			"okAddAddress": "Billing address '{add}' have been added successfully.",
+			"okAddFavorite": "Favorite car '{favCar}' have been added successfully.",
+			"okRemoveFavorite": "Favorite car '{favCar}' has been removed successfully."
+		}
+	},
+	"email": {
+		"titles": {
+			"rentCar": "Rent for car {model} have been registered!"
+		}
+	},
+	"modals": {
+		"titles": {
+			"invoiceId": "Invoice ID: #{id}",
+			"deleteAddress": "Delete Billing Address",
+			"deleteAccount": "Delete Account",
+			"cancelRent": "Cancel Rent",
+			"createAccount": "Create Account",
+			"confirmRent": "Confirm rent of the car: {man} {model}",
+			"selectLanguage": "Select Language and Currency",
+			"resetPass": "Reset your account password for the email: `{client}`",
+			"cancelRentGeneral": "Cancel rent #{id} for the car: `{plate}`"
+		},
+		"desc": {
+			"okCancelRent": "Rent with ID #{id} has been canceled, return the car to the drop-off location.",
+			"confirmDeleteAccount": "Are you sure you want to delete your account, this action can`t be undone!",
+			"confirmCancelRent": "Are you sure you want to cancel the rent, this action can`t be undone, you must return the car to the drop-off location in maximum 12 hours.",
+			"confirmDeleteAddress": "Are you sure you want to delete the billing address with ID `{addId}`?"
+		}
+	},
+	"carCard": {
+		"rented": "rented",
+		"rentNow": "Rent now for {price} - {days} days",
+		"rating": "rating",
+		"ratings": "ratings",
+		"noratings": "No ratings for this car.",
+		"addedAt": "Added At:",
+		"seats": "seats",
+		"bags": "bags",
+		"doors": "doors",
+		"air": "Air Conditioning",
+		"noair": "No Air Conditioning",
+		"fuelPolicy": "Fuel Policy",
+		"pickUpLocation": "Pick Up Location",
+		"viewList": "car features - Click to view list",
+		"rentedByYouNow": "Rented by you now",
+		"lastRent": "Your last rent: {date}",
+		"rentedBefore": "Rented before",
+		"rentedTill": "Rented! Till {date}",
+		"rating_bad": "Bad",
+		"rating_exceptional": "Exceptional",
+		"rating_good": "Good",
+		"rating_verygood": "Very Good",
+		"rating_satisfactory": "Satisfactory"
+	},
+	"pages": {
+		"privacy": {
+			"title": "Privacy Notice",
+			"sections": {
+				"section1": {
+					"title": "1. Information We Collect",
+					"content": "We collect personal information such as name, email address, phone number, and payment details when you voluntarily provide it to us for purposes such as booking a vehicle rental."
+				},
+				"section2": {
+					"title": "2. Use of Information",
+					"content": "We may use the information we collect for various purposes, including: Processing vehicle rental bookings, Communicating with you about your bookings, Improving our services, Marketing and promotional purposes."
+				},
+				"section3": {
+					"title": "3. Data Security",
+					"content": "We implement security measures to protect your personal information against unauthorized access or alteration, including the use of encryption technology and secure socket layer (SSL) protocol."
+				},
+				"section4": {
+					"title": "4. Cookies",
+					"content": "We may use cookies and similar tracking technologies to enhance your experience on our website and to analyze usage patterns. You can control cookies through your browser settings."
+				},
+				"section5": {
+					"title": "5. Third-party Links",
+					"content": "Our website may contain links to third-party websites. We are not responsible for the privacy practices or content of such websites. We encourage you to review the privacy policies of those websites."
+				},
+				"section6": {
+					"title": "6. Data Retention",
+					"content": "We will retain your personal information only for as long as necessary to fulfill the purposes for which it was collected and as required by applicable laws and regulations."
+				},
+				"section7": {
+					"title": "7. Client Rights",
+					"content": "You have the right to access, update, or delete your personal information. If you would like to exercise these rights, please contact us using the information provided below."
+				},
+				"section8": {
+					"title": "8. Disclosure of Information",
+					"content": "We may disclose your personal information to third parties, including service providers and legal authorities, as required by law or to protect our rights and interests."
+				},
+				"section9": {
+					"title": "9. Compliance with Legal Requirements",
+					"content": "We will cooperate with government and law enforcement officials to enforce and comply with the law. We may disclose any information about you to government or law enforcement officials as we, in our sole discretion, believe necessary or appropriate to respond to claims and legal process."
+				},
+				"section10": {
+					"title": "10. Changes to this Policy",
+					"content": "We may update this Privacy Policy from time to time. Any changes will be reflected on this page, and the effective date will be updated accordingly."
+				},
+				"section11": {
+					"title": "11. Contact Us",
+					"content": "If you have any questions or concerns about our Privacy Policy, please contact us at contact@eurocarsbusiness.com."
+				}
+			}
+		},
+		"terms": {
+			"title": "Terms and Conditions",
+			"sections": {
+				"section1": {
+					"title": "1. Rental Agreement",
+					"content": "By renting a vehicle from Euro Cars Business, you agree to abide by the terms outlined in the rental agreement provided at the time of rental."
+				},
+				"section2": {
+					"title": "2. Eligibility",
+					"content": "To rent a vehicle, you must be at least 21 years old and possess a valid driver's license."
+				},
+				"section3": {
+					"title": "3. Booking and Payment",
+					"content": "Vehicle bookings are subject to availability. Payment is required at the time of booking via credit card or other accepted payment methods."
+				},
+				"section4": {
+					"title": "4. Cancellation and Refunds",
+					"content": "Cancellation policies vary based on the type of booking and may incur cancellation fees. Refunds are subject to the terms outlined in the cancellation policy."
+				},
+				"section5": {
+					"title": "5. Rental Duration",
+					"content": "The rental duration begins and ends as specified in the rental agreement. Extension of rental duration is subject to availability and additional fees."
+				},
+				"section6": {
+					"title": "6. Vehicle Use",
+					"content": "The rented vehicle must only be used for lawful purposes and in accordance with traffic laws. Any unauthorized use of the vehicle may result in termination of the rental agreement."
+				},
+				"section7": {
+					"title": "7. Insurance",
+					"content": "The rental vehicle may be covered by insurance, subject to the terms and conditions of the insurance policy. Additional insurance coverage may be purchased at the renter's discretion."
+				},
+				"section8": {
+					"title": "8. Maintenance and Repairs",
+					"content": "Euro Cars Business is responsible for maintaining the rented vehicle in good working condition. Renter must promptly report any mechanical issues or damages to Euro Cars Business."
+				},
+				"section9": {
+					"title": "9. Liability",
+					"content": "Euro Cars Business is not liable for any loss or damage to personal belongings left in the rented vehicle. Renter is responsible for any damages or liabilities incurred during the rental period."
+				},
+				"section10": {
+					"title": "10. Termination",
+					"content": "Euro Cars Business reserves the right to terminate the rental agreement at any time for violation of these Terms or for any other valid reason."
+				},
+				"section11": {
+					"title": "11. Amendments",
+					"content": "Euro Cars Business may update or modify these Terms from time to time without prior notice. It is your responsibility to review these Terms periodically for any changes."
+				},
+				"section12": {
+					"title": "12. Governing Law",
+					"content": "These Terms are governed by the laws of Romania, without regard to its conflict of laws principles."
+				},
+				"section13": {
+					"title": "13. Contact Us",
+					"content": "If you have any questions or concerns about these Terms, please contact us at contact@eurocarsbusiness.com."
+				}
+			}
+		},
+		"home": {
+			"hero": {
+				"subtitle": "Find cars for rent near you",
+				"title": "Find Your Perfect Car",
+				"pickupDetails": "Pick-up details:",
+				"dropOffDetails": "Drop-off details:",
+				"featuredTitle": "Or Browse Featured Model"
+			},
+			"brands": {
+				"title": "Explore Our Premium Brands"
+			},
+			"mostRented": {
+				"title": "Explore Most Rented Vehicles"
+			},
+			"chooseUs": {
+				"title": "Why Choose Us & Our Services"
+			},
+			"newestCars": {
+				"title": "Explore Newest Vehicles"
+			},
+			"browse": {
+				"title": "Rent exclusive cars, whether you are on the lot or on the go",
+				"caption": "Rent exclusive cars with exceptional service, competitive pricing, and a wide range of options - whether you are on the lot or on the go."
+			},
+			"started": {
+				"title": "Get A Fair Price For Your Car Rent From Us Today",
+				"caption": "We are committed to providing our customers with exceptional service, competitive pricing, and a wide range of.",
+				"check1": "We are the Romanian`s largest provider, with more patrols in more places",
+				"check2": "You get 24/7 roadside assistance",
+				"check3": "We rent 4 out of 5 cars per day",
+				"brag1": "CARS FOR RENT",
+				"brag2": "CUSTOMERS REVIEWS",
+				"brag3": "VISITORS PER DAY",
+				"brag4": "CONFIRMED RENTS"
+			},
+			"faqs": {
+				"title": "Frequently Asked Questions"
+			},
+			"aboutus": {
+				"title": "About Us",
+				"caption": "We Value Our Clients And Want Them To Have A Nice Experience",
+				"text": "Euro Cars Business is a car rental company based in Romania, offering premium car rental services for its discerning clients. With a diverse fleet of high-quality cars, ranging from sleek compacts to luxury SUVs and top-class limousines, we strive to meet all the needs and preferences of our customers. What sets us apart from other car rental companies is our firm commitment to quality and exceptional service. Every car in our fleet is rigorously maintained and regularly cleaned to ensure that our customers enjoy a seamless and worry-free driving experience. Our dedicated team of professionals is always ready to provide personalized assistance and advice to help customers choose the perfect car for their specific needs. Whether you are traveling for business or leisure, we have the ideal solution for every situation. At Euro Cars Business, we take pride in our transparency and professionalism. There are no hidden costs or unpleasant surprises - our prices are clear and competitive, and the rental process is simple and efficient. Additionally, we are always available to our customers, offering flexible and convenient car rental services. Whether you need a car for a day or for a longer period, we are here to provide the perfect solution at affordable prices. In conclusion, Euro Cars Business is the ideal partner for anyone who values comfort, safety, and quality when it comes to renting a car. With us, your journey becomes more enjoyable and relaxing, and the driving experience becomes memorable and worry-free."
+			},
+			"contact": {
+				"title": "Contact",
+				"contactDetails": {
+					"title": "Contact Details",
+					"phone": "Phone:",
+					"email": "Email:",
+					"address": "Address:"
+				}
+			}
+		}
+	},
+	"backend": {
+		"existsAccountProvider": {
+			"error": "An error occurred while checking if account provider exists.",
+			"notFound": "Client not found.",
+			"providerExists": "Account provider already exists."
+		},
+		"deleteMainAccountProvider": {
+			"error": "An error occurred while deleting main account provider.",
+			"notFound": "Client not found.",
+			"noPassword": "You must set a password to your account before removing the main provider.",
+			"providerNotFound": "Provider not found.",
+			"success": "Main account provider '{providerEmail}' deleted successfully."
+		},
+		"deleteAccountProvider": {
+			"error": "An error occurred while deleting account provider.",
+			"notFound": "Client not found.",
+			"providerNotFound": "Provider not found.",
+			"success": "Account provider '{providerEmail}' deleted successfully."
+		},
+		"createAccountProvider": {
+			"error": "An error occurred while creating account provider.",
+			"existsAccount": "You can't associate your account with another one that already exists.",
+			"alreadyAssociated": "Account is already associated with another email '{existingEmail}'.",
+			"success": "Your account has been successfully associated with email '{email}' and provider '{provider}'."
+		},
+		"loginWithProvider": {
+			"error": "Client with email '{email}' not found!",
+			"success": "Successfully logged in with provider for client '{email}'."
+		},
+		"loginWithCredentials": {
+			"error": "Client with email '{email}' not found!",
+			"noPassword": "Account associated with email '{email}' does not have a password.",
+			"incorrectPassword": "Incorrect password for client '{email}'."
+		},
+		"deleteAccountClient": {
+			"notFound": "Client could not be deleted, try again later.",
+			"success": "Account '{email}' has been deleted from the database."
+		},
+		"updateDetailsClient": {
+			"notFound": "Client could not be updated, try again later.",
+			"success": "Client details for the account '{email}' have been updated!"
+		},
+		"registerWithCredentialsorProvider": {
+			"emailExists": "Client with email '{email}' already exists.",
+			"associationExists": "Client with email '{email}' is associated with another account.",
+			"createSuccess": "Account created successfully for the email '{email}' with provider '{provider}'.",
+			"encryptError": "An error occurred while encrypting the password.",
+			"emailSendError": "An error occurred while sending the verification email.",
+			"verifyEmail": "Account created successfully, verify your email in order to activate your account.",
+			"unknownError": "An unknown error occurred"
+		},
+		"resetPasswordClient": {
+			"notFound": "Client with email '{email}' not found!",
+			"success": "Your password for the account '{email}' has been updated!"
+		},
+		"createCarBrands": {
+			"alreadyExists": "Car brand with manufacturer '{manufacturer}' and model '{model}' already exists.",
+			"success": "Car brand created successfully.",
+			"unknownError": "An unknown error occurred while creating the car brand."
+		},
+		"updateCarBrand": {
+			"notFound": "Car brand could not be found.",
+			"success": "Car brand with ID '{id}' updated successfully.",
+			"unknownError": "An unknown error occurred while updating the car brand."
+		},
+		"deleteCarBrand": {
+			"notFound": "Car brand not found.",
+			"success": "The car brand with ID '{id}' has been deleted.",
+			"unknownError": "Unknown error occurred while deleting the car brand."
+		},
+		"deleteRentForCar": {
+			"notFound": "Rent not found!",
+			"success": "Rent have been deleted!",
+			"unknownError": "Unknown error, please try again later!"
+		},
+		"createCar": {
+			"brandNotFound": "Car brand with ID {brandId} have not been found!",
+			"success": "Car created successfully.",
+			"unknownError": "An unknown error occurred"
+		},
+		"updateCar": {
+			"brandNotFound": "Car brand with ID {brandId} have not been found!",
+			"success": "Car updated successfully.",
+			"unknownError": "An unknown error occurred"
+		},
+		"deleteCar": {
+			"notFound": "Car not found!",
+			"success": "The car with ID '{id}' has been deleted.",
+			"unknownError": "Unknown error, please try again later!"
+		},
+		"verifyAccountIsActivated": {
+			"clientNotFound": "No client found with the provided email.",
+			"accountActivated": "Account already activated.",
+			"invalidSignature": "Invalid signature!",
+			"accountNotActivated": "Account not active yet, check your email and access the activation link.",
+			"accountActivationExpired": "Account have not been activated in time of 24 hours, deleting your account.",
+			"unknownError": "Unknown error occurred, please try again later!"
+		},
+		"sendEmailContact": {
+			"subject": "New message from a guest received!",
+			"successMessage": "Message have been send, our staff team its gonna contact you soon!"
+		},
+		"verifyAccountActivationSignature": {
+			"invalidSignature": "Invalid signature!",
+			"clientNotFound": "No client found with the provided email and activation link.",
+			"accountActivationExpired": "Account activation link has expired, your account have been deleted.",
+			"accountActivated": "Your account have been activated, you can start using the account now!"
+		},
+		"verifyPasswordResetSignature": {
+			"invalidSignature": "Invalid signature!",
+			"clientNotFound": "No client found with the provided email and reset link.",
+			"resetLinkExpired": "Reset password link has expired, try to send another one.",
+			"validLink": "Valid reset password link, you can reset your password now!"
+		},
+		"sendPasswordForgotEmail": {
+			"subject": "Confirm reset password",
+			"successMessage": "A password reset email has been sent to the email address associated with your account.",
+			"emailNotSpecified": "You must specify the email address you wish to send the reset link.",
+			"resetRequested": "A password reset request has already been initiated for this email address. Please check your inbox and follow the provided reset link to proceed.",
+			"accountNotFound": "Account with the email address '{email}' have not been found!",
+			"noPassword": "Account with the email address '{email}' does not have a password, might be associated with a provider!",
+			"notActivated": "Account with the email address '{email}' have not been activated yet!",
+			"emailSent": "A password reset email has been sent to the email address associated with your account."
+		},
+		"sendVerifyAccountEmail": {
+			"invalidEmailAddress": "Invalid email",
+			"subject": "Confirm activate account",
+			"successMessage": "Activation email has been sent to the email address associated with your account.",
+			"emailNotSpecified": "You must specify the email address you wish to send the verify link.",
+			"accountNotFoundOrActivated": "Account with the email address '{email}' have not been found or have been already activated!",
+			"activationEmailSent": "Activation email has been sent to the email address associated with your account.",
+			"activationEmailFailed": "Activation email could not be send, the account associated with your email address have been deleted."
+		},
+		"sendEmail": {
+			"emailSent": "Email sent successfully.",
+			"unknownError": "Unknown error occurred, please try again later!"
+		},
+		"createExtraAdds": {
+			"error": "Additional extra feature with name '{name}' already exists.",
+			"success": "Additional extra feature created successfully.",
+			"unknownError": "An unknown error occurred while creating additional extra feature."
+		},
+		"updateExtraAdds": {
+			"error": "Additional extra feature have not been found!",
+			"success": "Additional extra feature with ID '{id}' updated successfully.",
+			"unknownError": "An unknown error occurred while updating additional extra feature."
+		},
+		"deleteExtraAdd": {
+			"error": "Additional extra feature not found!",
+			"message": "The additional extra feature with ID '{id}' has been deleted.",
+			"unknownError": "An unknown error occurred while deleting additional extra feature."
+		},
+		"createRentAdmin": {
+			"carNotFound": "Car not found!",
+			"clientNotFound": "Client not found!",
+			"rentCreatedSuccess": "The rent with ID '{rentId}' has been created!",
+			"unknownError": "Unknown error occurred while creating the rent, please try again later!"
+		},
+		"updateRentAdmin": {
+			"carNotFound": "Car not found!",
+			"clientNotFound": "Client not found!",
+			"rentNotFound": "Rent not found!",
+			"rentUpdatedSuccess": "The rent with ID '{rentId}' has been updated!",
+			"unknownError": "Unknown error occurred while updating the rent, please try again later!"
+		},
+		"deleteRentAdmin": {
+			"rentNotFound": "Rent not found!",
+			"paymentNotFound": "Payment not found!",
+			"rentDeletedSuccess": "The rent with ID '{rentId}' has been deleted.",
+			"unknownError": "Unknown error occurred while deleting the rent, please try again later!"
+		},
+		"createClient": {
+			"clientWithEmailExists": "Client with email '{email}' already exists.",
+			"emailAssociatedWithAnotherAccount": "Client with email '{email}' is associated with another account.",
+			"accountCreatedSuccess": "Account created successfully.",
+			"unknownError": "An unknown error occurred while creating the client. Please try again later."
+		},
+		"updateClient": {
+			"clientWithEmailNotFound": "Client with email '{email}' does not exist.",
+			"accountUpdatedSuccess": "Account updated successfully.",
+			"unknownError": "An unknown error occurred while updating the client. Please try again later."
+		},
+		"deleteClient": {
+			"clientNotFound": "Client not found!",
+			"clientDeletedSuccess": "The client with ID '{clientId}' has been deleted.",
+			"unknownError": "An unknown error occurred while deleting the client. Please try again later."
+		},
+		"createSeason": {
+			"seasonWithNameExists": "Season with name '{name}' already exists.",
+			"seasonCreatedSuccess": "Show Season created successfully.",
+			"unknownError": "An unknown error occurred while creating the show season. Please try again later."
+		},
+		"updateSeason": {
+			"seasonWithNameNotFound": "Season with name '{name}' does not exist.",
+			"seasonUpdatedSuccess": "Show Season updated successfully.",
+			"unknownError": "An unknown error occurred while updating the show season. Please try again later."
+		},
+		"deleteSeason": {
+			"seasonNotFound": "Season not found!",
+			"seasonDeletedSuccess": "The season with ID '{seasonId}' has been deleted.",
+			"unknownError": "An unknown error occurred while deleting the show season. Please try again later."
+		},
+		"createShowType": {
+			"typeWithNameExists": "Show Category with name '{name}' already exists.",
+			"typeCreatedSuccess": "Show Category created successfully.",
+			"unknownError": "An unknown error occurred while creating the show category. Please try again later."
+		},
+		"updateShowType": {
+			"typeWithNameNotFound": "Category with name '{name}' does not exist.",
+			"typeUpdatedSuccess": "Show Category updated successfully.",
+			"unknownError": "An unknown error occurred while updating the show category. Please try again later."
+		},
+		"deleteShowType": {
+			"typeNotFound": "Category not found!",
+			"typeDeletedSuccess": "The category with ID '{typeId}' has been deleted.",
+			"unknownError": "An unknown error occurred while deleting the show category. Please try again later."
+		},
+		"createShowDistribution": {
+			"distributionWithNameExists": "Show Distribution with name '{name}' already exists.",
+			"distributionCreatedSuccess": "Show Distribution created successfully.",
+			"unknownError": "An unknown error occurred while creating the show distribution. Please try again later."
+		},
+		"updateShowDistribution": {
+			"distributionWithNameNotFound": "Show Distribution with name '{name}' does not exist.",
+			"distributionUpdatedSuccess": "Show Distribution updated successfully.",
+			"unknownError": "An unknown error occurred while updating the show distribution. Please try again later."
+		},
+		"deleteShowDistribution": {
+			"distributionNotFound": "Show distribution not found!",
+			"distributionDeletedSuccess": "The distribution with ID '{typeId}' has been deleted.",
+			"unknownError": "An unknown error occurred while deleting the show distribution. Please try again later."
+		}
+	}
+}
