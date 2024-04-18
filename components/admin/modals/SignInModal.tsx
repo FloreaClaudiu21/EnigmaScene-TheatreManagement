@@ -19,7 +19,6 @@ import { z } from "zod";
 import { verifyAccountIsActivated } from "@/services/general/EmailProvider";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { getUserByEmail } from "@/services/general/AuthProvider";
 import {
 	Form,
 	FormControl,
@@ -30,6 +29,7 @@ import {
 } from "@/components/ui/form";
 import { LockIcon, MailIcon } from "lucide-react";
 import { useEffect, useState } from "react";
+import { getClientByEmail } from "@/services/general/AuthProvider";
 
 export default function AdminSignInModal({
 	langData,
@@ -72,7 +72,7 @@ export default function AdminSignInModal({
 		}
 		if (data.ok) {
 			loginForm.reset();
-			const user = await getUserByEmail(values.email);
+			const user = await getClientByEmail(values.email);
 			if (!user?.adminUser) {
 				router.push("/");
 				toast({
@@ -103,7 +103,6 @@ export default function AdminSignInModal({
 		if (auth.isLogged) return;
 		setTimeout(() => {
 			const modal = document.getElementsByClassName("modal-login")[0];
-			console.log(modal);
 			if (!modal) return;
 			modal.parentElement?.setAttribute("style", "z-index: 99998 !important;");
 		}, 100);
@@ -126,7 +125,7 @@ export default function AdminSignInModal({
 				{() => (
 					<>
 						<ModalHeader className="flex flex-col gap-1">
-							Sign In to Enigma Scene Threatre Admin Panel
+							Sign In to Enigma Scene Theatre Admin Panel
 						</ModalHeader>
 						<ModalBody>
 							<Form {...loginForm}>

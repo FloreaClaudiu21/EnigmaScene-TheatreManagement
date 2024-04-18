@@ -1,6 +1,5 @@
 import { columns } from "./columns";
 import { prisma } from "@/lib/prismaClient";
-import TableContainer from "@/components/admin/table/TableContainer";
 import { Payment, TableTypes } from "@/lib/types";
 
 export default async function AdminPayments({ params }: { params: any }) {
@@ -10,45 +9,9 @@ export default async function AdminPayments({ params }: { params: any }) {
 		},
 		include: {
 			invoice: true,
-			rent: true,
-			user: true,
+			client: true,
+			ticket: true,
 		},
 	});
-	return (
-		<TableContainer
-			params={params}
-			showControlBtns={false}
-			type={TableTypes.PAYMENTS}
-			columns={columns}
-			data={payments}
-			filters={[
-				{
-					column: "id",
-					label: "ID",
-				},
-				{
-					column: "amount",
-					label: "Amount",
-				},
-				{
-					column: "currency",
-					label: "Currency",
-				},
-				{
-					column: "paidAt",
-					label: "Paid At",
-				},
-				{
-					column: "status",
-					label: "Status",
-				},
-				{
-					column: "userId",
-					label: "User Id",
-				},
-			]}
-			new_link="payments/new"
-			page_title="All Payments"
-		/>
-	);
+	return <></>;
 }
