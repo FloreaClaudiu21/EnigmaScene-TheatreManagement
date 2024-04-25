@@ -94,6 +94,14 @@ table {
 	position: relative;
 }
 
+.ticket-bg {
+	background-image: url("/images/invoice-bg.jpg");
+	background-position: bottom right;
+	background-size: cover;
+	background-repeat: no-repeat;
+	position: relative;
+}
+
 .header::before {
 	content: "";
 	position: absolute;
@@ -121,4 +129,8 @@ table {
 
 nextjs-portal {
 	display: none;
+}
+
+div[data-slot="grid-wrapper"] {
+	overflow-x: auto;
 }

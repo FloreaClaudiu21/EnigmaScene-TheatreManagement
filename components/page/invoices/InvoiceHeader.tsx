@@ -13,10 +13,11 @@ const InvoiceHeader = ({
 		<div className="flex flex-col h-[95.0mm] mx-8 my-2 mt-4 border-2 bg-white">
 			<div className="flex flex-row gap-2">
 				<div className="flex flex-1 flex-col text-center">
-					<div className="flex flex-col border-2 w-[60%] text-xs m-1">
+					<div className="flex flex-col border-2 w-[55%] text-xs m-1">
 						<p className="text-lg font-bold">
 							{dictionary.invoice.labels.invoice}
 						</p>
+						<p>#{invoice.invoiceNumber}</p>
 						<p>
 							{dictionary.invoice.labels.series} {invoice.invoiceSeries}
 						</p>
@@ -32,9 +33,9 @@ const InvoiceHeader = ({
 					<Image
 						src={"/images/logo.webp"}
 						alt=""
-						width={120}
-						height={100}
-						className="h-full w-44 max-h-[100px] object-cover"
+						width={130}
+						height={110}
+						className="h-full w-44 max-h-[110px] object-fill"
 					/>
 				</div>
 			</div>
@@ -43,9 +44,9 @@ const InvoiceHeader = ({
 					<p className="font-bold text-sm">
 						{dictionary.invoice.supplier.label}
 					</p>
-					<p className="font-bold text-md text-blue-500">SC ENIGMA SCENE SRL</p>
-					<p className="text-xs text-left">CIF: 29108044</p>
-					<p className="text-xs text-left">Reg. com.: J40/5967/2011</p>
+					<p className="font-bold text-md text-red-500">SC ENIGMA SCENE SRL</p>
+					<p className="text-xs text-left">CIF: RO15608527</p>
+					<p className="text-xs text-left">Reg. com.: J40/5967/2000</p>
 					<p className="text-xs text-left">
 						{dictionary.invoice.supplier.address}
 					</p>
@@ -57,11 +58,11 @@ const InvoiceHeader = ({
 						{dictionary.invoice.supplier.phone}
 					</p>
 					<p className="text-xs">Email: contact@enigmascene.website</p>
-					<p className="text-xs">Capital social: 23200 lei</p>
+					<p className="text-xs">{dictionary.invoice.supplier.socialCapital}</p>
 				</div>
 				<div className="flex flex-col w-1/2 p-2 place-items-end">
 					<p className="font-bold text-sm">Client</p>
-					<p className="font-bold text-md text-blue-500 text-right">
+					<p className="font-bold text-md text-red-500 text-right">
 						{invoice.firstName} {invoice.lastName}
 					</p>
 					<p className="text-xs text-right">

@@ -23,6 +23,7 @@ const InvoiceModal = ({ langData }: { langData: LanguageData }) => {
 	const dict = langData.dictionary;
 	return (
 		<Modal
+			radius="md"
 			backdrop="opaque"
 			isOpen={invoiceModal.visible}
 			placement={"bottom-center"}
@@ -31,10 +32,11 @@ const InvoiceModal = ({ langData }: { langData: LanguageData }) => {
 				document.body.style.overflowY = "auto";
 			}}
 			classNames={{
+				wrapper: "!z-[99998]",
 				backdrop:
-					"bg-gradient-to-t from-zinc-900 to-zinc-900/10 backdrop-opacity-20",
+					"bg-gradient-to-t from-zinc-900 to-zinc-900/10 backdrop-opacity-20 !z-[99998]",
 			}}
-			className="h-[98%] rounded-none max-h-screen overflow-auto min-w-72 md:min-w-[230mm] z-[99998]"
+			className="h-[98%] max-h-screen overflow-auto min-w-72 md:min-w-[230mm] !z-[99998]"
 		>
 			<ModalContent className="md:m-4 p-2">
 				{(onClose) => (
@@ -60,14 +62,14 @@ const InvoiceModal = ({ langData }: { langData: LanguageData }) => {
 						</ModalBody>
 						<ModalFooter>
 							<Button
+								radius="md"
 								color="danger"
 								variant="light"
 								onPress={onClose}
-								radius="none"
 							>
 								{dict.buttons.cancel}
 							</Button>
-							<Button color="primary" onPress={handlePrint} radius="none">
+							<Button color="primary" onPress={handlePrint} radius="md">
 								{dict.buttons.print}
 							</Button>
 						</ModalFooter>

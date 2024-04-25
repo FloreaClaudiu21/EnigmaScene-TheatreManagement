@@ -12,7 +12,7 @@ export default function ColumnCellActions({
 }: {
 	type: TableTypes;
 	link_edit: string;
-	deleteId: string;
+	deleteId: number;
 }) {
 	const deleteModal = useDeleteModal();
 	return (
@@ -21,9 +21,9 @@ export default function ColumnCellActions({
 				size="sm"
 				as={Link}
 				radius="sm"
-				variant="faded"
+				variant="bordered"
 				aria-label="Edit"
-				className="text-zinc-600 border-zinc-400 font-medium"
+				className="text-zinc-600 font-medium hover:text-green-600"
 				href={link_edit}
 			>
 				Edit
@@ -32,7 +32,7 @@ export default function ColumnCellActions({
 				size="sm"
 				isIconOnly
 				radius="sm"
-				variant="light"
+				variant="bordered"
 				className="text-zinc-600 hover:text-red-600"
 				onPress={() => {
 					deleteModal.setType(type);

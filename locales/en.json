@@ -1,4 +1,36 @@
 {
+	"ticket": {
+		"middle": {
+			"noticket": "Ticket Number",
+			"show": "SHOW:",
+			"room": "ROOM",
+			"row": "ROW",
+			"seat": "SEAT NO. & TYPE"
+		}
+	},
+	"receipt": {
+		"header": {
+			"name": "EnigmaScene Theatre",
+			"address": "Bucharest Municipality, Sector 2, Imaginatiei Boulevard No. 123"
+		},
+		"middle": {
+			"show": "SHOW",
+			"piece": "PIECE",
+			"receipt": "--------- FISCAL RECEIPT ---------",
+			"daily": "DAILY 08:00 - 22:00",
+			"welcome": "WELCOME TO OUR THEATER!",
+			"value": "VALUE",
+			"vat": "VAT",
+			"totalTaxes": "TOTAL TAXES:",
+			"ty": "Thank you for choosing us. We wish you a pleasant viewing of the show."
+		},
+		"footer": {
+			"cashier": "CASHIER:",
+			"home": "HOME:",
+			"receipt": "FISCAL RECEIPT",
+			"receiptNO": "RECEIPT NO.:"
+		}
+	},
 	"invoice": {
 		"footer": {
 			"title": "Page 1 of 1",
@@ -13,11 +45,11 @@
 		},
 		"supplier": {
 			"label": "Supplier",
-			"address": "Address: Str. SUBLOCOTENENT ADAM Street, No. 1, Bacau, Romania",
+			"address": "Address: Bucharest Municipality, Sector 2, Imagination Boulevard No. 123, Romania",
 			"bank": "Bank: BANCA TRANSILVANIA",
-			"phone": "Phone: +400723334521",
+			"phone": "Phone: +40072642113",
 			"email": "Email: contact@enigmascene.website",
-			"socialCapital": "Social capital: 23200 lei"
+			"socialCapital": "Social capital: 70000 lei"
 		},
 		"client": {
 			"label": "Client",
@@ -35,7 +67,7 @@
 			"vatValue": "VAT Value",
 			"unitPriceIncVAT": "Unit Price (Incl. VAT)",
 			"rentOnDate": "Rent on date",
-			"rent": "Rent",
+			"show": "Piece",
 			"vatOnCollection": "VAT on collection"
 		},
 		"total": "TOTAL",
@@ -44,7 +76,10 @@
 		"by": "By:",
 		"dispatchedInOurPresence": "Dispatched in our presence on",
 		"signatures": "Signatures",
-		"receivingSignature": "Receiving Signature"
+		"receivingSignature": "Receiving Signature",
+		"middle": {
+			"text": "Show `{title}` Seat number `{number}` and type `{type}` in show room `{showRoom}`"
+		}
 	},
 	"forms": {
 		"labels": {
@@ -175,9 +210,12 @@
 		"viewAll": "View All",
 		"register": "Register",
 		"print": "Print",
+		"download": "Download",
+		"savePDF": "Save PDF",
+		"saveCSV": "Save CSV",
 		"started": "Get Started",
-		"like": "Like this car",
-		"unlike": "Unlike this car",
+		"like": "Like this show",
+		"unlike": "Unlike this show",
 		"sendMsg": "Send Message",
 		"startExplore": "Start Exploring",
 		"clearAllFilters": "Clear All Filters",
@@ -185,9 +223,10 @@
 		"backtomainpage": "Back to home page",
 		"linkGoogle": "Link with Google",
 		"signInGoogle": "Sign In with Google",
-		"cancelRent": "Cancel Rent",
 		"forgotPass": "Forgot Password?",
 		"viewInvoice": "View Invoice",
+		"viewTicket": "View Ticket",
+		"viewfiscalReceipt": "View Fiscal Receipt",
 		"acceptTerms": "I accept Terms & Conditions.",
 		"confirmPayment": "CONFIRM PAYMENT OF {cost} {currency} AND RENTING OF THIS CAR",
 		"titles": {
@@ -275,6 +314,9 @@
 	},
 	"modals": {
 		"titles": {
+			"raport": "Generate Raport",
+			"receiptId": "Fiscal Receipt ID: #{id}",
+			"ticketId": "Ticket ID: #{id}",
 			"invoiceId": "Invoice ID: #{id}",
 			"deleteAddress": "Delete Billing Address",
 			"deleteAccount": "Delete Account",
@@ -533,41 +575,6 @@
 			"notFound": "Client with email '{email}' not found!",
 			"success": "Your password for the account '{email}' has been updated!"
 		},
-		"createCarBrands": {
-			"alreadyExists": "Car brand with manufacturer '{manufacturer}' and model '{model}' already exists.",
-			"success": "Car brand created successfully.",
-			"unknownError": "An unknown error occurred while creating the car brand."
-		},
-		"updateCarBrand": {
-			"notFound": "Car brand could not be found.",
-			"success": "Car brand with ID '{id}' updated successfully.",
-			"unknownError": "An unknown error occurred while updating the car brand."
-		},
-		"deleteCarBrand": {
-			"notFound": "Car brand not found.",
-			"success": "The car brand with ID '{id}' has been deleted.",
-			"unknownError": "Unknown error occurred while deleting the car brand."
-		},
-		"deleteRentForCar": {
-			"notFound": "Rent not found!",
-			"success": "Rent have been deleted!",
-			"unknownError": "Unknown error, please try again later!"
-		},
-		"createCar": {
-			"brandNotFound": "Car brand with ID {brandId} have not been found!",
-			"success": "Car created successfully.",
-			"unknownError": "An unknown error occurred"
-		},
-		"updateCar": {
-			"brandNotFound": "Car brand with ID {brandId} have not been found!",
-			"success": "Car updated successfully.",
-			"unknownError": "An unknown error occurred"
-		},
-		"deleteCar": {
-			"notFound": "Car not found!",
-			"success": "The car with ID '{id}' has been deleted.",
-			"unknownError": "Unknown error, please try again later!"
-		},
 		"verifyAccountIsActivated": {
 			"clientNotFound": "No client found with the provided email.",
 			"accountActivated": "Account already activated.",
@@ -611,104 +618,29 @@
 			"activationEmailSent": "Activation email has been sent to the email address associated with your account.",
 			"activationEmailFailed": "Activation email could not be send, the account associated with your email address have been deleted."
 		},
+		"createGeneral": {
+			"alreadyExistsEmail": "{what} with email '{email}' already exists.",
+			"alreadyExistsName": "{what} with name '{name}' already exists.",
+			"createdSuccess": "{what} created successfully.",
+			"emailAssociatedWithAnotherAccount": "Email '{email}' it's already associated with another account.",
+			"unknownError": "An unknown error occurred while creating the {what}. Please try again later."
+		},
+		"updateGeneral": {
+			"withEmailNotFound": "{what} with email '{email}' does not exist.",
+			"withNameNotFound": "{what} with name '{name}' does not exist.",
+			"withIDNotFound": "{what} with ID '{id}' does not exist.",
+			"updatedSuccess": "{what} updated successfully.",
+			"unknownError": "An unknown error occurred while updating the {what}. Please try again later."
+		},
+		"deleteGeneral": {
+			"notFound": "{what} not found!",
+			"notFoundID": "{what} with ID '{id}' not found!",
+			"deletedSuccess": "The {what} with ID '{id}' has been deleted.",
+			"unknownError": "An unknown error occurred while deleting the {what}. Please try again later."
+		},
 		"sendEmail": {
 			"emailSent": "Email sent successfully.",
 			"unknownError": "Unknown error occurred, please try again later!"
-		},
-		"createExtraAdds": {
-			"error": "Additional extra feature with name '{name}' already exists.",
-			"success": "Additional extra feature created successfully.",
-			"unknownError": "An unknown error occurred while creating additional extra feature."
-		},
-		"updateExtraAdds": {
-			"error": "Additional extra feature have not been found!",
-			"success": "Additional extra feature with ID '{id}' updated successfully.",
-			"unknownError": "An unknown error occurred while updating additional extra feature."
-		},
-		"deleteExtraAdd": {
-			"error": "Additional extra feature not found!",
-			"message": "The additional extra feature with ID '{id}' has been deleted.",
-			"unknownError": "An unknown error occurred while deleting additional extra feature."
-		},
-		"createRentAdmin": {
-			"carNotFound": "Car not found!",
-			"clientNotFound": "Client not found!",
-			"rentCreatedSuccess": "The rent with ID '{rentId}' has been created!",
-			"unknownError": "Unknown error occurred while creating the rent, please try again later!"
-		},
-		"updateRentAdmin": {
-			"carNotFound": "Car not found!",
-			"clientNotFound": "Client not found!",
-			"rentNotFound": "Rent not found!",
-			"rentUpdatedSuccess": "The rent with ID '{rentId}' has been updated!",
-			"unknownError": "Unknown error occurred while updating the rent, please try again later!"
-		},
-		"deleteRentAdmin": {
-			"rentNotFound": "Rent not found!",
-			"paymentNotFound": "Payment not found!",
-			"rentDeletedSuccess": "The rent with ID '{rentId}' has been deleted.",
-			"unknownError": "Unknown error occurred while deleting the rent, please try again later!"
-		},
-		"createClient": {
-			"clientWithEmailExists": "Client with email '{email}' already exists.",
-			"emailAssociatedWithAnotherAccount": "Client with email '{email}' is associated with another account.",
-			"accountCreatedSuccess": "Account created successfully.",
-			"unknownError": "An unknown error occurred while creating the client. Please try again later."
-		},
-		"updateClient": {
-			"clientWithEmailNotFound": "Client with email '{email}' does not exist.",
-			"accountUpdatedSuccess": "Account updated successfully.",
-			"unknownError": "An unknown error occurred while updating the client. Please try again later."
-		},
-		"deleteClient": {
-			"clientNotFound": "Client not found!",
-			"clientDeletedSuccess": "The client with ID '{clientId}' has been deleted.",
-			"unknownError": "An unknown error occurred while deleting the client. Please try again later."
-		},
-		"createSeason": {
-			"seasonWithNameExists": "Season with name '{name}' already exists.",
-			"seasonCreatedSuccess": "Show Season created successfully.",
-			"unknownError": "An unknown error occurred while creating the show season. Please try again later."
-		},
-		"updateSeason": {
-			"seasonWithNameNotFound": "Season with name '{name}' does not exist.",
-			"seasonUpdatedSuccess": "Show Season updated successfully.",
-			"unknownError": "An unknown error occurred while updating the show season. Please try again later."
-		},
-		"deleteSeason": {
-			"seasonNotFound": "Season not found!",
-			"seasonDeletedSuccess": "The season with ID '{seasonId}' has been deleted.",
-			"unknownError": "An unknown error occurred while deleting the show season. Please try again later."
-		},
-		"createShowType": {
-			"typeWithNameExists": "Show Category with name '{name}' already exists.",
-			"typeCreatedSuccess": "Show Category created successfully.",
-			"unknownError": "An unknown error occurred while creating the show category. Please try again later."
-		},
-		"updateShowType": {
-			"typeWithNameNotFound": "Category with name '{name}' does not exist.",
-			"typeUpdatedSuccess": "Show Category updated successfully.",
-			"unknownError": "An unknown error occurred while updating the show category. Please try again later."
-		},
-		"deleteShowType": {
-			"typeNotFound": "Category not found!",
-			"typeDeletedSuccess": "The category with ID '{typeId}' has been deleted.",
-			"unknownError": "An unknown error occurred while deleting the show category. Please try again later."
-		},
-		"createShowDistribution": {
-			"distributionWithNameExists": "Show Distribution with name '{name}' already exists.",
-			"distributionCreatedSuccess": "Show Distribution created successfully.",
-			"unknownError": "An unknown error occurred while creating the show distribution. Please try again later."
-		},
-		"updateShowDistribution": {
-			"distributionWithNameNotFound": "Show Distribution with name '{name}' does not exist.",
-			"distributionUpdatedSuccess": "Show Distribution updated successfully.",
-			"unknownError": "An unknown error occurred while updating the show distribution. Please try again later."
-		},
-		"deleteShowDistribution": {
-			"distributionNotFound": "Show distribution not found!",
-			"distributionDeletedSuccess": "The distribution with ID '{typeId}' has been deleted.",
-			"unknownError": "An unknown error occurred while deleting the show distribution. Please try again later."
 		}
 	}
 }

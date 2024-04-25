@@ -1,3 +1,7 @@
+import { RaportModal } from "@/services/StateProvider";
+import { getLocalTimeZone } from "@internationalized/date";
+import { DateValue } from "@nextui-org/calendar";
+import { Header } from "@tanstack/react-table";
 import { type ClassValue, clsx } from "clsx"
 import { twMerge } from "tailwind-merge"
 
@@ -5,9 +9,86 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
+export function validRowsAndCols(raportModal: RaportModal) {
+	const dataRows = raportModal.raport?.getCoreRowModel().rows;
+	const dataColumns = raportModal.raport
+		?.getHeaderGroups()[0]
+		.headers.filter(
+			(header) =>
+				header.column.getIsVisible() &&
+				header.column.id != "select" &&
+				header.column.id != "actions"
+		);
+	const validColums: Header<any, unknown>[] = [];
+	dataColumns?.map((col) => {
+		dataRows?.map((row, rowIndex) => {
+			const value = row.original[col.id];
+			const type = typeof value;
+			const isDate = value instanceof Date;
+			if (
+				value != undefined &&
+				(type == "number" || type == "string" || isDate || type == "boolean")
+			) {
+				validColums.push(col);
+			}
+		});
+	});
+	return {cols: validColums, rows: dataRows ?? []}
+}
+
+export function generateRandomString(length: number) {
+	let result = '';
+	const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+	const charactersLength = characters.length;
+	for (let i = 0; i < length; i++) {
+			result += characters.charAt(Math.floor(Math.random() * charactersLength));
+	}
+	return result;
+}
+
+export function convertToLocalTime(e: DateValue, add: number = 3) {
+	const date = e.toDate(getLocalTimeZone());
+	date.setHours(date.getHours() + add);
+	const isonTimeString = date.toISOString();
+	return isonTimeString;
+}
+
 export function capitalizeFirstLetter(str: string): string {
 	if (str.length === 0) return str;
+	const parts = str.split('-');
+	return parts
+			.map(part => capitalizeFirst(part))
+			.join('-');
+}
+
+function capitalizeFirst(str: string): string {
+	if (str.length === 0) return str;
 	return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+export function capitalizeAfterHyphen(str: string): string {
+	const parts = str.split('-');
+	return parts
+			.map((part, index) => {
+					if (index === 0) {
+							return capitalizeFirstLetter(part);
+					} else if (part.length === 0) {
+							return part;
+					} else {
+							return capitalizeFirstLetter(part);
+					}
+			})
+			.join('-');
+}
+
+export function lastMonthAndThisMonthDates() {
+	const today = new Date();
+	const currentYear = today.getFullYear();
+	const currentMonth = today.getMonth() + 1;
+	const startDate = new Date(currentYear, currentMonth - 1, 1);
+	const endDateLast = new Date(currentYear, currentMonth - 1, 0);
+	const startDateLast = new Date(currentYear, currentMonth - 2, 1);
+	return {start: startDate, end: today, endLast: endDateLast, startLast: startDateLast}
 }
 
 export const urlLink = (pathname: string) => {

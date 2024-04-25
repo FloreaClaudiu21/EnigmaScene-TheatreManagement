@@ -46,7 +46,7 @@ function BillAddreses({ user }: { user: User }) {
 	const addAddress = useAddAddressModal();
 	const deleteAddressModal = useDeleteAddressModal();
 	const billAddress = user.billingAddresses ?? [];
-	const [selectedValue, setSelectedValue] = useState<string | null>(null);
+	const [selectedValue, setSelectedValue] = useState<number | null>(null);
 	useEffect(() => {
 		if (billAddress.length > 0) {
 			setSelectedValue(billAddress[0].id);
@@ -61,7 +61,7 @@ function BillAddreses({ user }: { user: User }) {
 				selectedKeys={selectedValue ? [selectedValue] : undefined}
 				value={selectedValue ?? ""}
 				onChange={(e) => {
-					setSelectedValue(e.target.value);
+					setSelectedValue(parseInt(e.target.value));
 				}}
 				disabled={billAddress.length <= 0}
 				isDisabled={billAddress.length <= 0}
@@ -110,9 +110,7 @@ function BillAddreses({ user }: { user: User }) {
 					className="z-30 border-black hover:bg-red-400"
 					onClick={() => {
 						deleteAddressModal.onToggle(
-							selectedValue != null && selectedValue.length > 3
-								? selectedValue
-								: null
+							selectedValue != null && selectedValue > 0 ? selectedValue : null
 						);
 					}}
 				>
@@ -145,7 +143,7 @@ function ActionButtons({ user }: { user: User }) {
 				variant="light"
 				className="text-zinc-600 hover:text-red-600"
 				onPress={() => {
-					deleteModal.setType(TableTypes.CLIENTS);
+					deleteModal.setType(TableTypes.CLIENT);
 					deleteModal.setDeleteId(user.id);
 					deleteModal.setVisible(true);
 				}}
@@ -212,7 +210,12 @@ export const columns: ColumnDef<User>[] = [
 		},
 		cell: ({ row }) => {
 			const user = row.original;
-			return <ColumnCell data={user.email} />;
+			return (
+				<ColumnCell
+					data={user.email}
+					className={`${user.adminUser && "text-red-500"}`}
+				/>
+			);
 		},
 	},
 	{

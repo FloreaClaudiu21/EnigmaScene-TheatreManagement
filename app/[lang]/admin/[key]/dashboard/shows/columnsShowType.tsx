@@ -25,9 +25,9 @@ export const columnsShowType: ColumnDef<ShowType>[] = [
 		cell: ({ row }) => {
 			return (
 				<ColumnCellActions
-					type={TableTypes.SHOWS_CATEGORY}
+					type={TableTypes.SHOW_CATEGORY}
 					deleteId={row.original.id}
-					link_edit={"shows/" + row.original.id + "/edit-showtype"}
+					link_edit={"shows/" + row.original.id + "/edit-category"}
 				/>
 			);
 		},

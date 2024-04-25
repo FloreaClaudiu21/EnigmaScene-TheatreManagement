@@ -67,8 +67,9 @@ export default function LangCurrencyModal({
 				setSelectedCurrency(useCur.currency);
 			}}
 			classNames={{
+				wrapper: "!z-[99998]",
 				backdrop:
-					"bg-gradient-to-t from-zinc-900 to-zinc-900/10 backdrop-opacity-20",
+					"bg-gradient-to-t from-zinc-900 to-zinc-900/10 backdrop-opacity-20 !z-[99998]",
 			}}
 		>
 			<ModalContent>
@@ -83,10 +84,13 @@ export default function LangCurrencyModal({
 									<Autocomplete
 										radius="md"
 										className="mb-2"
+										allowsEmptyCollection={false}
 										label="Select your language"
 										selectedKey={selectedLanguage}
 										defaultInputValue={mapLanguage[langData.language].text}
-										onSelectionChange={(v) => setSelectedLanguage(v.toString())}
+										onSelectionChange={(v) =>
+											setSelectedLanguage(v != null ? v.toString() : "en")
+										}
 									>
 										{i18n.locales.map((lang) => (
 											<AutocompleteItem key={lang} value={lang}>
@@ -96,10 +100,13 @@ export default function LangCurrencyModal({
 									</Autocomplete>
 									<Autocomplete
 										radius="md"
+										allowsEmptyCollection={false}
 										selectedKey={selectedCurrency}
 										defaultInputValue={selectedCurrency}
 										label={dict.forms.labels.selectCurrency}
-										onSelectionChange={(v) => setSelectedCurrency(v.toString())}
+										onSelectionChange={(v) =>
+											setSelectedCurrency(v != null ? v.toString() : "RON")
+										}
 									>
 										{currencyArray.map(([country, value]) => (
 											<AutocompleteItem key={value} value={value}>

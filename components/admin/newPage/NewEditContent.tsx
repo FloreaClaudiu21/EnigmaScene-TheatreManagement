@@ -4,7 +4,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form } from "@/components/ui/form";
 import { ArrowLeftIcon, SaveIcon } from "lucide-react";
 import Link from "next/link";
-import React from "react";
+import React, { useState } from "react";
+import { z } from "zod";
 
 export default function NewOrEditContent({
 	back_link,
@@ -42,8 +43,8 @@ export default function NewOrEditContent({
 					</CardContent>
 				</Card>
 			</div>
-			<div className="flex flex-row items-center justify-between flex-wrap mt-4">
-				<div className="flex flex-row justify-end gap-4 w-full">
+			<div className="flex flex-row items-center justify-between flex-wrap my-4 mb-10">
+				<div className="flex flex-row justify-end gap-2 md:gap-4 w-full">
 					<Link href={back_link}>
 						<Button
 							size="sm"
@@ -51,9 +52,7 @@ export default function NewOrEditContent({
 							className="h-10 gap-1 shadow-sm rounded-md hover:bg-yellow-100"
 						>
 							<ArrowLeftIcon className="h-3.5 w-3.5" />
-							<span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-								Back to prev page
-							</span>
+							<span className="whitespace-nowrap">Back to prev page</span>
 						</Button>
 					</Link>
 					<Button

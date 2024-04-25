@@ -9,15 +9,20 @@ function InvoiceMiddle({
 	langData: LanguageData;
 }) {
 	const cur = invoice.currency;
+	const lang = langData.language;
 	const dictionary = langData.dictionary;
-	const priceWithoutVAT = invoice.totalAmount / 1.19;
-	const vatAmount = invoice.totalAmount - priceWithoutVAT;
-	const rent = invoice.rentId == null ? invoice.rentHistory : invoice.rent;
+	let priceConverted = invoice.totalAmount;
+	if (cur != "RON") {
+		priceConverted /= invoice.currencyAmount;
+	}
+	const priceWithoutVAT = priceConverted / 1.19;
+	const vatAmount = priceConverted - priceWithoutVAT;
+	const ticket = invoice.ticketId != null ? invoice.ticket : undefined;
 	return (
 		<div className="flex flex-1 mx-8 border-2 bg-white">
 			<div className="flex flex-col w-full">
 				<table className="invoice-table">
-					<tr className="text-center break-normal place-items-center bg-blue-500 text-white text-[13px] font-bold">
+					<tr className="text-center break-normal place-items-center bg-red-500 text-white text-[13px] font-bold">
 						<th>
 							<span>{dictionary.invoice.table.number}</span>
 						</th>
@@ -31,16 +36,24 @@ function InvoiceMiddle({
 							<span>{dictionary.invoice.table.quantity}</span>
 						</th>
 						<th>
-							<span>{dictionary.invoice.table.unitPriceExVAT}</span>
+							<span>
+								{dictionary.invoice.table.unitPriceExVAT} <br /> --{cur}--
+							</span>
 						</th>
 						<th>
-							<span>{dictionary.invoice.table.value}</span>
+							<span>
+								{dictionary.invoice.table.value} <br /> --{cur}--
+							</span>
 						</th>
 						<th>
-							<span>{dictionary.invoice.table.vatValue}</span>
+							<span>
+								{dictionary.invoice.table.vatValue} <br /> --{cur}--
+							</span>
 						</th>
 						<th>
-							<span>{dictionary.invoice.table.unitPriceIncVAT}</span>
+							<span>
+								{dictionary.invoice.table.unitPriceIncVAT} <br /> --{cur}--
+							</span>
 						</th>
 					</tr>
 					<tbody className="h-full text-center text-xs">
@@ -73,18 +86,22 @@ function InvoiceMiddle({
 						<tr className="border-y-2 min-h-11 h-11">
 							<td className="border-r-2">1</td>
 							<td className="max-w-[200px] border-r-2">
-								Rent on date {invoice.issueDate.toDateString()} of the car `
-								{rent?.car?.plateNumber}` till `
-								{rent?.dropOffDate.replaceAll("|", " ")}`{" "}
+								{dictionary.invoice.middle.text
+									.replace(
+										"{title}",
+										lang == "ro" ? ticket?.show?.title : ticket?.show?.title_en
+									)
+									.replace("{number}", ticket?.seat?.number)
+									.replace("{type}", ticket?.showRoom?.number)}
 							</td>
 							<td className="border-r-2 min-w-10">
-								{dictionary.invoice.table.rent}
+								{dictionary.invoice.table.show}
 							</td>
 							<td className="border-r-2">1</td>
 							<td className="border-r-2">{priceWithoutVAT.toFixed(2)}</td>
 							<td className="border-r-2">{priceWithoutVAT.toFixed(2)}</td>
 							<td className="border-r-2">{vatAmount.toFixed(2)}</td>
-							<td>{invoice.totalAmount}</td>
+							<td>{(priceWithoutVAT + vatAmount).toFixed(2)}</td>
 						</tr>
 						<tr></tr>
 						{Array.from({ length: 8 }).map((v, index) => {
@@ -107,7 +124,9 @@ function InvoiceMiddle({
 					<div className="flex flex-row">
 						<div className="w-1/2"></div>
 						<div className="flex flex-row justify-evenly w-1/2 p-1 place-items-center">
-							<p className="font-bold text-sm">{dictionary.invoice.total}</p>
+							<p className="font-bold text-sm">
+								{(priceWithoutVAT + vatAmount).toFixed(2)}
+							</p>
 							<p className="font-bold flex-1 text-center text-xs">
 								{priceWithoutVAT.toFixed(2)}
 							</p>
@@ -119,12 +138,12 @@ function InvoiceMiddle({
 					</div>
 					<div className="flex flex-row w-full bg-gray-200 py-1 flex-1">
 						<div className="w-1/2"></div>
-						<div className="flex flex-row justify-evenly w-1/2 p-1 place-items-center text-blue-500">
+						<div className="flex flex-row justify-evenly w-1/2 p-1 place-items-center text-red-500">
 							<p className="font-bold text-sm">
 								{dictionary.invoice.totalPayment}
 							</p>
 							<p className="font-bold flex-1 text-right text-sm">
-								{invoice.totalAmount.toFixed(2)}
+								{(priceWithoutVAT + vatAmount).toFixed(2)}
 							</p>
 						</div>
 					</div>
@@ -142,7 +161,7 @@ function InvoiceMiddle({
 							</p>
 							<p className="text-xs">{dictionary.invoice.signatures}</p>
 						</div>
-						<div className="flex flex-col w-1/2 place-items-center">
+						<div className="flex flex-col w-1/2 place-items-end">
 							<p className="font-bold text-sm">
 								{dictionary.invoice.receivingSignature}
 							</p>

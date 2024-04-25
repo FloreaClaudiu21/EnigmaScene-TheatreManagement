@@ -11,14 +11,9 @@ import {
 	ModalHeader,
 } from "@nextui-org/react";
 import { useState } from "react";
-import { LanguageData, TableTypes } from "@/lib/types";
+import { LanguageData } from "@/lib/types";
 import { useRouter } from "next-nprogress-bar";
-import { deleteClient } from "@/services/admin/ClientsProvider";
-import {
-	deleteCategory,
-	deleteDistribution,
-	deleteSeason,
-} from "@/services/admin/ShowsProvider";
+import { remove } from "@/services/admin/ControlProvider";
 
 export default function DeleteModalGeneral({
 	langData,
@@ -32,42 +27,22 @@ export default function DeleteModalGeneral({
 	//////////////////////////////////////////////
 	const deleteAction = async (onClose: any) => {
 		setLoading(true);
-		let response = null;
-		switch (deleteModal.type) {
-			case TableTypes.CLIENTS: {
-				response = await deleteClient(langData.language, deleteModal.deleteId);
-				break;
-			}
-			case TableTypes.SHOWS_SEASON: {
-				response = await deleteSeason(langData.language, deleteModal.deleteId);
-				break;
-			}
-			case TableTypes.SHOWS_CATEGORY: {
-				response = await deleteCategory(
-					langData.language,
-					deleteModal.deleteId
-				);
-				break;
-			}
-			case TableTypes.SHOWS_DISTRIBUTION: {
-				response = await deleteDistribution(
-					langData.language,
-					deleteModal.deleteId
-				);
-				break;
-			}
-		}
+		let response = await remove(
+			langData.language,
+			deleteModal.type,
+			deleteModal.deleteId
+		);
 		if (!response) return;
 		if (response.ok) {
 			toast({
 				title: "Record Delete",
-				description: response.message,
+				description: response.error,
 			});
 			router.refresh();
 		} else {
 			toast({
 				title: "Record Delete",
-				description: response.message,
+				description: response.error,
 				variant: "destructive",
 			});
 		}
@@ -85,8 +60,9 @@ export default function DeleteModalGeneral({
 			}}
 			isOpen={deleteModal.visible}
 			classNames={{
+				wrapper: "!z-[99998]",
 				backdrop:
-					"bg-gradient-to-t from-zinc-900 to-zinc-900/10 backdrop-opacity-20",
+					"bg-gradient-to-t from-zinc-900 to-zinc-900/10 backdrop-opacity-20 !z-[99998]",
 			}}
 		>
 			{loading && (

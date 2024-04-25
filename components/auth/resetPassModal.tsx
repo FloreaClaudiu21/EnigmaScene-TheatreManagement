@@ -22,9 +22,9 @@ import {
 } from "../ui/form";
 import { resetPassSchema } from "@/lib/schemas";
 import { useLoadingScreen, useResetPassModal } from "@/services/StateProvider";
-import { resetPasswordUser } from "@/services/general/AuthProvider";
 import { useToast } from "../ui/use-toast";
 import { LanguageData } from "@/lib/types";
+import { resetPasswordClient } from "@/services/general/AuthProvider";
 
 export default function ResetPassModal({
 	langData,
@@ -42,7 +42,7 @@ export default function ResetPassModal({
 	});
 	async function onSubmit(values: z.infer<typeof resetPassSchema>) {
 		loadingScreen.setLoading(true);
-		const res = await resetPasswordUser(
+		const res = await resetPasswordClient(
 			langData.language,
 			resetPassModal.user,
 			values.password
@@ -71,8 +71,9 @@ export default function ResetPassModal({
 			}}
 			isOpen={resetPassModal.visible}
 			classNames={{
+				wrapper: "!z-[99998]",
 				backdrop:
-					"bg-gradient-to-t from-zinc-900 to-zinc-900/10 backdrop-opacity-20",
+					"bg-gradient-to-t from-zinc-900 to-zinc-900/10 backdrop-opacity-20 !z-[99998]",
 			}}
 		>
 			<ModalContent>

@@ -2,19 +2,19 @@ import { prisma } from "@/lib/prismaClient";
 import { notFound } from "next/navigation";
 import React from "react";
 import AdminSeasonEdit from "./PageContent";
+import { getSeasonById } from "@/services/admin/ControlProvider";
+import { isNumeric } from "@/lib/utils";
 
 export default async function AdminShowSeasonEditPage({
 	params,
 }: {
 	params: any;
 }) {
-	const id = params.showID;
+	let id = params.showID;
 	if (!id) return notFound();
-	const found = await prisma.season.findFirst({
-		where: {
-			id,
-		},
-	});
+	if (!isNumeric(id)) return notFound();
+	id = parseInt(id);
+	const found = await getSeasonById(id);
 	if (!found) {
 		return notFound();
 	}

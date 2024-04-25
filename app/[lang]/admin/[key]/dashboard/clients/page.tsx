@@ -38,7 +38,7 @@ export default async function AdminClients({ params }: { params: any }) {
 							data={decClients}
 							columns={columns}
 							showControlBtns={true}
-							type={TableTypes.CLIENTS}
+							type={TableTypes.CLIENT}
 							create_title="Add Client"
 							create_link="clients/create"
 							subtitle="Manage your clients and view their billing addresses."

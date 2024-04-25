@@ -26,7 +26,7 @@ const DropdownUser = ({ user }: { user: User }) => {
 			</DropdownMenuTrigger>
 			<DropdownMenuContent align="end">
 				<DropdownMenuLabel>My Account</DropdownMenuLabel>
-				<DropdownMenuItem>
+				<DropdownMenuItem className="text-red-500 font-semibold hover:text-red-800">
 					{user?.firstName + " " + user?.lastName}
 				</DropdownMenuItem>
 				<DropdownMenuSeparator />

@@ -4,10 +4,13 @@ import { User } from "next-auth";
 import { notFound } from "next/navigation";
 import React from "react";
 import AdminClientEdit from "./PageContent";
+import { isNumeric } from "@/lib/utils";
 
 export default async function AdminUserEditPage({ params }: { params: any }) {
-	const clientId = params.clientID;
+	let clientId = params.clientID;
 	if (!clientId) return notFound();
+	if (!isNumeric(clientId)) return notFound();
+	clientId = parseInt(clientId);
 	const client = await prisma.client.findFirst({
 		where: {
 			id: clientId,

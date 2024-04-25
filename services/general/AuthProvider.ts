@@ -28,7 +28,7 @@ export const getAdminKey = async () => {
 	return process.env.ADMIN_KEY;
 };
 
-export const getClientById = async (id: string) => {
+export const getClientById = async (id: number) => {
 	const foundClient = await prisma.client.findFirst({
 		where: {
 			id,
@@ -93,7 +93,7 @@ export const LoginWithCredentials = async (
 	}
 };
 
-export const deleteAccountClient = async (lang: Locale, clientId: string) => {
+export const deleteAccountClient = async (lang: Locale, clientId: number) => {
 	const { dictionary } = await makeDictionaryBE(lang);
 	const client = await getClientById(clientId);
 	if (!client) {
@@ -120,7 +120,7 @@ export const deleteAccountClient = async (lang: Locale, clientId: string) => {
 
 export const updateDetailsClient = async (
 	lang: Locale,
-	clientId: string,
+	clientId: number,
 	values: z.infer<typeof updateSchema>
 ) => {
 	const { dictionary } = await makeDictionaryBE(lang);
@@ -377,7 +377,7 @@ export const resetPasswordClient = async (
 };
 
 export const addBillingAddress = async (
-	id: string,
+	id: number,
 	values: z.infer<typeof addAddressFormSchema>
 ) => {
 	try {
@@ -398,7 +398,7 @@ export const addBillingAddress = async (
 	}
 };
 
-export const deleteBillingAddress = async (id: string) => {
+export const deleteBillingAddress = async (id: number) => {
 	try {
 		const address = await prisma.billingAddress.delete({
 			where: {

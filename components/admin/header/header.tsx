@@ -2,25 +2,35 @@
 import Link from "next/link";
 import { useAuth } from "@/services/StateProvider";
 import DropdownUser from "@/components/admin/header/DropdownMenuUser";
-import {
-	Breadcrumb,
-	BreadcrumbItem,
-	BreadcrumbLink,
-	BreadcrumbList,
-	BreadcrumbPage,
-	BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
 import { usePathname } from "next/navigation";
 import { Image } from "@nextui-org/react";
-import { capitalizeFirstLetter, homeUrl, urlLink } from "@/lib/utils";
+import { homeUrl } from "@/lib/utils";
 import HeaderMenuAdmin from "./headerMenu";
+import { useEffect, useState } from "react";
+import BreadcrumbHeader from "./BreadcrumbHeader";
 
 const HeaderComponent = () => {
 	const auth = useAuth();
 	const pathName = usePathname();
-	const pathNames = pathName.split("/");
+	const [scrollPosition, setScrollPosition] = useState(0);
+	useEffect(() => {
+		setScrollPosition(window.scrollY);
+		const handleScroll = () => {
+			setScrollPosition(window.scrollY);
+		};
+		window.addEventListener("scroll", handleScroll);
+		return () => {
+			window.removeEventListener("scroll", handleScroll);
+		};
+	}, []);
 	return (
-		<header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 py-6 sm:px-6 md:px-20 md:pr-6 sm:static sm:h-auto sm:border-0 sm:bg-transparent">
+		<header
+			className={`fixed top-0 flex h-14 w-full items-center gap-4 border-b bg-background px-4 py-6 sm:px-6 md:px-20 sm:py-2 md:pr-6 sm:h-auto sm:border-0 z-[99] ${
+				scrollPosition < 70
+					? "sm:bg-muted/80"
+					: "sm:bg-white sm:shadow-md sm:border-b"
+			}`}
+		>
 			<div className="flex flex-grow items-center justify-between gap-4">
 				<div className="flex items-center gap-4 md:hidden">
 					<HeaderMenuAdmin />
@@ -39,46 +49,10 @@ const HeaderComponent = () => {
 							removeWrapper
 							fetchPriority="high"
 							src={"/images/logo.webp"}
-							className="h-12 w-24"
+							className="h-14 w-28"
 						/>
 					</Link>
-					<Breadcrumb className="hidden md:flex">
-						<BreadcrumbList>
-							{pathNames.map((val: string, index: number) => {
-								if (index < 4) return <></>;
-								const isLast = index === pathNames.length - 1;
-								return (
-									<BreadcrumbItem key={val + index}>
-										{!isLast ? (
-											<>
-												<BreadcrumbLink asChild>
-													<Link
-														href={
-															urlLink(pathName) + val != "dashboard" ? val : ""
-														}
-													>
-														{capitalizeFirstLetter(val)}
-													</Link>
-												</BreadcrumbLink>
-												<BreadcrumbSeparator />
-											</>
-										) : (
-											<BreadcrumbPage>
-												<Link
-													className="text-red-500"
-													href={
-														urlLink(pathName) + val != "dashboard" ? val : ""
-													}
-												>
-													{capitalizeFirstLetter(val)}
-												</Link>
-											</BreadcrumbPage>
-										)}
-									</BreadcrumbItem>
-								);
-							})}
-						</BreadcrumbList>
-					</Breadcrumb>
+					<BreadcrumbHeader />
 				</div>
 				<div className="flex items-center gap-3 sm:gap-7">
 					<DropdownUser user={auth.user!} />

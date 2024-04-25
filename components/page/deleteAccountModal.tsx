@@ -57,8 +57,9 @@ export default function DeleteAccountModal({
 			}}
 			isOpen={visible}
 			classNames={{
+				wrapper: "!z-[99998]",
 				backdrop:
-					"bg-gradient-to-t from-zinc-900 to-zinc-900/10 backdrop-opacity-20",
+					"bg-gradient-to-t from-zinc-900 to-zinc-900/10 backdrop-opacity-20 !z-[99998]",
 			}}
 		>
 			{loading && (

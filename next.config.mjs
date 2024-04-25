@@ -28,6 +28,12 @@ const nextConfig = {
 				port: "",
 				pathname: "/**",
 			},
+			{
+				protocol: "https",
+				hostname: "mystage-static.starter.ro",
+				port: "",
+				pathname: "/**",
+			},
 		],
 	},
 };

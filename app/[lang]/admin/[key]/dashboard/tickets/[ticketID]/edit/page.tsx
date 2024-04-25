@@ -1,24 +1,79 @@
 import { prisma } from "@/lib/prismaClient";
-import { decryptPassword } from "@/services/general/AuthProvider";
-import { User } from "next-auth";
 import { notFound } from "next/navigation";
 import React from "react";
-import AdminClientEdit from "./PageContent";
+import AdminTicketSoldEdit from "./PageContent";
+import { isNumeric } from "@/lib/utils";
 
-export default async function AdminUserEditPage({ params }: { params: any }) {
-	const clientId = params.clientID;
-	if (!clientId) return notFound();
-	const client = await prisma.client.findFirst({
+export default async function AdminTicketEditPage({ params }: { params: any }) {
+	let id = params.ticketID;
+	if (!id) return notFound();
+	if (!isNumeric(id)) return notFound();
+	id = parseInt(id);
+	const found = await prisma.ticketSold.findFirst({
 		where: {
-			id: clientId,
+			id,
+		},
+		include: {
+			invoice: true,
+			showRoom: true,
+			seat: true,
+			payment: {
+				include: {
+					client: true,
+				},
+			},
+			show: {
+				include: {
+					showType: true,
+					season: true,
+					showRoom: true,
+				},
+			},
 		},
 	});
-	if (!client) {
+	if (!found) {
 		return notFound();
 	}
-	const passClient = {
-		...client,
-		password: decryptPassword(client.password),
-	} as User;
-	return <AdminClientEdit client={passClient} params={params} />;
+	const [clients, shows, exchanges] = await Promise.all([
+		prisma.client.findMany({
+			include: {
+				billingAddresses: true,
+			},
+		}),
+		prisma.show.findMany({
+			include: {
+				season: true,
+				showType: true,
+				showRoom: {
+					include: {
+						ticketsSold: true,
+						seats: {
+							include: {
+								ticketsSold: {
+									include: {
+										show: {
+											include: {
+												season: true,
+												showType: true,
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		}),
+		prisma.exchangeRate.findMany({}),
+	]);
+	return (
+		<AdminTicketSoldEdit
+			clients={clients}
+			exchanges={exchanges}
+			params={params}
+			shows={shows}
+			ticket={found}
+		/>
+	);
 }

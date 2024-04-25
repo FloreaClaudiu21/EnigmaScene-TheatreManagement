@@ -1,641 +1,189 @@
 "use client";
 import { ColumnDef } from "@tanstack/react-table";
-import { ArrowDownIcon, ArrowUpIcon } from "lucide-react";
-import { Button, Checkbox, Chip } from "@nextui-org/react";
-import { Invoice, Payment } from "@/lib/types";
+import ColumnHeader from "@/components/admin/table/ColumnHeader";
+import ColumnCell from "@/components/admin/table/ColumnCell";
+import { FiscalReceipt } from "@/lib/types";
 import ModalViewInvoice from "@/components/page/invoices/ViewInvoiceBtn";
+import ModalViewFiscalReceipt from "@/components/page/fiscalReceipts/ViewFiscalReceiptBtn";
+import ModalViewTicket from "@/components/page/ticket/ViewTicketBtn";
 
-export const columns: ColumnDef<Invoice>[] = [
-	{
-		id: "select",
-		header: ({ table }) => (
-			<div className="flex flex-row items-center justify-center text-center">
-				<Checkbox
-					radius="none"
-					onChange={(event) => {
-						table.toggleAllPageRowsSelected(event.target.checked);
-					}}
-					isIndeterminate={table.getIsSomePageRowsSelected()}
-					isSelected={table.getIsAllPageRowsSelected()}
-					aria-label="Select all"
-				/>
-			</div>
-		),
-		cell: ({ row }) => (
-			<div className="flex flex-row items-center justify-center text-center">
-				<Checkbox
-					radius="none"
-					onChange={(event) => {
-						row.toggleSelected(event.target.checked);
-					}}
-					isSelected={row.getIsSelected()}
-					aria-label="Select row"
-				/>
-			</div>
-		),
-		enableSorting: false,
-		enableHiding: true,
-	},
+export const columnsReceipts: ColumnDef<FiscalReceipt>[] = [
 	{
 		id: "actions",
-		cell: ({ row }) => {
-			const invoice = row.original;
-			return <ModalViewInvoice invoice={invoice} />;
+		cell: ({ row: { original } }) => {
+			return (
+				<div className="flex flex-row gap-2 place-items-center">
+					<ModalViewInvoice invoice={original.invoice} />
+					<ModalViewFiscalReceipt receipt={original} />
+					<ModalViewTicket ticket={original.ticket} />
+				</div>
+			);
 		},
+		enableSorting: false,
 	},
 	{
 		accessorKey: "id",
 		header: ({ column }) => {
-			return (
-				<div className="text-center">
-					<Button
-						variant="light"
-						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-					>
-						ID
-						{column.getIsSorted() ? (
-							column.getIsSorted() === "asc" ? (
-								<ArrowUpIcon className="ml-2 h-4 w-4" />
-							) : (
-								<ArrowDownIcon className="ml-2 h-4 w-4" />
-							)
-						) : (
-							""
-						)}
-					</Button>
-				</div>
-			);
+			return <ColumnHeader column={column} title="Id" />;
 		},
 		cell: ({ row }) => {
-			const invoice = row.original;
-			return (
-				<div className="text-center">
-					<Button
-						radius="none"
-						variant="light"
-						onClick={() => navigator.clipboard.writeText(invoice.id.toString())}
-					>
-						{invoice.id}
-					</Button>
-				</div>
-			);
+			const user = row.original;
+			return <ColumnCell data={user.id} />;
 		},
 	},
 	{
-		accessorKey: "billingAddress",
+		accessorKey: "amount",
 		header: ({ column }) => {
-			return (
-				<div className="flex flex-row items-center justify-center text-center">
-					<Button
-						radius="none"
-						variant="light"
-						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-					>
-						Billing Address
-						{column.getIsSorted() ? (
-							column.getIsSorted() === "asc" ? (
-								<ArrowUpIcon className="ml-2 h-4 w-4" />
-							) : (
-								<ArrowDownIcon className="ml-2 h-4 w-4" />
-							)
-						) : (
-							""
-						)}
-					</Button>
-				</div>
-			);
+			return <ColumnHeader column={column} title="Amount Paid" />;
 		},
-		cell: ({ row }) => {
-			const invoice = row.original;
-			return (
-				<div className="flex flex-row items-center justify-center text-center">
-					<Button
-						radius="none"
-						variant="light"
-						onClick={() =>
-							navigator.clipboard.writeText(invoice.billingAddress)
-						}
-					>
-						{invoice.billingAddress}
-					</Button>
-				</div>
-			);
+		cell: ({ row: { original } }) => {
+			return <ColumnCell data={original.amount} />;
 		},
 	},
 	{
-		accessorKey: "currency",
+		accessorKey: "amountCur",
 		header: ({ column }) => {
-			return (
-				<div className="flex flex-row items-center justify-center text-center">
-					<Button
-						radius="none"
-						variant="light"
-						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-					>
-						Currency
-						{column.getIsSorted() ? (
-							column.getIsSorted() === "asc" ? (
-								<ArrowUpIcon className="ml-2 h-4 w-4" />
-							) : (
-								<ArrowDownIcon className="ml-2 h-4 w-4" />
-							)
-						) : (
-							""
-						)}
-					</Button>
-				</div>
-			);
+			return <ColumnHeader column={column} title="Amount Paid In Currency" />;
 		},
-		cell: ({ row }) => {
-			const invoice = row.original;
+		cell: ({ row: { original } }) => {
 			return (
-				<div className="flex flex-row items-center justify-center text-center">
-					<Button
-						radius="none"
-						variant="light"
-						onClick={() => navigator.clipboard.writeText(invoice.currency)}
-					>
-						{invoice.currency}
-					</Button>
-				</div>
-			);
-		},
-	},
-	{
-		accessorKey: "currencyAmount",
-		header: ({ column }) => {
-			return (
-				<div className="flex flex-row items-center justify-center text-center">
-					<Button
-						variant="light"
-						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-					>
-						Currency Amount
-						{column.getIsSorted() ? (
-							column.getIsSorted() === "asc" ? (
-								<ArrowUpIcon className="ml-2 h-4 w-4" />
-							) : (
-								<ArrowDownIcon className="ml-2 h-4 w-4" />
-							)
-						) : (
-							""
-						)}
-					</Button>
-				</div>
-			);
-		},
-		cell: ({ row }) => {
-			const invoice = row.original;
-			return (
-				<div className="flex flex-row items-center justify-center text-center">
-					<Button
-						radius="none"
-						variant="light"
-						onClick={() =>
-							navigator.clipboard.writeText(invoice.currencyAmount + "")
-						}
-					>
-						{invoice.currencyAmount}
-					</Button>
-				</div>
-			);
-		},
-	},
-	{
-		accessorKey: "email",
-		header: ({ column }) => {
-			return (
-				<div className="flex flex-row items-center justify-center text-center">
-					<Button
-						radius="none"
-						variant="light"
-						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-					>
-						User Email
-						{column.getIsSorted() ? (
-							column.getIsSorted() === "asc" ? (
-								<ArrowUpIcon className="ml-2 h-4 w-4" />
-							) : (
-								<ArrowDownIcon className="ml-2 h-4 w-4" />
-							)
-						) : (
-							""
-						)}
-					</Button>
-				</div>
-			);
-		},
-		cell: ({ row }) => {
-			const invoice = row.original;
-			return (
-				<div className="flex flex-row items-center justify-center text-center">
-					<Button
-						radius="none"
-						variant="light"
-						onClick={() => navigator.clipboard.writeText(invoice.email)}
-					>
-						{invoice.email}
-					</Button>
-				</div>
-			);
-		},
-	},
-	{
-		accessorKey: "firstName",
-		header: ({ column }) => {
-			return (
-				<div className="flex flex-row items-center justify-center text-center">
-					<Button
-						radius="none"
-						variant="light"
-						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-					>
-						User Name
-						{column.getIsSorted() ? (
-							column.getIsSorted() === "asc" ? (
-								<ArrowUpIcon className="ml-2 h-4 w-4" />
-							) : (
-								<ArrowDownIcon className="ml-2 h-4 w-4" />
-							)
-						) : (
-							""
-						)}
-					</Button>
-				</div>
-			);
-		},
-		cell: ({ row }) => {
-			const invoice = row.original;
-			const name = invoice.firstName + " " + invoice.lastName;
-			return (
-				<div className="flex flex-row items-center justify-center text-center">
-					<Button
-						radius="none"
-						variant="light"
-						onClick={() => navigator.clipboard.writeText(name)}
-					>
-						{name}
-					</Button>
-				</div>
-			);
-		},
-	},
-	{
-		accessorKey: "invoiceNumber",
-		header: ({ column }) => {
-			return (
-				<div className="flex flex-row items-center justify-center text-center">
-					<Button
-						variant="light"
-						radius="none"
-						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-					>
-						Invoice Number
-						{column.getIsSorted() ? (
-							column.getIsSorted() === "asc" ? (
-								<ArrowUpIcon className="ml-2 h-4 w-4" />
-							) : (
-								<ArrowDownIcon className="ml-2 h-4 w-4" />
-							)
-						) : (
-							""
-						)}
-					</Button>
-				</div>
-			);
-		},
-		cell: ({ row }) => {
-			const invoice = row.original;
-			return (
-				<div className="flex flex-row items-center justify-center text-center">
-					<Button
-						radius="none"
-						variant="light"
-						onClick={() => navigator.clipboard.writeText(invoice.invoiceNumber)}
-					>
-						{invoice.invoiceNumber}
-					</Button>
-				</div>
-			);
-		},
-	},
-	{
-		accessorKey: "invoiceSeries",
-		header: ({ column }) => {
-			return (
-				<div className="flex flex-row items-center justify-center text-center">
-					<Button
-						radius="none"
-						variant="light"
-						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-					>
-						Invoice Series
-						{column.getIsSorted() ? (
-							column.getIsSorted() === "asc" ? (
-								<ArrowUpIcon className="ml-2 h-4 w-4" />
-							) : (
-								<ArrowDownIcon className="ml-2 h-4 w-4" />
-							)
-						) : (
-							""
-						)}
-					</Button>
-				</div>
-			);
-		},
-		cell: ({ row }) => {
-			const invoice = row.original;
-			return (
-				<div className="flex flex-row items-center justify-center text-center">
-					<Button
-						radius="none"
-						variant="light"
-						onClick={() => navigator.clipboard.writeText(invoice.invoiceSeries)}
-					>
-						{invoice.invoiceSeries}
-					</Button>
-				</div>
-			);
-		},
-	},
-	{
-		accessorKey: "totalAmount",
-		header: ({ column }) => {
-			return (
-				<div className="flex flex-row items-center justify-center text-center">
-					<Button
-						radius="none"
-						variant="light"
-						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-					>
-						Total Amount
-						{column.getIsSorted() ? (
-							column.getIsSorted() === "asc" ? (
-								<ArrowUpIcon className="ml-2 h-4 w-4" />
-							) : (
-								<ArrowDownIcon className="ml-2 h-4 w-4" />
-							)
-						) : (
-							""
-						)}
-					</Button>
-				</div>
-			);
-		},
-		cell: ({ row }) => {
-			const invoice = row.original;
-			return (
-				<div className="flex flex-row items-center justify-center text-center">
-					<Button
-						radius="none"
-						variant="light"
-						onClick={() =>
-							navigator.clipboard.writeText(invoice.totalAmount + "")
-						}
-					>
-						{invoice.totalAmount}
-					</Button>
-				</div>
-			);
-		},
-	},
-	{
-		accessorKey: "extraFees",
-		header: ({ column }) => {
-			return (
-				<div className="flex flex-row items-center justify-center text-center">
-					<Button
-						radius="none"
-						variant="light"
-						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-					>
-						Extra Fees
-						{column.getIsSorted() ? (
-							column.getIsSorted() === "asc" ? (
-								<ArrowUpIcon className="ml-2 h-4 w-4" />
-							) : (
-								<ArrowDownIcon className="ml-2 h-4 w-4" />
-							)
-						) : (
-							""
-						)}
-					</Button>
-				</div>
-			);
-		},
-		cell: ({ row }) => {
-			const invoice = row.original;
-			return (
-				<div className="flex flex-row items-center justify-center text-center">
-					<Button
-						radius="none"
-						variant="light"
-						onClick={() =>
-							navigator.clipboard.writeText(invoice.extraFees + "")
-						}
-					>
-						{invoice.extraFees}
-					</Button>
-				</div>
-			);
-		},
-	},
-	{
-		accessorKey: "userId",
-		header: ({ column }) => {
-			return (
-				<div className="flex flex-row items-center justify-center text-center">
-					<Button
-						variant="light"
-						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-					>
-						User Id
-						{column.getIsSorted() ? (
-							column.getIsSorted() === "asc" ? (
-								<ArrowUpIcon className="ml-2 h-4 w-4" />
-							) : (
-								<ArrowDownIcon className="ml-2 h-4 w-4" />
-							)
-						) : (
-							""
-						)}
-					</Button>
-				</div>
-			);
-		},
-		cell: ({ row }) => {
-			const payment = row.original;
-			return (
-				<div className="flex flex-row items-center justify-center text-center">
-					<Button
-						radius="none"
-						variant="light"
-						onClick={() => navigator.clipboard.writeText(payment.userId)}
-					>
-						{payment.userId}
-					</Button>
-				</div>
+				<ColumnCell
+					data={(original.currency != "RON"
+						? original.amount / original.currencyAmount
+						: original.amount
+					).toFixed(2)}
+				/>
 			);
 		},
 	},
 	{
 		accessorKey: "paymentId",
 		header: ({ column }) => {
-			return (
-				<div className="flex flex-row items-center justify-center text-center">
-					<Button
-						radius="none"
-						variant="light"
-						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-					>
-						Payment Id
-						{column.getIsSorted() ? (
-							column.getIsSorted() === "asc" ? (
-								<ArrowUpIcon className="ml-2 h-4 w-4" />
-							) : (
-								<ArrowDownIcon className="ml-2 h-4 w-4" />
-							)
-						) : (
-							""
-						)}
-					</Button>
-				</div>
-			);
+			return <ColumnHeader column={column} title="Payment Id" />;
 		},
-		cell: ({ row }) => {
-			const invoice = row.original;
-			return (
-				<div className="flex flex-row items-center justify-center text-center">
-					<Button
-						radius="none"
-						variant="light"
-						onClick={() =>
-							navigator.clipboard.writeText(invoice.paymentId ?? "")
-						}
-					>
-						{invoice.paymentId ?? "Not associated with a payment"}
-					</Button>
-				</div>
-			);
+		cell: ({ row: { original } }) => {
+			return <ColumnCell data={original.paymentId} />;
 		},
 	},
 	{
-		accessorKey: "rentId",
+		accessorKey: "currency",
 		header: ({ column }) => {
-			return (
-				<div className="flex flex-row items-center justify-center text-center">
-					<Button
-						radius="none"
-						variant="light"
-						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-					>
-						Rent Id
-						{column.getIsSorted() ? (
-							column.getIsSorted() === "asc" ? (
-								<ArrowUpIcon className="ml-2 h-4 w-4" />
-							) : (
-								<ArrowDownIcon className="ml-2 h-4 w-4" />
-							)
-						) : (
-							""
-						)}
-					</Button>
-				</div>
-			);
+			return <ColumnHeader column={column} title="Currency" />;
 		},
-		cell: ({ row }) => {
-			const invoice = row.original;
-			return (
-				<div className="flex flex-row items-center justify-center text-center">
-					<Button
-						radius="none"
-						variant="light"
-						onClick={() => navigator.clipboard.writeText(invoice.rentId ?? "")}
-					>
-						{invoice.rentId ?? "Not associated with a rent"}
-					</Button>
-				</div>
-			);
+		cell: ({ row: { original } }) => {
+			return <ColumnCell data={original.currency} />;
 		},
 	},
 	{
-		accessorKey: "issueDate",
+		accessorKey: "currencyAmount",
 		header: ({ column }) => {
-			return (
-				<div className="flex flex-row items-center justify-center text-center">
-					<Button
-						radius="none"
-						variant="light"
-						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-					>
-						Issue Date
-						{column.getIsSorted() ? (
-							column.getIsSorted() === "asc" ? (
-								<ArrowUpIcon className="ml-2 h-4 w-4" />
-							) : (
-								<ArrowDownIcon className="ml-2 h-4 w-4" />
-							)
-						) : (
-							""
-						)}
-					</Button>
-				</div>
-			);
+			return <ColumnHeader column={column} title="Currency Amount" />;
 		},
-		cell: ({ row }) => {
-			const user = row.original;
-			const theDate = user.issueDate.toUTCString();
-			return (
-				<div className="flex flex-row items-center justify-center text-center">
-					<Button
-						radius="none"
-						variant="light"
-						onClick={() => navigator.clipboard.writeText(theDate)}
-					>
-						{theDate}
-					</Button>
-				</div>
-			);
+		cell: ({ row: { original } }) => {
+			return <ColumnCell data={original.currencyAmount} />;
+		},
+	},
+	{
+		accessorKey: "currencyDate",
+		header: ({ column }) => {
+			return <ColumnHeader column={column} title="Currency Date" />;
+		},
+		cell: ({ row: { original } }) => {
+			return <ColumnCell data={original.currencyDate.toUTCString()} />;
+		},
+	},
+	{
+		accessorKey: "paidAt",
+		header: ({ column }) => {
+			return <ColumnHeader column={column} title="Paid At" />;
+		},
+		cell: ({ row: { original } }) => {
+			return <ColumnCell data={original.paidAt.toUTCString()} />;
+		},
+	},
+	{
+		accessorKey: "ticketId",
+		header: ({ column }) => {
+			return <ColumnHeader column={column} title="Ticket Id" />;
+		},
+		cell: ({ row: { original } }) => {
+			return <ColumnCell data={original.ticket?.id} />;
+		},
+	},
+	{
+		accessorKey: "ticketNumber",
+		header: ({ column }) => {
+			return <ColumnHeader column={column} title="Ticket Number" />;
+		},
+		cell: ({ row: { original } }) => {
+			return <ColumnCell data={original.ticket?.number} />;
+		},
+	},
+	{
+		accessorKey: "clientId",
+		header: ({ column }) => {
+			return <ColumnHeader column={column} title="Client Id" />;
+		},
+		cell: ({ row: { original } }) => {
+			return <ColumnCell data={original.clientId} />;
+		},
+	},
+	{
+		accessorKey: "clientEmail",
+		header: ({ column }) => {
+			return <ColumnHeader column={column} title="Client Email" />;
+		},
+		cell: ({ row: { original } }) => {
+			return <ColumnCell data={original.client?.email} />;
+		},
+	},
+	{
+		accessorKey: "showId",
+		header: ({ column }) => {
+			return <ColumnHeader column={column} title="Show Id" />;
+		},
+		cell: ({ row: { original } }) => {
+			return <ColumnCell data={original.clientId} />;
+		},
+	},
+	{
+		accessorKey: "showName",
+		header: ({ column }) => {
+			return <ColumnHeader column={column} title="Show Name" />;
+		},
+		cell: ({ row: { original } }) => {
+			return <ColumnCell data={original.show?.title} />;
+		},
+	},
+	{
+		accessorKey: "showNameEN",
+		header: ({ column }) => {
+			return <ColumnHeader column={column} title="Show Name EN" />;
+		},
+		cell: ({ row: { original } }) => {
+			return <ColumnCell data={original.show?.title_en} />;
 		},
 	},
 	{
 		accessorKey: "createdAt",
 		header: ({ column }) => {
-			return (
-				<div className="flex flex-row items-center justify-center text-center">
-					<Button
-						radius="none"
-						variant="light"
-						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-					>
-						Created At
-						{column.getIsSorted() ? (
-							column.getIsSorted() === "asc" ? (
-								<ArrowUpIcon className="ml-2 h-4 w-4" />
-							) : (
-								<ArrowDownIcon className="ml-2 h-4 w-4" />
-							)
-						) : (
-							""
-						)}
-					</Button>
-				</div>
-			);
+			return <ColumnHeader column={column} title="Created At" />;
 		},
 		cell: ({ row }) => {
-			const user = row.original;
-			const theDate = user.createdAt.toUTCString();
-			return (
-				<div className="flex flex-row items-center justify-center text-center">
-					<Button
-						radius="none"
-						variant="light"
-						onClick={() => navigator.clipboard.writeText(theDate)}
-					>
-						{theDate}
-					</Button>
-				</div>
-			);
+			const show = row.original;
+			const theDate = show.createdAt.toUTCString();
+			return <ColumnCell data={theDate} />;
+		},
+	},
+	{
+		accessorKey: "updatedAt",
+		header: ({ column }) => {
+			return <ColumnHeader column={column} title="Updated At" />;
+		},
+		cell: ({ row }) => {
+			const show = row.original;
+			const theDate = show.updatedAt.toUTCString();
+			return <ColumnCell data={theDate} />;
 		},
 	},
 ];

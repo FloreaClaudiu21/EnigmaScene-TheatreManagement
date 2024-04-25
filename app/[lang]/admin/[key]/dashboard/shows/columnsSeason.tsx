@@ -25,7 +25,7 @@ export const columnsSeason: ColumnDef<Season>[] = [
 		cell: ({ row }) => {
 			return (
 				<ColumnCellActions
-					type={TableTypes.SHOWS_SEASON}
+					type={TableTypes.SHOW_SEASON}
 					deleteId={row.original.id}
 					link_edit={"shows/" + row.original.id + "/edit-season"}
 				/>

@@ -33,7 +33,7 @@ export default function DeleteAddressModal({
 	///////////////////////////////////////////////
 	const removeAddress = async () => {
 		loadingScreen.setLoading(true);
-		const address = await deleteBillingAddress(useDeleteModal.addressId ?? "");
+		const address = await deleteBillingAddress(useDeleteModal.addressId ?? 0);
 		if (!address) {
 			toast({
 				variant: "destructive",
@@ -77,8 +77,9 @@ export default function DeleteAddressModal({
 			}}
 			isOpen={useDeleteModal.addressId != null}
 			classNames={{
+				wrapper: "!z-[99998]",
 				backdrop:
-					"bg-gradient-to-t from-zinc-900 to-zinc-900/10 backdrop-opacity-20",
+					"bg-gradient-to-t from-zinc-900 to-zinc-900/10 backdrop-opacity-20 !z-[99998]",
 			}}
 		>
 			<ModalContent>

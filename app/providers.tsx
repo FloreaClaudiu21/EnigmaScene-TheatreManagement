@@ -21,7 +21,7 @@ import { PrimeReactProvider } from "primereact/api";
 import { useEffect } from "react";
 import ScrollToTop from "react-scroll-to-top";
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v14-appRouter";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { AppProgressBar as ProgressBar } from "next-nprogress-bar";
 import { useFiltersHook } from "@/services/FiltersProvider";
 
@@ -115,7 +115,13 @@ function AuthWrapper({ children }: { children: React.ReactNode }) {
 			{children}
 			{loadingScreen.loading && (
 				<div className="fixed top-0 left-0 bottom-0 min-h-screen w-full h-full flex flex-1 flex-col gap-4 justify-center place-items-center bg-[rgba(0,0,0,0.45)] z-[999999]">
-					<Image src="/images/loading.gif" alt="" width={350} height={350} />
+					<Image
+						src="/images/loading.gif"
+						priority
+						alt=""
+						width={128}
+						height={128}
+					/>
 				</div>
 			)}
 			{refreshScreen.loading && (

@@ -1,8 +1,10 @@
 import {
+	FiscalReceipt,
 	Invoice,
 	PartialClient,
 	SelectedFilters,
 	TableTypes,
+	TicketSold,
 	currencyArray,
 } from "@/lib/types";
 import { Table } from "@tanstack/react-table";
@@ -30,8 +32,8 @@ type generalModal = {
 	setVisible: (val: boolean) => void;
 };
 type AddAddress = {
-	userId: string;
-	setIsAdminPanel: (val: string) => void;
+	userId: number;
+	setIsAdminPanel: (val: number) => void;
 } & generalModal;
 type firstTimeModal = {
 	user: PartialClient | undefined;
@@ -43,9 +45,9 @@ type resetPassModal = {
 } & generalModal;
 type deleteModal = {
 	type: TableTypes;
-	deleteId: string;
+	deleteId: number;
 	setType: (type: TableTypes) => void;
-	setDeleteId: (val: string) => void;
+	setDeleteId: (val: number) => void;
 } & generalModal;
 type AuthModel = {
 	isLogged: boolean;
@@ -53,8 +55,8 @@ type AuthModel = {
 	setUser: (user: User | undefined) => void;
 };
 type DeleteAddressModal = {
-	addressId: string | null;
-	onToggle: (val: string | null) => void;
+	addressId: number | null;
+	onToggle: (val: number | null) => void;
 };
 type InvoiceModal = {
 	visible: boolean;
@@ -62,11 +64,23 @@ type InvoiceModal = {
 	setVisible: (val: boolean) => void;
 	setInvoice: (val: Invoice | null) => void;
 };
-type RaportModal = {
+type TicketModal = {
 	visible: boolean;
-	table: Table<any> | null;
+	ticket: TicketSold | null;
 	setVisible: (val: boolean) => void;
-	setTable: (val: Table<any> | null) => void;
+	setTicket: (val: TicketSold | null) => void;
+};
+type ReceiptModal = {
+	visible: boolean;
+	receipt: FiscalReceipt | null;
+	setVisible: (val: boolean) => void;
+	setReceipt: (val: FiscalReceipt | null) => void;
+};
+export type RaportModal = {
+	visible: boolean;
+	raport: Table<any> | null;
+	setVisible: (val: boolean) => void;
+	setRaport: (val: Table<any> | null) => void;
 };
 type ActiveLink = {
 	active: string;
@@ -104,24 +118,24 @@ export const useActiveLink = create<ActiveLink>((set) => ({
 }));
 export const useAddAddressModal = create<AddAddress>((set) => ({
 	visible: false,
-	userId: "",
+	userId: 0,
 	onToggle: () =>
 		set((state: { visible: boolean }) => ({
 			visible: !state.visible,
-			userId: "",
+			userId: 0,
 		})),
 	setVisible: (val: boolean) => set({ visible: val }),
-	setIsAdminPanel: (val: string) => set({ userId: val }),
+	setIsAdminPanel: (val: number) => set({ userId: val }),
 }));
 export const useDeleteAddressModal = create<DeleteAddressModal>((set) => ({
 	addressId: null,
-	onToggle: (val: string | null) => set({ addressId: val }),
+	onToggle: (val: number | null) => set({ addressId: val }),
 }));
 export const useDeleteModal = create<deleteModal>((set) => ({
 	visible: false,
-	deleteId: "",
-	type: TableTypes.CLIENTS,
-	setDeleteId: (val: string) => set({ deleteId: val }),
+	deleteId: 0,
+	type: TableTypes.CLIENT,
+	setDeleteId: (val: number) => set({ deleteId: val }),
 	onToggle: () =>
 		set((state: { visible: boolean }) => ({ visible: !state.visible })),
 	setVisible: (val: boolean) => set({ visible: val }),
@@ -163,11 +177,23 @@ export const useInvoiceModal = create<InvoiceModal>((set) => ({
 	invoice: null,
 	setInvoice: (val: Invoice | null) => set({ invoice: val }),
 }));
+export const useTicketModal = create<TicketModal>((set) => ({
+	visible: false,
+	setVisible: (val: boolean) => set({ visible: val }),
+	ticket: null,
+	setTicket: (val: TicketSold | null) => set({ ticket: val }),
+}));
 export const useRaportModal = create<RaportModal>((set) => ({
 	visible: false,
 	setVisible: (val: boolean) => set({ visible: val }),
-	table: null,
-	setTable: (val: Table<any> | null) => set({ table: val }),
+	raport: null,
+	setRaport: (val: Table<any> | null) => set({ raport: val }),
+}));
+export const useFiscalReceiptModal = create<ReceiptModal>((set) => ({
+	visible: false,
+	setVisible: (val: boolean) => set({ visible: val }),
+	receipt: null,
+	setReceipt: (val: FiscalReceipt | null) => set({ receipt: val }),
 }));
 type FilterValue = string | string[] | null | undefined;
 export const useFiltersQuery = create<SelectedFiltersState>((set, get) => ({

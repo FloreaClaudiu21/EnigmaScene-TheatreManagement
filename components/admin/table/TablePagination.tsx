@@ -7,6 +7,7 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
+import { setCookie } from "cookies-next";
 
 export function DataTablePagination<TData>({ table }: { table: Table<TData> }) {
 	return (
@@ -21,6 +22,7 @@ export function DataTablePagination<TData>({ table }: { table: Table<TData> }) {
 					value={`${table.getState().pagination.pageSize}`}
 					onValueChange={(value) => {
 						table.setPageSize(Number(value));
+						setCookie("tableSize", value);
 					}}
 				>
 					<SelectTrigger className="h-8 w-[70px]">

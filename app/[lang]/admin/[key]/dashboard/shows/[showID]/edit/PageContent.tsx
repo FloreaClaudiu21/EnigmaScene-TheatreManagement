@@ -8,19 +8,22 @@ import {
 	FormMessage,
 } from "@/components/ui/form";
 import { useToast } from "@/components/ui/use-toast";
-import { registerSchema } from "@/lib/schemas";
-import { Show, countryCodesArray } from "@/lib/types";
+import { createShowSchema } from "@/lib/schemas";
+import { Season, Show, ShowRoom, ShowType, TableTypes } from "@/lib/types";
+import { convertToLocalTime } from "@/lib/utils";
 import { useLoadingScreen } from "@/services/StateProvider";
-import { updateClient } from "@/services/admin/ClientsProvider";
+import { update } from "@/services/admin/ControlProvider";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Autocomplete, AutocompleteItem, Input } from "@nextui-org/react";
+import { getLocalTimeZone, now, parseDateTime } from "@internationalized/date";
+import { DateValue } from "@nextui-org/calendar";
+import { DatePicker } from "@nextui-org/date-picker";
 import {
-	EyeIcon,
-	EyeOffIcon,
-	MailIcon,
-	PhoneIcon,
-	SquareUserIcon,
-} from "lucide-react";
+	Autocomplete,
+	AutocompleteItem,
+	Input,
+	Textarea,
+} from "@nextui-org/react";
+import { PenIcon, PictureInPicture } from "lucide-react";
 import { useRouter } from "next-nprogress-bar";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -29,47 +32,56 @@ import { z } from "zod";
 export default function AdminShowEditPage({
 	params,
 	show,
+	seasons,
+	showRooms,
+	categories,
 }: {
 	params: any;
 	show: Show;
+	seasons: Season[];
+	showRooms: ShowRoom[];
+	categories: ShowType[];
 }) {
 	const router = useRouter();
 	const { toast } = useToast();
 	const loadingScreen = useLoadingScreen();
-	const [showPassRegister, setShowPassRegister] = useState(false);
-	const [showPassRegister2, setShowPassRegister2] = useState(false);
-	const form = useForm<z.infer<typeof registerSchema>>({
-		resolver: zodResolver(registerSchema),
+	const [valueEnd, setValueEnd] = useState<DateValue>(
+		parseDateTime(show.endTime.split(".")[0])
+	);
+	const [valueStart, setValueStart] = useState<DateValue>(
+		parseDateTime(show.startTime.split(".")[0])
+	);
+	const form = useForm<z.infer<typeof createShowSchema>>({
+		resolver: zodResolver(createShowSchema),
 		defaultValues: {
-			firstName: client.firstName,
-			lastName: client.lastName,
-			password: client.password,
-			rePassword: client.password,
-			email: client.email,
-			phone: client.phone.substring(3),
-			prefix: client.phone.substring(3, 0),
-			birthDate: client.birthDate,
-			terms: true,
+			actors: show.actors,
+			description: show.description,
+			description_en: show.description_en,
+			content: show.content,
+			content_en: show.content_en,
+			director: show.director,
+			showRoomId: show.showRoomId + "",
+			showTypeId: show.showTypeId + "",
+			seasonId: show.seasonId + "",
+			endTime: show.endTime,
+			startTime: show.startTime,
+			title: show.title,
+			title_en: show.title_en,
+			image: show.image,
 		},
 	});
-	async function onSubmit(values: z.infer<typeof registerSchema>) {
+	async function onSubmit(values: z.infer<typeof createShowSchema>) {
 		loadingScreen.setLoading(true);
-		const data = await updateClient(params.lang, {
-			email: values.email,
-			lastName: values.lastName,
-			password: values.password,
-			firstName: values.firstName,
-			phone: values.prefix + values.phone,
-			birthDate: values.birthDate,
-		});
+		const data = await update(params.lang, TableTypes.SHOW, values, show.id);
 		toast({
 			description: data.error,
-			title: "Account Editing",
+			title: "Show Editing",
 			variant: data.ok ? "default" : "destructive",
 		});
-		if (data.ok && data.client != undefined) {
-			router.push("../../clients");
+		if (data.ok) {
+			router.push("../../shows?tab=showsAll");
 			form.reset();
+			router.refresh();
 		}
 		loadingScreen.setLoading(false);
 	}
@@ -77,24 +89,46 @@ export default function AdminShowEditPage({
 		<NewOrEditContent
 			form={form}
 			onSubmit={onSubmit}
-			back_link="../../clients"
-			title={`Edit the user with ID #${params.clientID}`}
+			back_link="../../shows?tab=showsAll"
+			title={`Edit the show with ID #${show.id}`}
 			loading={loadingScreen.loading}
 		>
-			<div className="flex flex-row gap-2">
+			<FormField
+				control={form.control}
+				name="image"
+				render={({ field }) => (
+					<FormItem>
+						<FormLabel>Show Image*</FormLabel>
+						<FormControl>
+							<Input
+								radius="md"
+								variant="bordered"
+								required
+								endContent={
+									<PictureInPicture className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
+								}
+								{...field}
+							/>
+						</FormControl>
+						<FormMessage />
+					</FormItem>
+				)}
+			/>
+			<div className="flex flex-col md:flex-row gap-2">
 				<FormField
 					control={form.control}
-					name="firstName"
+					name="title"
 					render={({ field }) => (
-						<FormItem className="w-1/2">
-							<FormLabel>First Name*</FormLabel>
+						<FormItem className="w-full md:w-1/2">
+							<FormLabel>Title*</FormLabel>
 							<FormControl>
 								<Input
 									radius="md"
+									maxLength={100}
 									variant="bordered"
 									required
 									endContent={
-										<SquareUserIcon className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
+										<PenIcon className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
 									}
 									{...field}
 								/>
@@ -105,17 +139,18 @@ export default function AdminShowEditPage({
 				/>
 				<FormField
 					control={form.control}
-					name="lastName"
+					name="title_en"
 					render={({ field }) => (
-						<FormItem className="w-1/2">
-							<FormLabel>Last Name*</FormLabel>
+						<FormItem className="w-full md:w-1/2">
+							<FormLabel>Title EN*</FormLabel>
 							<FormControl>
 								<Input
 									radius="md"
+									maxLength={100}
 									variant="bordered"
 									required
 									endContent={
-										<SquareUserIcon className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
+										<PenIcon className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
 									}
 									{...field}
 								/>
@@ -125,52 +160,218 @@ export default function AdminShowEditPage({
 					)}
 				/>
 			</div>
-			<FormField
-				control={form.control}
-				name="email"
-				render={({ field }) => (
-					<FormItem>
-						<FormLabel>Email*</FormLabel>
-						<FormControl>
-							<Input
-								type="email"
-								radius="md"
-								variant="bordered"
-								required
-								endContent={
-									<MailIcon className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
-								}
-								{...field}
-							/>
-						</FormControl>
-						<FormMessage />
-					</FormItem>
-				)}
-			/>
-			<div className="flex flex-row gap-2">
+			<div className="flex flex-col md:flex-row gap-2">
 				<FormField
-					name="prefix"
 					control={form.control}
+					name="description"
 					render={({ field }) => (
-						<FormItem className="min-w-[140px]">
-							<FormLabel>Phone*</FormLabel>
+						<FormItem className="w-full md:w-1/2">
+							<FormLabel>Description*</FormLabel>
+							<FormControl>
+								<Textarea
+									radius="md"
+									variant="bordered"
+									maxLength={150}
+									required
+									endContent={
+										<PenIcon className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
+									}
+									{...field}
+								/>
+							</FormControl>
+							<FormMessage />
+						</FormItem>
+					)}
+				/>
+				<FormField
+					control={form.control}
+					name="description_en"
+					render={({ field }) => (
+						<FormItem className="w-full md:w-1/2">
+							<FormLabel>Description EN*</FormLabel>
+							<FormControl>
+								<Textarea
+									radius="md"
+									variant="bordered"
+									maxLength={150}
+									required
+									endContent={
+										<PenIcon className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
+									}
+									{...field}
+								/>
+							</FormControl>
+							<FormMessage />
+						</FormItem>
+					)}
+				/>
+			</div>
+			<div className="flex flex-col md:flex-row gap-2">
+				<FormField
+					control={form.control}
+					name="content"
+					render={({ field }) => (
+						<FormItem className="w-full md:w-1/2">
+							<FormLabel>Content*</FormLabel>
+							<FormControl>
+								<Textarea
+									radius="md"
+									variant="bordered"
+									maxLength={500}
+									required
+									endContent={
+										<PenIcon className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
+									}
+									{...field}
+								/>
+							</FormControl>
+							<FormMessage />
+						</FormItem>
+					)}
+				/>
+				<FormField
+					control={form.control}
+					name="content_en"
+					render={({ field }) => (
+						<FormItem className="w-full md:w-1/2">
+							<FormLabel>Content EN*</FormLabel>
+							<FormControl>
+								<Textarea
+									radius="md"
+									variant="bordered"
+									maxLength={500}
+									required
+									endContent={
+										<PenIcon className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
+									}
+									{...field}
+								/>
+							</FormControl>
+							<FormMessage />
+						</FormItem>
+					)}
+				/>
+			</div>
+			<div className="flex flex-col md:flex-row gap-2">
+				<FormField
+					control={form.control}
+					name="actors"
+					render={({ field }) => (
+						<FormItem className="w-full md:w-1/2">
+							<FormLabel>Actors (Use comma to separate values)*</FormLabel>
+							<FormControl>
+								<Input
+									radius="md"
+									variant="bordered"
+									maxLength={200}
+									required
+									endContent={
+										<PenIcon className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
+									}
+									{...field}
+								/>
+							</FormControl>
+							<FormMessage />
+						</FormItem>
+					)}
+				/>
+				<FormField
+					control={form.control}
+					name="director"
+					render={({ field }) => (
+						<FormItem className="w-full md:w-1/2">
+							<FormLabel>Director*</FormLabel>
+							<FormControl>
+								<Input
+									radius="md"
+									variant="bordered"
+									maxLength={150}
+									required
+									endContent={
+										<PenIcon className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
+									}
+									{...field}
+								/>
+							</FormControl>
+							<FormMessage />
+						</FormItem>
+					)}
+				/>
+			</div>
+			<div className="flex flex-col md:flex-row gap-2">
+				<FormField
+					control={form.control}
+					name="startTime"
+					render={({ field }) => (
+						<FormItem className="w-full md:w-1/2">
+							<FormLabel>Start Date & Time*</FormLabel>
+							<FormControl>
+								<DatePicker
+									fullWidth
+									hideTimeZone
+									radius="md"
+									variant="bordered"
+									value={valueStart}
+									showMonthAndYearPickers
+									pageBehavior="single"
+									onChange={(e) => {
+										setValueStart(e);
+										field.onChange(convertToLocalTime(e));
+									}}
+									minValue={now(getLocalTimeZone()).subtract({ minutes: 1 })}
+								/>
+							</FormControl>
+							<FormMessage />
+						</FormItem>
+					)}
+				/>
+				<FormField
+					control={form.control}
+					name="endTime"
+					render={({ field }) => (
+						<FormItem className="w-full md:w-1/2">
+							<FormLabel>End Date & Time*</FormLabel>
+							<FormControl>
+								<DatePicker
+									fullWidth
+									hideTimeZone
+									radius="md"
+									variant="bordered"
+									value={valueEnd}
+									showMonthAndYearPickers
+									pageBehavior="single"
+									onChange={(e) => {
+										setValueEnd(e);
+										field.onChange(convertToLocalTime(e));
+									}}
+									minValue={now(getLocalTimeZone()).subtract({ minutes: 1 })}
+								/>
+							</FormControl>
+							<FormMessage />
+						</FormItem>
+					)}
+				/>
+			</div>
+			<div className="flex flex-col md:flex-row gap-2">
+				<FormField
+					control={form.control}
+					name="showRoomId"
+					render={({ field }) => (
+						<FormItem className="w-full md:w-1/2">
+							<FormLabel>Show Room*</FormLabel>
 							<FormControl>
 								<Autocomplete
 									radius="md"
-									label="Prefix"
+									label="Rooms"
 									variant="bordered"
 									onSelectionChange={field.onChange}
-									defaultInputValue={client.phone.substring(3, 0)}
+									defaultSelectedKey={show.showRoomId}
 									{...field}
 								>
-									{countryCodesArray.map((array, index) => {
+									{showRooms.map((room, index) => {
 										return (
-											<AutocompleteItem
-												className="px-0"
-												value={array[1]}
-												key={array[1]}
-											>
-												{array[1]}
+											<AutocompleteItem value={room.id} key={room.id}>
+												{index + 1 + ". " + room.number}
 											</AutocompleteItem>
 										);
 									})}
@@ -181,21 +382,28 @@ export default function AdminShowEditPage({
 					)}
 				/>
 				<FormField
-					name="phone"
 					control={form.control}
+					name="seasonId"
 					render={({ field }) => (
-						<FormItem className="w-full mt-8">
+						<FormItem className="w-full md:w-1/2">
+							<FormLabel>Show Season*</FormLabel>
 							<FormControl>
-								<Input
-									type="phone"
+								<Autocomplete
 									radius="md"
+									label="Seasons"
 									variant="bordered"
-									required
-									endContent={
-										<PhoneIcon className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
-									}
+									onSelectionChange={field.onChange}
+									defaultSelectedKey={show.seasonId}
 									{...field}
-								/>
+								>
+									{seasons.map((season, index) => {
+										return (
+											<AutocompleteItem value={season.id} key={season.id}>
+												{index + 1 + ". " + season.name + "|" + season.name_en}
+											</AutocompleteItem>
+										);
+									})}
+								</Autocomplete>
 							</FormControl>
 							<FormMessage />
 						</FormItem>
@@ -203,98 +411,33 @@ export default function AdminShowEditPage({
 				/>
 			</div>
 			<FormField
-				name="birthDate"
 				control={form.control}
+				name="showTypeId"
 				render={({ field }) => (
 					<FormItem>
-						<FormLabel>Birth Date*</FormLabel>
+						<FormLabel>Show Category*</FormLabel>
 						<FormControl>
-							<Input
+							<Autocomplete
 								radius="md"
-								type="date"
+								label="Category"
 								variant="bordered"
-								required
+								onSelectionChange={field.onChange}
+								defaultSelectedKey={show.showTypeId}
 								{...field}
-							/>
+							>
+								{categories.map((cat, index) => {
+									return (
+										<AutocompleteItem value={cat.id} key={cat.id}>
+											{index + 1 + ". " + cat.name + "|" + cat.name_en}
+										</AutocompleteItem>
+									);
+								})}
+							</Autocomplete>
 						</FormControl>
 						<FormMessage />
 					</FormItem>
 				)}
 			/>
-			<div className="flex flex-row gap-2">
-				<FormField
-					name="password"
-					control={form.control}
-					render={({ field }) => (
-						<FormItem className="w-full">
-							<FormLabel>Password*</FormLabel>
-							<FormControl>
-								<Input
-									required
-									radius="md"
-									endContent={
-										!showPassRegister ? (
-											<EyeIcon
-												onClick={() => {
-													setShowPassRegister(true);
-												}}
-												className="text-2xl text-default-400 flex-shrink-0 hover:cursor-pointer"
-											/>
-										) : (
-											<EyeOffIcon
-												onClick={() => {
-													setShowPassRegister(false);
-												}}
-												className="text-2xl text-default-400 flex-shrink-0 hover:cursor-pointer"
-											/>
-										)
-									}
-									type={showPassRegister ? "text" : "password"}
-									variant="bordered"
-									{...field}
-								/>
-							</FormControl>
-							<FormMessage />
-						</FormItem>
-					)}
-				/>
-				<FormField
-					name="rePassword"
-					control={form.control}
-					render={({ field }) => (
-						<FormItem className="w-full">
-							<FormLabel>Confirm Password*</FormLabel>
-							<FormControl>
-								<Input
-									required
-									radius="md"
-									endContent={
-										!showPassRegister2 ? (
-											<EyeIcon
-												onClick={() => {
-													setShowPassRegister2(true);
-												}}
-												className="text-2xl text-default-400 flex-shrink-0 hover:cursor-pointer"
-											/>
-										) : (
-											<EyeOffIcon
-												onClick={() => {
-													setShowPassRegister2(false);
-												}}
-												className="text-2xl text-default-400 flex-shrink-0 hover:cursor-pointer"
-											/>
-										)
-									}
-									type={showPassRegister2 ? "text" : "password"}
-									variant="bordered"
-									{...field}
-								/>
-							</FormControl>
-							<FormMessage />
-						</FormItem>
-					)}
-				/>
-			</div>
 		</NewOrEditContent>
 	);
 }

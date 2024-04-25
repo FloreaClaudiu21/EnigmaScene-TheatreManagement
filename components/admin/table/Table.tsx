@@ -1,5 +1,5 @@
 "use client";
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
 	DropdownMenu,
 	DropdownMenuCheckboxItem,
@@ -52,13 +52,10 @@ import { usePathname, useRouter } from "next/navigation";
 import { DataTablePagination } from "./TablePagination";
 import { useToast } from "@/components/ui/use-toast";
 import { TableTypes } from "@/lib/types";
-import { deleteClient } from "@/services/admin/ClientsProvider";
 import { CircularProgress } from "@nextui-org/react";
-import {
-	deleteCategory,
-	deleteDistribution,
-	deleteSeason,
-} from "@/services/admin/ShowsProvider";
+import { remove } from "@/services/admin/ControlProvider";
+import { useRaportModal } from "@/services/StateProvider";
+import { getCookie } from "cookies-next";
 
 type FilterMap = {
 	label: string;
@@ -91,11 +88,13 @@ export default function DataTable({
 	const router = useRouter();
 	const { toast } = useToast();
 	const pathName = usePathname();
+	const raportModal = useRaportModal();
 	const [date, setDate] = useState<DateRange | undefined>({
 		from: new Date("01.01.2024"),
 		to: new Date(),
 	});
 	const [loading, setLoading] = useState(false);
+	const pageSize = getCookie("tableSize") ?? "10";
 	const [rowSelection, setRowSelection] = useState({});
 	const [sorting, setSorting] = useState<SortingState>([]);
 	const [selectedFilter, setSelectedFilter] = useState(filters[0]);
@@ -125,6 +124,9 @@ export default function DataTable({
 			rowSelection,
 		},
 	});
+	useEffect(() => {
+		table.setPageSize(parseInt(pageSize));
+	}, [pageSize]);
 	const deleteMultiple = async () => {
 		setLoading(true);
 		const selectedRows = table.getSelectedRowModel().rows;
@@ -139,20 +141,7 @@ export default function DataTable({
 		const promises = table.getSelectedRowModel().rows.map(async (v) => {
 			const rowOriginal = v.original;
 			const id = rowOriginal.id;
-			switch (type) {
-				case TableTypes.CLIENTS: {
-					return await deleteClient(params.lang, id);
-				}
-				case TableTypes.SHOWS_CATEGORY: {
-					return await deleteCategory(params.lang, id);
-				}
-				case TableTypes.SHOWS_DISTRIBUTION: {
-					return await deleteDistribution(params.lang, id);
-				}
-				case TableTypes.SHOWS_SEASON: {
-					return await deleteSeason(params.lang, id);
-				}
-			}
+			return await remove(params.lang, type, id);
 		});
 		const responses = await Promise.all(promises);
 		const errors = responses.filter((v) => !v?.ok);
@@ -200,7 +189,10 @@ export default function DataTable({
 									</span>
 								</Button>
 							</DropdownMenuTrigger>
-							<DropdownMenuContent align="end">
+							<DropdownMenuContent
+								align="end"
+								className="max-h-60 overflow-y-auto"
+							>
 								<DropdownMenuLabel>Search By</DropdownMenuLabel>
 								<DropdownMenuSeparator />
 								{filters.map((v) => {
@@ -224,6 +216,7 @@ export default function DataTable({
 							</DropdownMenuContent>
 						</DropdownMenu>
 						<Input
+							title={selectedFilter.label}
 							className="min-w-64 h-8 text-sm rounded-md"
 							placeholder={`Search by ${selectedFilter.label}...`}
 							value={
@@ -246,7 +239,10 @@ export default function DataTable({
 								Columns <ChevronDown className="ml-2 h-4 w-4" />
 							</Button>
 						</DropdownMenuTrigger>
-						<DropdownMenuContent align="end">
+						<DropdownMenuContent
+							align="end"
+							className="max-h-60 overflow-y-auto"
+						>
 							{table
 								.getAllColumns()
 								.filter((column) => column.getCanHide())
@@ -270,6 +266,10 @@ export default function DataTable({
 						size="sm"
 						variant="outline"
 						disabled={loading}
+						onClick={() => {
+							raportModal.setRaport(table);
+							raportModal.setVisible(true);
+						}}
 						className="h-8 gap-1 shadow-sm rounded-md hover:bg-yellow-100"
 					>
 						<File className="h-3.5 w-3.5" />
@@ -307,7 +307,7 @@ export default function DataTable({
 					)}
 				</div>
 			</div>
-			<div className="mt-4 flex flex-col h-full">
+			<div className="my-4 flex flex-col h-full">
 				<Card>
 					<CardHeader>
 						<CardTitle>{title}</CardTitle>
@@ -363,8 +363,8 @@ export default function DataTable({
 							</TableBody>
 						</Table>
 					</CardContent>
-					<CardFooter>
-						<div className="text-xs text-muted-foreground">
+					<CardFooter className="flex flex-col md:flex-row gap-1">
+						<div className="flex w-full md:w-auto place-items-start md:place-items-center text-xs text-muted-foreground text-left gap-1">
 							Showing{" "}
 							<strong>
 								{data.length > 0

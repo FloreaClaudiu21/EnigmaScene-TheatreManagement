@@ -51,9 +51,7 @@ export default function AddAdressModal({
 	const dict = langData.dictionary;
 	async function onSubmitAdd(values: z.infer<typeof addAddressFormSchema>) {
 		const userId =
-			addAddressModal.userId.length > 2
-				? addAddressModal.userId
-				: auth.user?.id ?? "";
+			addAddressModal.userId > 0 ? addAddressModal.userId : auth.user?.id ?? 0;
 		loadingScreen.setLoading(true);
 		const address = await addBillingAddress(userId, values);
 		if (!address) {
@@ -97,11 +95,12 @@ export default function AddAdressModal({
 			}}
 			isOpen={addAddressModal.visible}
 			classNames={{
+				wrapper: "!z-[99998]",
 				backdrop:
-					"bg-gradient-to-t from-zinc-900 to-zinc-900/10 backdrop-opacity-20",
+					"bg-gradient-to-t from-zinc-900 to-zinc-900/10 backdrop-opacity-20 !z-[99998]",
 			}}
 		>
-			<ModalContent className="overflow-y-auto !z-[99999] max-h-[90vh]">
+			<ModalContent className="overflow-y-auto max-h-[90vh]">
 				{(onClose) => (
 					<>
 						<ModalHeader className="flex flex-col gap-1 text-xl">

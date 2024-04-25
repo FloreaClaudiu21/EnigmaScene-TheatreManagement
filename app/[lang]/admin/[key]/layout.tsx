@@ -19,5 +19,5 @@ export default async function AdminKeyLayout({
 	if (params.key != process.env.ADMIN_KEY) {
 		return notFound();
 	}
-	return <div className="bg-muted/30">{children}</div>;
+	return <div className="bg-muted/80">{children}</div>;
 }

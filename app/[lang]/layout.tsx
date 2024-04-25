@@ -3,7 +3,10 @@ import AdminSignInModal from "@/components/admin/modals/SignInModal";
 import DictionaryProvider from "@/components/dictionary-provider";
 import AddAdressModal from "@/components/page/addAddressModal";
 import DeleteAddressModal from "@/components/page/deleteAddressModal";
-import InvoiceModal from "@/components/page/invoices/invoiceModal";
+import FiscalReceiptModal from "@/components/page/fiscalReceipts/FiscalReceiptModal";
+import InvoiceModal from "@/components/page/invoices/InvoiceModal";
+import RaportModal from "@/components/page/raports/RaportModal";
+import TicketModal from "@/components/page/ticket/TicketModal";
 import { generateDictionary } from "@/lib/dictionary";
 import React from "react";
 
@@ -20,7 +23,10 @@ export default async function LangLayout({
 			<DictionaryProvider dictionary={dict.dictionary}>
 				{children}
 			</DictionaryProvider>
+			<TicketModal langData={dict} />
 			<InvoiceModal langData={dict} />
+			<RaportModal langData={dict} />
+			<FiscalReceiptModal langData={dict} />
 			<AdminSignInModal langData={dict} />
 			<AddAdressModal langData={dict} />
 			<DeleteAddressModal langData={dict} />

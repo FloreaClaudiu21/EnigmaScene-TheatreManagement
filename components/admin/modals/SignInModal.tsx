@@ -27,9 +27,11 @@ import {
 	FormLabel,
 	FormMessage,
 } from "@/components/ui/form";
-import { LockIcon, MailIcon } from "lucide-react";
-import { useEffect, useState } from "react";
+import { EyeIcon, EyeOffIcon, MailIcon } from "lucide-react";
 import { getClientByEmail } from "@/services/general/AuthProvider";
+import { useEffect, useState } from "react";
+import { urlLink } from "@/lib/utils";
+import { usePathname } from "next/navigation";
 
 export default function AdminSignInModal({
 	langData,
@@ -38,12 +40,18 @@ export default function AdminSignInModal({
 }) {
 	const auth = useAuth();
 	const router = useRouter();
+	const pathname = usePathname();
 	const { toast } = useToast();
 	const loadingScreen = useLoadingScreen();
-	const [modalOpen, setModalOpen] = useState(false);
+	const [showPassLogin, setShowPassLogin] = useState(false);
 	const loginForm = useForm<z.infer<typeof loginFormSchema>>({
 		resolver: zodResolver(loginFormSchema),
 	});
+	useEffect(() => {
+		if (!auth.isLogged && !pathname.endsWith("/dashboard")) {
+			router.replace(urlLink(pathname));
+		}
+	}, [auth.isLogged]);
 	async function onLoginProvider(prov: string) {
 		deleteCookie("signInProviderLinkParams");
 		await signIn(prov, {
@@ -99,38 +107,35 @@ export default function AdminSignInModal({
 		}
 		loadingScreen.setLoading(false);
 	}
-	useEffect(() => {
-		if (auth.isLogged) return;
-		setTimeout(() => {
-			const modal = document.getElementsByClassName("modal-login")[0];
-			if (!modal) return;
-			modal.parentElement?.setAttribute("style", "z-index: 99998 !important;");
-		}, 100);
-	}, [auth.isLogged]);
 	return (
 		<Modal
 			radius="md"
 			backdrop="opaque"
-			isOpen={false}
+			isOpen={!auth.isLogged}
 			placement={"bottom-center"}
 			onOpenChange={() => {
 				document.body.style.overflowY = "auto";
 			}}
 			classNames={{
+				wrapper: "!z-[99998]",
 				backdrop:
-					"bg-gradient-to-t from-zinc-900 to-zinc-900/10 backdrop-opacity-20 z-[99997]",
+					"bg-gradient-to-t from-zinc-900 to-zinc-900/10 backdrop-opacity-20 !z-[99998]",
 			}}
 		>
-			<ModalContent className="modal-login z-[99998]">
+			<ModalContent>
 				{() => (
 					<>
-						<ModalHeader className="flex flex-col gap-1">
-							Sign In to Enigma Scene Theatre Admin Panel
+						<ModalHeader className="flex flex-col gap-1 text-center pb-1">
+							<p>
+								Sign In to{" "}
+								<span className="text-red-500">Enigma Scene Theatre</span>
+								<br /> Admin Panel
+							</p>
 						</ModalHeader>
 						<ModalBody>
 							<Form {...loginForm}>
 								<form
-									className="space-y-2"
+									className="space-y-2 border-t-1 py-2"
 									onSubmit={loginForm.handleSubmit(onSubmitLogin)}
 								>
 									<FormField
@@ -168,9 +173,23 @@ export default function AdminSignInModal({
 														radius="md"
 														placeholder="*******"
 														endContent={
-															<LockIcon className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
+															!showPassLogin ? (
+																<EyeIcon
+																	onClick={() => {
+																		setShowPassLogin(true);
+																	}}
+																	className="text-2xl text-default-400 flex-shrink-0 hover:cursor-pointer"
+																/>
+															) : (
+																<EyeOffIcon
+																	onClick={() => {
+																		setShowPassLogin(false);
+																	}}
+																	className="text-2xl text-default-400 flex-shrink-0 hover:cursor-pointer"
+																/>
+															)
 														}
-														type="password"
+														type={showPassLogin ? "text" : "password"}
 														variant="bordered"
 														{...field}
 													/>

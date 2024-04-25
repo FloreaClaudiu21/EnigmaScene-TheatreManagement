@@ -4,17 +4,20 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { urlLink } from "@/lib/utils";
 import {
 	ArmchairIcon,
+	BarChart3Icon,
 	CircleUserIcon,
 	DramaIcon,
 	FileArchiveIcon,
 	Home,
 	MenuIcon,
+	MoonIcon,
 	PaintRollerIcon,
 	PiggyBankIcon,
-	Settings,
 	StickyNoteIcon,
+	SunIcon,
 	TicketIcon,
 } from "lucide-react";
+import { useTheme } from "next-themes";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React from "react";
@@ -34,9 +37,9 @@ const MenuLinkAdmin = ({
 }) => {
 	const isActive = () => {
 		const pn = pathName.toLowerCase();
-		if (include === "dashboard" && pn.endsWith(include)) {
+		if (include === "dashboard" && pn.endsWith(include.toLowerCase())) {
 			return true;
-		} else if (include != "dashboard" && pn.includes(include)) {
+		} else if (include != "dashboard" && pn.includes(include.toLowerCase())) {
 			return true;
 		}
 		return false;
@@ -58,6 +61,7 @@ const MenuLinkAdmin = ({
 
 export default function HeaderMenuAdmin() {
 	const pathname = usePathname();
+	const theme = useTheme();
 	return (
 		<Sheet>
 			<SheetTrigger asChild>
@@ -65,10 +69,13 @@ export default function HeaderMenuAdmin() {
 					<MenuIcon className="h-5 w-5" />
 				</Button>
 			</SheetTrigger>
-			<SheetContent side="left" className="sm:max-w-xs overflow-y-auto">
+			<SheetContent
+				side="left"
+				className="sm:max-w-xs overflow-y-auto z-[9999]"
+			>
 				<nav className="grid gap-6 text-lg font-medium">
 					<MenuLinkAdmin
-						icon={<Home size={20} />}
+						icon={<BarChart3Icon size={20} />}
 						include="dashboard"
 						pathName={pathname}
 						title="Dashboard"
@@ -130,13 +137,20 @@ export default function HeaderMenuAdmin() {
 						title="Invoices"
 						url={urlLink(pathname) + "invoices"}
 					/>
-					<MenuLinkAdmin
-						icon={<Settings size={20} />}
-						include="settings"
-						pathName={pathname}
-						title="Settings"
-						url={urlLink(pathname) + "settings"}
-					/>
+					<Button
+						variant="outline"
+						onClick={() =>
+							theme.setTheme(theme.theme === "light" ? "dark" : "light")
+						}
+						className={`flex gap-2 items-center justify-center rounded-md text-muted-foreground hover:text-foreground transition-colors`}
+					>
+						{theme.theme === "light" ? (
+							<MoonIcon size={20} />
+						) : (
+							<SunIcon size={20} />
+						)}
+						Toggle Theme
+					</Button>
 				</nav>
 			</SheetContent>
 		</Sheet>

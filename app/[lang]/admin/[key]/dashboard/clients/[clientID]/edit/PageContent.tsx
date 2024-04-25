@@ -9,9 +9,9 @@ import {
 } from "@/components/ui/form";
 import { useToast } from "@/components/ui/use-toast";
 import { registerSchema } from "@/lib/schemas";
-import { countryCodesArray } from "@/lib/types";
+import { TableTypes, countryCodesArray } from "@/lib/types";
 import { useLoadingScreen } from "@/services/StateProvider";
-import { updateClient } from "@/services/admin/ClientsProvider";
+import { update } from "@/services/admin/ControlProvider";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Autocomplete, AutocompleteItem, Input } from "@nextui-org/react";
 import {
@@ -55,22 +55,28 @@ export default function AdminClientEdit({
 	});
 	async function onSubmit(values: z.infer<typeof registerSchema>) {
 		loadingScreen.setLoading(true);
-		const data = await updateClient(params.lang, {
-			email: values.email,
-			lastName: values.lastName,
-			password: values.password,
-			firstName: values.firstName,
-			phone: values.prefix + values.phone,
-			birthDate: values.birthDate,
-		});
+		const data = await update(
+			params.lang,
+			TableTypes.CLIENT,
+			{
+				email: values.email,
+				lastName: values.lastName,
+				password: values.password,
+				firstName: values.firstName,
+				phone: values.prefix + values.phone,
+				birthDate: values.birthDate,
+			},
+			client.id
+		);
 		toast({
 			description: data.error,
 			title: "Account Editing",
 			variant: data.ok ? "default" : "destructive",
 		});
-		if (data.ok && data.client != undefined) {
+		if (data.ok) {
 			router.push("../../clients");
 			form.reset();
+			router.refresh();
 		}
 		loadingScreen.setLoading(false);
 	}
@@ -82,12 +88,12 @@ export default function AdminClientEdit({
 			title={`Edit the user with ID #${params.clientID}`}
 			loading={loadingScreen.loading}
 		>
-			<div className="flex flex-row gap-2">
+			<div className="flex flex-col md:flex-row gap-2">
 				<FormField
 					control={form.control}
 					name="firstName"
 					render={({ field }) => (
-						<FormItem className="w-1/2">
+						<FormItem className="w-full md:w-1/2">
 							<FormLabel>First Name*</FormLabel>
 							<FormControl>
 								<Input
@@ -108,7 +114,7 @@ export default function AdminClientEdit({
 					control={form.control}
 					name="lastName"
 					render={({ field }) => (
-						<FormItem className="w-1/2">
+						<FormItem className="w-full md:w-1/2">
 							<FormLabel>Last Name*</FormLabel>
 							<FormControl>
 								<Input
@@ -222,7 +228,7 @@ export default function AdminClientEdit({
 					</FormItem>
 				)}
 			/>
-			<div className="flex flex-row gap-2">
+			<div className="flex flex-col md:flex-row gap-2">
 				<FormField
 					name="password"
 					control={form.control}

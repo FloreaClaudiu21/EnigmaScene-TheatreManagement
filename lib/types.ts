@@ -3,14 +3,20 @@ import { PaymentStatus, PaymentType } from "@prisma/client";
 import { Locale } from "@/i18n.config";
 
 export enum TableTypes {
-	CLIENTS,
-	SHOWS,
-	SHOWS_CATEGORY,
-	SHOWS_SEASON,
-	SHOWS_DISTRIBUTION,
-	TICKETS,
-	MATERIALS,
-	INVOICES,
+	CLIENT = "Client",
+	SHOW = "Show",
+	SHOW_CATEGORY = "Show Category",
+	SHOW_SEASON = "Show Season",
+	SHOWROOM = "Show Room",
+	SHOWROOM_SEAT = "Show Room Seat",
+	TICKET_SOLD = "Ticket",
+	TICKET_VERIFIED = "Ticket Verified",
+	MATERIAL = "Decoration Material",
+	MATERIAL_USED = "Decoration Material Used",
+	MATERIAL_CATEGORY = "Decoration Material Category",
+	PAYMENT = "Payment",
+	FISCAL_RECEIPT = "Fiscal Receipt",
+	INVOICE = "Invoice",
 }
 
 export type BuySession = {
@@ -1015,7 +1021,7 @@ export type PartialClient = {
 };
 
 export type Provider = {
-	id: string;
+	id: number;
 	name: string;
 	linkedWith: string;
 	createdAt: Date;
@@ -1028,7 +1034,7 @@ export type Provider = {
 };
 
 export type BillingAddress = {
-	id: string;
+	id: number;
 	country: string;
 	city: string;
 	address: string;
@@ -1038,7 +1044,7 @@ export type BillingAddress = {
 };
 
 export type ExchangeRate = {
-	id: string;
+	id: number;
 	currency: string;
 	value: number;
 	multiplier: number;
@@ -1047,45 +1053,40 @@ export type ExchangeRate = {
 };
 
 export type Show = {
-	id: string;
-	date: Date;
+	id: number;
 	image: string;
 	title: string;
 	title_en: string;
+	startTime: string;
+	endTime: string;
+	director: string;
+	actors: string;
 	createdAt: Date;
 	updatedAt: Date;
 	description_en: string;
 	description: string;
-	distributionId: string;
-	distribution: Distribution;
-	seasonId: string;
+	content: string;
+	content_en: string;
+	seasonId: number;
 	season: Season;
-	showTypeId: string;
+	showTypeId: number;
 	showType: ShowType;
 	showRoom?: ShowRoom;
-	showRoomId: string;
+	showRoomId: number;
 	favorites?: ShowFavorite[] | null;
 	ticketsSold?: TicketSold[] | null;
 	materials?: ShowMaterialDecorationUsed[] | null;
+	fiscalReceipts?: FiscalReceipt[] | null;
 };
 
 export type ShowFavorite = {
-	id: string;
+	id: number;
 	show?: Show;
 	client: Client;
 };
 
-export type Distribution = {
-	id: string;
-	name: string;
-	name_en: string;
-	createdAt: Date;
-	updatedAt: Date;
-	shows?: Show[] | null;
-};
-
 export type ShowType = {
-	id: string;
+	id: number;
 	name: string;
 	name_en: string;
 	createdAt: Date;
@@ -1094,7 +1095,7 @@ export type ShowType = {
 };
 
 export type Season = {
-	id: string;
+	id: number;
 	name: string;
 	name_en: string;
 	createdAt: Date;
@@ -1103,7 +1104,7 @@ export type Season = {
 };
 
 export type ShowRoom = {
-	id: string;
+	id: number;
 	number: string;
 	createdAt: Date;
 	updatedAt: Date;
@@ -1113,8 +1114,10 @@ export type ShowRoom = {
 };
 
 export type ShowRoomSeat = {
-	id: string;
-	showRoomId: string;
+	id: number;
+	row: string;
+	number: string;
+	showRoomId: number;
 	showRoom?: ShowRoom | null;
 	type: string;
 	price: number;
@@ -1123,29 +1126,48 @@ export type ShowRoomSeat = {
 	ticketsSold?: TicketSold[] | null;
 };
 
+export enum ShowRoomSeatCategory {
+	STANDARD = "Standard",
+	PREMIUM = "Premium",
+	VIP = "VIP",
+}
+
+export const seatCategories: ShowRoomSeatCategory[] = [
+	ShowRoomSeatCategory.STANDARD,
+	ShowRoomSeatCategory.PREMIUM,
+	ShowRoomSeatCategory.VIP,
+];
+
 export type TicketSold = {
-	id: string;
+	id: number;
+	number: string;
+	showId: number;
 	show?: Show | null;
+	clientId: number;
 	client?: Client | null;
+	showRoomId: number;
 	showRoom?: ShowRoom | null;
+	seatId: number;
 	seat?: ShowRoomSeat | null;
 	soldPrice: number;
 	createdAt: Date;
 	updatedAt: Date;
-	ticketsVerified?: TicketVerified[] | null;
+	ticketVerified?: TicketVerified | null;
 	payment?: Payment | null;
 	invoice?: Invoice | null;
+	fiscalReceipt?: FiscalReceipt | null;
 };
 
 export type TicketVerified = {
-	id: string;
+	id: number;
 	verifiedAt: Date;
 	updatedAt: Date;
+	ticketSoldId: number;
 	ticketSold?: TicketSold | null;
 };
 
 export type Payment = {
-	id: string;
+	id: number;
 	amount: number;
 	currency: string;
 	currencyAmount: number;
@@ -1155,13 +1177,38 @@ export type Payment = {
 	type: PaymentType;
 	createdAt: Date;
 	updatedAt: Date;
+	clientId: number;
 	client?: Client | null;
+	ticketId?: number | null;
 	ticket?: TicketSold | null;
+	invoice?: Invoice | null;
+	fiscalReceipt?: FiscalReceipt | null;
+};
+
+export type FiscalReceipt = {
+	id: number;
+	receiptNumber: string;
+	receiptSeries: string;
+	amount: number;
+	currency: string;
+	currencyAmount: number;
+	currencyDate: Date;
+	paidAt: Date;
+	showId: number;
+	show?: Show | null;
+	createdAt: Date;
+	updatedAt: Date;
+	paymentId: number;
+	payment?: Payment | null;
+	ticket?: TicketSold | null;
+	ticketId?: number | null;
+	clientId: number;
+	client?: Client | null;
 	invoice?: Invoice | null;
 };
 
 export type Invoice = {
-	id: string;
+	id: number;
 	billingAddress: string;
 	firstName: string;
 	lastName: string;
@@ -1180,28 +1227,34 @@ export type Invoice = {
 	status: string;
 	createdAt: Date;
 	updatedAt: Date;
+	paymentId: number;
+	fiscalReceiptId: number;
+	clientId: number;
+	ticketId?: number | null;
 	client?: Client | null;
 	ticket?: TicketSold | null;
 	payment?: Payment | null;
+	fiscalReceipt?: FiscalReceipt | null;
 };
 
 export type ShowMaterialDecoration = {
-	id: string;
+	id: number;
 	name: string;
 	name_en: string;
+	unit: string;
 	stock: number;
-	buyDate: Date;
+	buyDate: string;
 	buyPrice: number;
 	producer: string;
-	categoryId: string;
+	categoryId: number;
 	createdAt: Date;
 	updatedAt: Date;
 	category?: ShowMaterialDecorationCategory | null;
-	materials?: ShowMaterialDecorationUsed[] | null;
+	materialsUsed?: ShowMaterialDecorationUsed[] | null;
 };
 
 export type ShowMaterialDecorationCategory = {
-	id: string;
+	id: number;
 	name: string;
 	name_en: string;
 	createdAt: Date;
@@ -1210,11 +1263,12 @@ export type ShowMaterialDecorationCategory = {
 };
 
 export type ShowMaterialDecorationUsed = {
-	id: string;
-	materialId: string;
+	id: number;
+	materialId: number;
 	material?: ShowMaterialDecoration | null;
+	showId: number;
 	show?: Show | null;
-	usedDate: Date;
+	usedDate: string;
 	quantity: number;
 	leftQuantity: number;
 	createdAt: Date;
@@ -1243,3 +1297,5 @@ export enum ActionRating {
 	CREATE,
 	DELETE,
 }
+
+export const paymentTypesList = Object.values(PaymentType);

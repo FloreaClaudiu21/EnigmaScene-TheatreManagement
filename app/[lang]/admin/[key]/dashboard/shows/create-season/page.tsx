@@ -9,8 +9,9 @@ import {
 } from "@/components/ui/form";
 import { useToast } from "@/components/ui/use-toast";
 import { createShowSeason } from "@/lib/schemas";
+import { TableTypes } from "@/lib/types";
 import { useLoadingScreen } from "@/services/StateProvider";
-import { createSeason } from "@/services/admin/ShowsProvider";
+import { insert } from "@/services/admin/ControlProvider";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@nextui-org/react";
 import { PenIcon } from "lucide-react";
@@ -28,7 +29,7 @@ export default function AdminSeasonNew({ params }: { params: any }) {
 	});
 	async function onSubmit(values: z.infer<typeof createShowSeason>) {
 		loadingScreen.setLoading(true);
-		const data = await createSeason(params.lang, values);
+		const data = await insert(params.lang, TableTypes.SHOW_SEASON, values);
 		toast({
 			description: data.error,
 			title: "Show Season Registration",
@@ -49,17 +50,18 @@ export default function AdminSeasonNew({ params }: { params: any }) {
 			title={"Add a new show season"}
 			loading={loadingScreen.loading}
 		>
-			<div className="flex flex-row gap-2">
+			<div className="flex flex-col md:flex-row gap-2">
 				<FormField
 					control={form.control}
 					name="name"
 					render={({ field }) => (
-						<FormItem className="w-1/2">
+						<FormItem className="w-full md:w-1/2">
 							<FormLabel>Name*</FormLabel>
 							<FormControl>
 								<Input
 									radius="md"
 									variant="bordered"
+									maxLength={100}
 									required
 									endContent={
 										<PenIcon className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
@@ -75,12 +77,13 @@ export default function AdminSeasonNew({ params }: { params: any }) {
 					control={form.control}
 					name="name_en"
 					render={({ field }) => (
-						<FormItem className="w-1/2">
+						<FormItem className="w-full md:w-1/2">
 							<FormLabel>Name English*</FormLabel>
 							<FormControl>
 								<Input
 									radius="md"
 									variant="bordered"
+									maxLength={100}
 									required
 									endContent={
 										<PenIcon className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />

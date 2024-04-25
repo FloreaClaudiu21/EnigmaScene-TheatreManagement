@@ -1,18 +1,19 @@
-import { prisma } from "@/lib/prismaClient";
 import { notFound } from "next/navigation";
 import React from "react";
-import AdminCarBrandEdit from "./PageContent";
+import AdminShowRoomEdit from "./PageContent";
+import { getShowRoomById } from "@/services/admin/ControlProvider";
+import { isNumeric } from "@/lib/utils";
 
-export default async function AdminUserEditPage({ params }: { params: any }) {
-	const id = params.carBrandID;
+export default async function AdminShowRoomPageEdit({
+	params,
+}: {
+	params: any;
+}) {
+	let id = params.showRoomID;
 	if (!id) return notFound();
-	const brand = await prisma.carBrand.findFirst({
-		where: {
-			id,
-		},
-	});
-	if (!brand) {
-		return notFound();
-	}
-	return <AdminCarBrandEdit brand={brand} params={params} />;
+	if (!isNumeric(id)) return notFound();
+	id = parseInt(id);
+	const showRoom = await getShowRoomById(id);
+	if (!showRoom) return notFound();
+	return <AdminShowRoomEdit params={params} showRoom={showRoom} />;
 }

@@ -177,7 +177,7 @@ export const existsAccountProvider = async (
 export const deleteMainAccountProvider = async (
 	lang: Locale,
 	email: string,
-	providerId: string
+	providerId: number
 ) => {
 	const { dictionary } = await makeDictionaryBE(lang);
 	try {
@@ -229,7 +229,7 @@ export const deleteMainAccountProvider = async (
 export const deleteAccountProvider = async (
 	lang: Locale,
 	email: string,
-	providerId: string
+	providerId: number
 ) => {
 	const { dictionary } = await makeDictionaryBE(lang);
 	try {

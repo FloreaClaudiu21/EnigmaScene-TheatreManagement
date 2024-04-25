@@ -9,9 +9,9 @@ import {
 } from "@/components/ui/form";
 import { useToast } from "@/components/ui/use-toast";
 import { registerSchema } from "@/lib/schemas";
-import { countryCodesArray } from "@/lib/types";
+import { TableTypes, countryCodesArray } from "@/lib/types";
 import { useLoadingScreen } from "@/services/StateProvider";
-import { createClient } from "@/services/admin/ClientsProvider";
+import { insert } from "@/services/admin/ControlProvider";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Autocomplete, AutocompleteItem, Input } from "@nextui-org/react";
 import {
@@ -40,7 +40,7 @@ export default function AdminClientNew({ params }: { params: any }) {
 	const [showPassRegister2, setShowPassRegister2] = useState(false);
 	async function onSubmit(values: z.infer<typeof registerSchema>) {
 		loadingScreen.setLoading(true);
-		const data = await createClient(params.lang, {
+		const data = await insert(params.lang, TableTypes.CLIENT, {
 			email: values.email,
 			lastName: values.lastName,
 			password: values.password,
@@ -53,7 +53,7 @@ export default function AdminClientNew({ params }: { params: any }) {
 			title: "Client Registration",
 			variant: data.ok ? "default" : "destructive",
 		});
-		if (data.ok && data.client != undefined) {
+		if (data.ok) {
 			router.push("../clients");
 			form.reset();
 			router.refresh();
@@ -68,12 +68,12 @@ export default function AdminClientNew({ params }: { params: any }) {
 			title={"Add a new client"}
 			loading={loadingScreen.loading}
 		>
-			<div className="flex flex-row gap-2">
+			<div className="flex flex-col md:flex-row gap-2">
 				<FormField
 					control={form.control}
 					name="firstName"
 					render={({ field }) => (
-						<FormItem className="w-1/2">
+						<FormItem className="w-full md:w-1/2">
 							<FormLabel>First Name*</FormLabel>
 							<FormControl>
 								<Input
@@ -94,7 +94,7 @@ export default function AdminClientNew({ params }: { params: any }) {
 					control={form.control}
 					name="lastName"
 					render={({ field }) => (
-						<FormItem className="w-1/2">
+						<FormItem className="w-full md:w-1/2">
 							<FormLabel>Last Name*</FormLabel>
 							<FormControl>
 								<Input
@@ -207,7 +207,7 @@ export default function AdminClientNew({ params }: { params: any }) {
 					</FormItem>
 				)}
 			/>
-			<div className="flex flex-row gap-2">
+			<div className="flex flex-col md:flex-row gap-2">
 				<FormField
 					name="password"
 					control={form.control}

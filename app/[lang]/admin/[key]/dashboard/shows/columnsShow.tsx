@@ -8,7 +8,7 @@ import {
 } from "@/components/admin/table/ColumnSelect";
 import { Show, TableTypes } from "@/lib/types";
 import ColumnCellActions from "@/components/admin/table/ColumnCellActions";
-import { Listbox, ListboxItem } from "@nextui-org/react";
+import { Image, Listbox, ListboxItem } from "@nextui-org/react";
 
 const MatDecorationList = ({ show }: { show: Show }) => {
 	return (
@@ -53,10 +53,26 @@ export const columnsShow: ColumnDef<Show>[] = [
 		cell: ({ row }) => {
 			return (
 				<ColumnCellActions
-					type={TableTypes.SHOWS}
+					type={TableTypes.SHOW}
 					deleteId={row.original.id}
 					link_edit={"shows/" + row.original.id + "/edit"}
 				/>
+			);
+		},
+		enableSorting: false,
+	},
+	{
+		id: "photo",
+		cell: ({ row: { original } }) => {
+			return (
+				<div className="min-w-48 min-h-24 !pr-0">
+					<Image
+						height={96}
+						alt="No Photo"
+						src={original.image}
+						className="w-full h-24 object-contain rounded-sm"
+					/>
+				</div>
 			);
 		},
 		enableSorting: false,
@@ -108,6 +124,24 @@ export const columnsShow: ColumnDef<Show>[] = [
 		},
 	},
 	{
+		accessorKey: "content",
+		header: ({ column }) => {
+			return <ColumnHeader column={column} title="Content" />;
+		},
+		cell: ({ row: { original } }) => {
+			return <ColumnCell data={original.content} />;
+		},
+	},
+	{
+		accessorKey: "content_en",
+		header: ({ column }) => {
+			return <ColumnHeader column={column} title="Content EN" />;
+		},
+		cell: ({ row: { original } }) => {
+			return <ColumnCell data={original.content_en} />;
+		},
+	},
+	{
 		accessorKey: "image",
 		header: ({ column }) => {
 			return <ColumnHeader column={column} title="Show Picture" />;
@@ -117,13 +151,24 @@ export const columnsShow: ColumnDef<Show>[] = [
 		},
 	},
 	{
-		accessorKey: "date",
+		accessorKey: "startTime",
 		header: ({ column }) => {
-			return <ColumnHeader column={column} title="Show Date" />;
+			return <ColumnHeader column={column} title="Start Time & Date" />;
 		},
 		cell: ({ row }) => {
 			const show = row.original;
-			const theDate = show.date.toUTCString();
+			const theDate = show.startTime.replace("T", " ").split(".")[0];
+			return <ColumnCell data={theDate} />;
+		},
+	},
+	{
+		accessorKey: "endTime",
+		header: ({ column }) => {
+			return <ColumnHeader column={column} title="End Time & Date" />;
+		},
+		cell: ({ row }) => {
+			const show = row.original;
+			const theDate = show.endTime.replace("T", " ").split(".")[0];
 			return <ColumnCell data={theDate} />;
 		},
 	},
@@ -134,6 +179,33 @@ export const columnsShow: ColumnDef<Show>[] = [
 		},
 		cell: ({ row: { original } }) => {
 			return <ColumnCell data={original.ticketsSold?.length} />;
+		},
+	},
+	{
+		accessorKey: "ticketsAvailable",
+		header: ({ column }) => {
+			return <ColumnHeader column={column} title="Tickets Available" />;
+		},
+		cell: ({ row: { original } }) => {
+			return <ColumnCell data={original.showRoom?.seats?.length} />;
+		},
+	},
+	{
+		accessorKey: "showRoomId",
+		header: ({ column }) => {
+			return <ColumnHeader column={column} title="Show Room Id" />;
+		},
+		cell: ({ row: { original } }) => {
+			return <ColumnCell data={original.showRoomId} />;
+		},
+	},
+	{
+		accessorKey: "showRoomName",
+		header: ({ column }) => {
+			return <ColumnHeader column={column} title="Show Room Name" />;
+		},
+		cell: ({ row: { original } }) => {
+			return <ColumnCell data={original.showRoom?.number} />;
 		},
 	},
 	{
@@ -188,33 +260,6 @@ export const columnsShow: ColumnDef<Show>[] = [
 		},
 		cell: ({ row: { original } }) => {
 			return <ColumnCell data={original.showType.name_en} />;
-		},
-	},
-	{
-		accessorKey: "distributionId",
-		header: ({ column }) => {
-			return <ColumnHeader column={column} title="Distribution Id" />;
-		},
-		cell: ({ row: { original } }) => {
-			return <ColumnCell data={original.distribution.id} />;
-		},
-	},
-	{
-		accessorKey: "distribution",
-		header: ({ column }) => {
-			return <ColumnHeader column={column} title="Distribution" />;
-		},
-		cell: ({ row: { original } }) => {
-			return <ColumnCell data={original.distribution.name} />;
-		},
-	},
-	{
-		accessorKey: "distribution_en",
-		header: ({ column }) => {
-			return <ColumnHeader column={column} title="Distribution EN" />;
-		},
-		cell: ({ row: { original } }) => {
-			return <ColumnCell data={original.distribution.name_en} />;
 		},
 	},
 	{

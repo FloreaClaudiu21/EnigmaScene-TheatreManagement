@@ -36,7 +36,7 @@ const InvoicePrintPaper: React.FC<{
           }
         `}
 			</style>
-			<div className="flex flex-col w-[210mm] max-w-[210mm] h-[297mm] invoice-bg">
+			<div className="flex flex-col w-[210mm] max-w-[210mm] h-[297mm] invoice-bg border-2 border-red-500">
 				<InvoiceHeader invoice={data} langData={langData} />
 				<InvoiceMiddle invoice={data} langData={langData} />
 				<InvoiceFooter dict={dict} />

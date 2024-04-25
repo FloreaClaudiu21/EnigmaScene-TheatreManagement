@@ -12,7 +12,7 @@ import {
 
 declare module "next-auth" {
 	type User = {
-		id: string;
+		id: number;
 		firstName: string;
 		lastName: string;
 		email: string;
@@ -32,6 +32,7 @@ declare module "next-auth" {
 		ticketsBuyed?: TicketSold[] | null;
 		payments?: Payment[] | null;
 		invoices?: Invoice[] | null;
+		fiscalReceipts?: FiscalReceipt[] | null;
 	};
 	type Client = {} & User;
 	interface Session {

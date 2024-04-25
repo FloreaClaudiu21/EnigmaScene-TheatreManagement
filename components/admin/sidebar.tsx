@@ -3,19 +3,24 @@ import React from "react";
 import { usePathname } from "next/navigation";
 import {
 	ArmchairIcon,
+	BarChart3,
+	BarChart3Icon,
 	CircleUserIcon,
 	DramaIcon,
 	FileArchiveIcon,
 	Home,
+	MoonIcon,
 	PaintRollerIcon,
 	PiggyBankIcon,
 	Settings,
 	StickyNoteIcon,
+	SunIcon,
 	TicketIcon,
 } from "lucide-react";
-import { Tooltip } from "@nextui-org/react";
+import { Button, Tooltip } from "@nextui-org/react";
 import Link from "next/link";
 import { urlLink } from "@/lib/utils";
+import { useTheme } from "next-themes";
 
 function SidebarLink({
 	url,
@@ -32,9 +37,9 @@ function SidebarLink({
 }) {
 	const isActive = () => {
 		const pn = pathName.toLowerCase();
-		if (include === "dashboard" && pn.endsWith(include)) {
+		if (include === "dashboard" && pn.endsWith(include.toLowerCase())) {
 			return true;
-		} else if (include != "dashboard" && pn.includes(include)) {
+		} else if (include != "dashboard" && pn.includes(include.toLowerCase())) {
 			return true;
 		}
 		return false;
@@ -57,11 +62,12 @@ function SidebarLink({
 
 export default function SidebarAdminComponent() {
 	const pathname = usePathname();
+	const theme = useTheme();
 	return (
 		<aside className="fixed inset-y-0 left-0 hidden w-14 flex-col border-r bg-background md:flex z-[999]">
 			<nav className="flex flex-col items-center gap-4 px-2 sm:py-5">
 				<SidebarLink
-					icon={<Home size={20} />}
+					icon={<BarChart3Icon size={20} />}
 					include="dashboard"
 					pathName={pathname}
 					title="Dashboard"
@@ -125,13 +131,28 @@ export default function SidebarAdminComponent() {
 				/>
 			</nav>
 			<nav className="mt-auto flex flex-col items-center gap-4 px-2 sm:py-5">
-				<SidebarLink
-					icon={<Settings size={20} />}
-					include="settings"
-					pathName={pathname}
-					title="Settings"
-					url={urlLink(pathname) + "settings"}
-				/>
+				<Tooltip
+					radius="sm"
+					content={"Toggle Theme"}
+					placement="right"
+					showArrow
+				>
+					<Button
+						isIconOnly
+						radius="md"
+						variant="bordered"
+						onClick={() =>
+							theme.setTheme(theme.theme === "light" ? "dark" : "light")
+						}
+						className={`flex h-9 w-9 items-center justify-center rounded-lg transition-colors`}
+					>
+						{theme.theme === "light" ? (
+							<MoonIcon size={20} />
+						) : (
+							<SunIcon size={20} />
+						)}
+					</Button>
+				</Tooltip>
 			</nav>
 		</aside>
 	);

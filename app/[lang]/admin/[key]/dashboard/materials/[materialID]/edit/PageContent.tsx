@@ -8,69 +8,72 @@ import {
 	FormMessage,
 } from "@/components/ui/form";
 import { useToast } from "@/components/ui/use-toast";
-import { registerSchema } from "@/lib/schemas";
-import { countryCodesArray } from "@/lib/types";
-import { useLoadingScreen } from "@/services/StateProvider";
-import { updateClient } from "@/services/admin/ClientsProvider";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Autocomplete, AutocompleteItem, Input } from "@nextui-org/react";
+import { createMaterialSchema } from "@/lib/schemas";
+
 import {
-	EyeIcon,
-	EyeOffIcon,
-	MailIcon,
-	PhoneIcon,
-	SquareUserIcon,
-} from "lucide-react";
-import { Client } from "next-auth";
+	ShowMaterialDecoration,
+	ShowMaterialDecorationCategory,
+	TableTypes,
+} from "@/lib/types";
+import { convertToLocalTime } from "@/lib/utils";
+import { useLoadingScreen } from "@/services/StateProvider";
+import { update } from "@/services/admin/ControlProvider";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { parseDateTime } from "@internationalized/date";
+import { DateValue } from "@nextui-org/calendar";
+import { DatePicker } from "@nextui-org/date-picker";
+import { Autocomplete, AutocompleteItem, Input } from "@nextui-org/react";
+import { PenIcon } from "lucide-react";
 import { useRouter } from "next-nprogress-bar";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-export default function AdminClientEdit({
+export default function AdminMaterialDecorationEdit({
 	params,
-	client,
+	material,
+	categories,
 }: {
 	params: any;
-	client: Client;
+	material: ShowMaterialDecoration;
+	categories: ShowMaterialDecorationCategory[];
 }) {
 	const router = useRouter();
 	const { toast } = useToast();
 	const loadingScreen = useLoadingScreen();
-	const [showPassRegister, setShowPassRegister] = useState(false);
-	const [showPassRegister2, setShowPassRegister2] = useState(false);
-	const form = useForm<z.infer<typeof registerSchema>>({
-		resolver: zodResolver(registerSchema),
+	const [buyDate, setBuyDate] = useState<DateValue>(
+		parseDateTime(material.buyDate.split(".")[0])
+	);
+	const form = useForm<z.infer<typeof createMaterialSchema>>({
+		resolver: zodResolver(createMaterialSchema),
 		defaultValues: {
-			firstName: client.firstName,
-			lastName: client.lastName,
-			password: client.password,
-			rePassword: client.password,
-			email: client.email,
-			phone: client.phone.substring(3),
-			prefix: client.phone.substring(3, 0),
-			birthDate: client.birthDate,
-			terms: true,
+			producer: material.producer,
+			buyDate: material.buyDate,
+			buyPrice: material.buyPrice + "" ?? "0",
+			name: material.name,
+			name_en: material.name_en,
+			stock: material.stock + "" ?? "0",
+			categoryId: material.categoryId + "",
+			unit: material.unit,
 		},
 	});
-	async function onSubmit(values: z.infer<typeof registerSchema>) {
+	async function onSubmit(values: z.infer<typeof createMaterialSchema>) {
 		loadingScreen.setLoading(true);
-		const data = await updateClient(params.lang, {
-			email: values.email,
-			lastName: values.lastName,
-			password: values.password,
-			firstName: values.firstName,
-			phone: values.prefix + values.phone,
-			birthDate: values.birthDate,
-		});
+		const data = await update(
+			params.lang,
+			TableTypes.MATERIAL,
+			values,
+			material.id
+		);
 		toast({
 			description: data.error,
-			title: "Account Editing",
+			title: "Material Decoration Editing",
 			variant: data.ok ? "default" : "destructive",
 		});
-		if (data.ok && data.client != undefined) {
-			router.push("../../clients");
+		if (data.ok) {
+			router.push("../../materials?tab=allMaterials");
 			form.reset();
+			router.refresh();
 		}
 		loadingScreen.setLoading(false);
 	}
@@ -78,24 +81,24 @@ export default function AdminClientEdit({
 		<NewOrEditContent
 			form={form}
 			onSubmit={onSubmit}
-			back_link="../../clients"
-			title={`Edit the user with ID #${params.clientID}`}
 			loading={loadingScreen.loading}
+			back_link="../../materials?tab=allMaterials"
+			title={`Edit the material decoration with ID #${material.id}`}
 		>
-			<div className="flex flex-row gap-2">
+			<div className="flex flex-col md:flex-row gap-2">
 				<FormField
 					control={form.control}
-					name="firstName"
+					name="name"
 					render={({ field }) => (
-						<FormItem className="w-1/2">
-							<FormLabel>First Name*</FormLabel>
+						<FormItem className="w-full md:w-1/2">
+							<FormLabel>Name*</FormLabel>
 							<FormControl>
 								<Input
 									radius="md"
 									variant="bordered"
 									required
 									endContent={
-										<SquareUserIcon className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
+										<PenIcon className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
 									}
 									{...field}
 								/>
@@ -106,17 +109,17 @@ export default function AdminClientEdit({
 				/>
 				<FormField
 					control={form.control}
-					name="lastName"
+					name="name_en"
 					render={({ field }) => (
-						<FormItem className="w-1/2">
-							<FormLabel>Last Name*</FormLabel>
+						<FormItem className="w-full md:w-1/2">
+							<FormLabel>Name EN*</FormLabel>
 							<FormControl>
 								<Input
 									radius="md"
 									variant="bordered"
 									required
 									endContent={
-										<SquareUserIcon className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
+										<PenIcon className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
 									}
 									{...field}
 								/>
@@ -126,170 +129,143 @@ export default function AdminClientEdit({
 					)}
 				/>
 			</div>
-			<FormField
-				control={form.control}
-				name="email"
-				render={({ field }) => (
-					<FormItem>
-						<FormLabel>Email*</FormLabel>
-						<FormControl>
-							<Input
-								type="email"
-								radius="md"
-								variant="bordered"
-								required
-								endContent={
-									<MailIcon className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
-								}
-								{...field}
-							/>
-						</FormControl>
-						<FormMessage />
-					</FormItem>
-				)}
-			/>
-			<div className="flex flex-row gap-2">
+			<div className="flex flex-col md:flex-row gap-2">
 				<FormField
-					name="prefix"
+					name="buyDate"
 					control={form.control}
 					render={({ field }) => (
-						<FormItem className="min-w-[140px]">
-							<FormLabel>Phone*</FormLabel>
+						<FormItem className="w-full md:w-1/2">
+							<FormLabel>Buy Date & Time*</FormLabel>
+							<FormControl>
+								<DatePicker
+									fullWidth
+									hideTimeZone
+									radius="md"
+									value={buyDate}
+									variant="bordered"
+									showMonthAndYearPickers
+									pageBehavior="single"
+									onChange={(e) => {
+										setBuyDate(e);
+										field.onChange(convertToLocalTime(e));
+									}}
+								/>
+							</FormControl>
+							<FormMessage />
+						</FormItem>
+					)}
+				/>
+				<FormField
+					control={form.control}
+					name="buyPrice"
+					render={({ field }) => (
+						<FormItem className="w-full md:w-1/2">
+							<FormLabel>Buy Price (RON)*</FormLabel>
+							<FormControl>
+								<Input
+									radius="md"
+									variant="bordered"
+									required
+									endContent={
+										<PenIcon className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
+									}
+									{...field}
+								/>
+							</FormControl>
+							<FormMessage />
+						</FormItem>
+					)}
+				/>
+			</div>
+			<div className="flex flex-col md:flex-row gap-2">
+				<FormField
+					name="stock"
+					control={form.control}
+					render={({ field }) => (
+						<FormItem className="w-full md:w-1/2">
+							<FormLabel>Stock (Number)*</FormLabel>
+							<FormControl>
+								<Input
+									radius="md"
+									variant="bordered"
+									required
+									endContent={
+										<PenIcon className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
+									}
+									{...field}
+								/>
+							</FormControl>
+							<FormMessage />
+						</FormItem>
+					)}
+				/>
+				<FormField
+					control={form.control}
+					name="unit"
+					render={({ field }) => (
+						<FormItem className="w-full md:w-1/2">
+							<FormLabel>Unit*</FormLabel>
+							<FormControl>
+								<Input
+									radius="md"
+									variant="bordered"
+									required
+									endContent={
+										<PenIcon className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
+									}
+									{...field}
+								/>
+							</FormControl>
+							<FormMessage />
+						</FormItem>
+					)}
+				/>
+			</div>
+			<div className="flex flex-col md:flex-row gap-2">
+				<FormField
+					control={form.control}
+					name="producer"
+					render={({ field }) => (
+						<FormItem className="w-full md:w-1/2">
+							<FormLabel>Producer*</FormLabel>
+							<FormControl>
+								<Input
+									radius="md"
+									variant="bordered"
+									required
+									endContent={
+										<PenIcon className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
+									}
+									{...field}
+								/>
+							</FormControl>
+							<FormMessage />
+						</FormItem>
+					)}
+				/>
+				<FormField
+					control={form.control}
+					name="categoryId"
+					render={({ field }) => (
+						<FormItem className="w-full md:w-1/2">
+							<FormLabel>Material Category*</FormLabel>
 							<FormControl>
 								<Autocomplete
 									radius="md"
-									label="Prefix"
+									label="Category"
 									variant="bordered"
 									onSelectionChange={field.onChange}
-									defaultInputValue={client.phone.substring(3, 0)}
+									defaultSelectedKey={material.categoryId}
 									{...field}
 								>
-									{countryCodesArray.map((array, index) => {
+									{categories.map((cat, index) => {
 										return (
-											<AutocompleteItem
-												className="px-0"
-												value={array[1]}
-												key={array[1]}
-											>
-												{array[1]}
+											<AutocompleteItem value={cat.id} key={cat.id}>
+												{index + 1 + ". " + cat.name + "|" + cat.name_en}
 											</AutocompleteItem>
 										);
 									})}
 								</Autocomplete>
-							</FormControl>
-							<FormMessage />
-						</FormItem>
-					)}
-				/>
-				<FormField
-					name="phone"
-					control={form.control}
-					render={({ field }) => (
-						<FormItem className="w-full mt-8">
-							<FormControl>
-								<Input
-									type="phone"
-									radius="md"
-									variant="bordered"
-									required
-									endContent={
-										<PhoneIcon className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
-									}
-									{...field}
-								/>
-							</FormControl>
-							<FormMessage />
-						</FormItem>
-					)}
-				/>
-			</div>
-			<FormField
-				name="birthDate"
-				control={form.control}
-				render={({ field }) => (
-					<FormItem>
-						<FormLabel>Birth Date*</FormLabel>
-						<FormControl>
-							<Input
-								radius="md"
-								type="date"
-								variant="bordered"
-								required
-								{...field}
-							/>
-						</FormControl>
-						<FormMessage />
-					</FormItem>
-				)}
-			/>
-			<div className="flex flex-row gap-2">
-				<FormField
-					name="password"
-					control={form.control}
-					render={({ field }) => (
-						<FormItem className="w-full">
-							<FormLabel>Password*</FormLabel>
-							<FormControl>
-								<Input
-									required
-									radius="md"
-									endContent={
-										!showPassRegister ? (
-											<EyeIcon
-												onClick={() => {
-													setShowPassRegister(true);
-												}}
-												className="text-2xl text-default-400 flex-shrink-0 hover:cursor-pointer"
-											/>
-										) : (
-											<EyeOffIcon
-												onClick={() => {
-													setShowPassRegister(false);
-												}}
-												className="text-2xl text-default-400 flex-shrink-0 hover:cursor-pointer"
-											/>
-										)
-									}
-									type={showPassRegister ? "text" : "password"}
-									variant="bordered"
-									{...field}
-								/>
-							</FormControl>
-							<FormMessage />
-						</FormItem>
-					)}
-				/>
-				<FormField
-					name="rePassword"
-					control={form.control}
-					render={({ field }) => (
-						<FormItem className="w-full">
-							<FormLabel>Confirm Password*</FormLabel>
-							<FormControl>
-								<Input
-									required
-									radius="md"
-									endContent={
-										!showPassRegister2 ? (
-											<EyeIcon
-												onClick={() => {
-													setShowPassRegister2(true);
-												}}
-												className="text-2xl text-default-400 flex-shrink-0 hover:cursor-pointer"
-											/>
-										) : (
-											<EyeOffIcon
-												onClick={() => {
-													setShowPassRegister2(false);
-												}}
-												className="text-2xl text-default-400 flex-shrink-0 hover:cursor-pointer"
-											/>
-										)
-									}
-									type={showPassRegister2 ? "text" : "password"}
-									variant="bordered"
-									{...field}
-								/>
 							</FormControl>
 							<FormMessage />
 						</FormItem>
