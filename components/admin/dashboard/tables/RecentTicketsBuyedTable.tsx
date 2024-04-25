@@ -55,7 +55,6 @@ export default async function RecentTicketsBuyedTable({
 								</p>
 								<p className="text-sm text-muted-foreground">
 									{lang == "ro" ? ticket.show?.title : ticket.show?.title_en}
-									aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
 								</p>
 								<p className="text-sm text-muted-foreground">
 									{lang == "ro"

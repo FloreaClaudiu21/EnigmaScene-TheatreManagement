@@ -7,17 +7,11 @@ import { columnsShowRoomSeat } from "./columnsShowRoomSeat";
 
 export default async function AdminShowRooms({ params }: { params: any }) {
 	const showRoomsSeats: ShowRoomSeat[] = await prisma.showRoomSeat.findMany({
-		orderBy: {
-			createdAt: "desc",
-		},
 		include: {
 			showRoom: true,
 		},
 	});
 	const showRooms: ShowRoom[] = await prisma.showRoom.findMany({
-		orderBy: {
-			createdAt: "desc",
-		},
 		include: {
 			seats: true,
 			ticketsSold: true,

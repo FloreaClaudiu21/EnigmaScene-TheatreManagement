@@ -11,9 +11,6 @@ export default async function AdminShows({ params }: { params: any }) {
 	const seasons: Season[] = await prisma.season.findMany({});
 	const categories: ShowType[] = await prisma.showType.findMany({});
 	const shows: Show[] = await prisma.show.findMany({
-		orderBy: {
-			createdAt: "desc",
-		},
 		include: {
 			favorites: {
 				include: {

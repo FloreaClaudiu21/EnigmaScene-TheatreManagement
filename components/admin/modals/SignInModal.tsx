@@ -13,7 +13,7 @@ import {
 import { LanguageData } from "@/lib/types";
 import { useRouter } from "next-nprogress-bar";
 import { deleteCookie } from "cookies-next";
-import { signIn, signOut } from "next-auth/react";
+import { signIn, signOut, useSession } from "next-auth/react";
 import { loginFormSchema } from "@/lib/schemas";
 import { z } from "zod";
 import { verifyAccountIsActivated } from "@/services/general/EmailProvider";
@@ -41,6 +41,7 @@ export default function AdminSignInModal({
 	const auth = useAuth();
 	const router = useRouter();
 	const pathname = usePathname();
+	const { status } = useSession();
 	const { toast } = useToast();
 	const loadingScreen = useLoadingScreen();
 	const [showPassLogin, setShowPassLogin] = useState(false);
@@ -48,6 +49,7 @@ export default function AdminSignInModal({
 		resolver: zodResolver(loginFormSchema),
 	});
 	useEffect(() => {
+		if (status === "loading") return;
 		if (!auth.isLogged && !pathname.endsWith("/dashboard")) {
 			router.replace(urlLink(pathname));
 		}

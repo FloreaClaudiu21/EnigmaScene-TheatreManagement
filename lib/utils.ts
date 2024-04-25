@@ -17,11 +17,11 @@ export function validRowsAndCols(raportModal: RaportModal) {
 			(header) =>
 				header.column.getIsVisible() &&
 				header.column.id != "select" &&
-				header.column.id != "actions"
+				header.column.id != "actions" && header.column.id != "photo"
 		);
 	const validColums: Header<any, unknown>[] = [];
 	dataColumns?.map((col) => {
-		dataRows?.map((row, rowIndex) => {
+		dataRows?.map((row) => {
 			const value = row.original[col.id];
 			const type = typeof value;
 			const isDate = value instanceof Date;
@@ -29,7 +29,9 @@ export function validRowsAndCols(raportModal: RaportModal) {
 				value != undefined &&
 				(type == "number" || type == "string" || isDate || type == "boolean")
 			) {
-				validColums.push(col);
+				if (!validColums.includes(col)) {
+					validColums.push(col);
+				}
 			}
 		});
 	});

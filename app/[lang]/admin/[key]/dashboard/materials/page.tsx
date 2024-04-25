@@ -19,9 +19,6 @@ export default async function AdminDecorationMaterials({
 	const materialsCategory: ShowMaterialDecorationCategory[] = await prisma.showMaterialDecorationCategory.findMany();
 	const materials: ShowMaterialDecoration[] = await prisma.showMaterialDecoration.findMany(
 		{
-			orderBy: {
-				createdAt: "desc",
-			},
 			include: {
 				category: true,
 			},
@@ -29,9 +26,6 @@ export default async function AdminDecorationMaterials({
 	);
 	const materialsUsed: ShowMaterialDecorationUsed[] = await prisma.showMaterialDecorationUsed.findMany(
 		{
-			orderBy: {
-				createdAt: "desc",
-			},
 			include: {
 				material: {
 					include: {

@@ -8,6 +8,7 @@ import {
 } from "@/components/admin/table/ColumnSelect";
 import { TableTypes, TicketVerified } from "@/lib/types";
 import ColumnCellActions from "@/components/admin/table/ColumnCellActions";
+import ModalViewTicket from "@/components/page/ticket/ViewTicketBtn";
 
 export const columnsTicketsVerified: ColumnDef<TicketVerified>[] = [
 	{
@@ -22,13 +23,16 @@ export const columnsTicketsVerified: ColumnDef<TicketVerified>[] = [
 	},
 	{
 		id: "actions",
-		cell: ({ row }) => {
+		cell: ({ row: { original } }) => {
 			return (
-				<ColumnCellActions
-					deleteId={row.original.id}
-					type={TableTypes.TICKET_VERIFIED}
-					link_edit={"tickets/" + row.original.id + "/edit-verified"}
-				/>
+				<div className="flex flex-row gap-2">
+					<ModalViewTicket ticket={original.ticketSold} />
+					<ColumnCellActions
+						deleteId={original.id}
+						type={TableTypes.TICKET_VERIFIED}
+						link_edit={"tickets/" + original.id + "/edit-verified"}
+					/>
+				</div>
 			);
 		},
 		enableSorting: false,

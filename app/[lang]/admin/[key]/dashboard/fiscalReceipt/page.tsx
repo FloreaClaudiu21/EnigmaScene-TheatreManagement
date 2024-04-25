@@ -6,9 +6,6 @@ import { columnsReceipts } from "./columns";
 
 export default async function AdminFiscalReceipts({ params }: { params: any }) {
 	const receips: FiscalReceipt[] = await prisma.fiscalReceipt.findMany({
-		orderBy: {
-			createdAt: "desc",
-		},
 		include: {
 			payment: {
 				include: {

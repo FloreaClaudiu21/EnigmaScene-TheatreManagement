@@ -9,9 +9,6 @@ import TabsPages from "@/components/admin/table/TabsPages";
 
 export default async function AdminClients({ params }: { params: any }) {
 	const clients: Client[] = await prisma.client.findMany({
-		orderBy: {
-			createdAt: "desc",
-		},
 		include: {
 			favorites: true,
 			invoices: true,

@@ -2,7 +2,11 @@
 "use client";
 import { validRowsAndCols } from "@/lib/utils";
 import { RaportModal } from "@/services/StateProvider";
+import config from "@/tailwind.config";
 import { Document, Page, View, Text, Image } from "@react-pdf/renderer";
+import { createTw } from "react-pdf-tailwind";
+
+const tw = createTw(config);
 
 export const RaportDocument = ({
 	title,
@@ -19,7 +23,12 @@ export const RaportDocument = ({
 			author="EnigmaScene"
 			creationDate={new Date()}
 		>
-			<Page wrap size="A4" orientation="landscape">
+			<Page
+				wrap
+				size="A4"
+				orientation="landscape"
+				style={tw("invoice-bg bg-[#eee]")}
+			>
 				<View
 					style={{
 						gap: 2,

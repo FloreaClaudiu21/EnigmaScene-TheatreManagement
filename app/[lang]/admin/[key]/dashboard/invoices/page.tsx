@@ -6,9 +6,6 @@ import { columnsInvoice } from "./columns";
 
 export default async function AdminInvoices({ params }: { params: any }) {
 	const invoices: Invoice[] = await prisma.invoice.findMany({
-		orderBy: {
-			createdAt: "desc",
-		},
 		include: {
 			client: true,
 			payment: true,

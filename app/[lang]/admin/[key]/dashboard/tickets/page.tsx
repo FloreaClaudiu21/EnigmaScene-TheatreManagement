@@ -8,9 +8,6 @@ import { columnsTicketsVerified } from "./columnsTicketsVerified";
 
 export default async function AdminTickets({ params }: { params: any }) {
 	const ticketsSold: TicketSold[] = await prisma.ticketSold.findMany({
-		orderBy: {
-			createdAt: "desc",
-		},
 		include: {
 			invoice: {
 				include: {
@@ -58,7 +55,22 @@ export default async function AdminTickets({ params }: { params: any }) {
 				verifiedAt: "desc",
 			},
 			include: {
-				ticketSold: true,
+				ticketSold: {
+					include: {
+						seat: true,
+						showRoom: true,
+						show: {
+							include: {
+								season: true,
+								showType: true,
+								showRoom: true,
+							},
+						},
+						payment: true,
+						invoice: true,
+						fiscalReceipt: true,
+					},
+				},
 			},
 		}
 	);
