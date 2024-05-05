@@ -8,287 +8,248 @@ datasource db {
 }
 
 model Client {
-  id                     Int              @id @default(autoincrement())
-  firstName              String
-  lastName               String
-  email                  String           @unique
-  emailVerified          DateTime?        @db.Date
-  emailVerifySignature   String?          @db.Text
-  createdAt              DateTime         @default(now())
-  updatedAt              DateTime         @updatedAt
-  createdWithProvider    String?
-  birthDate              String
-  profileImage           String?          @db.Text
-  phone                  String
-  password               String
-  passwordResetSignature String?          @db.Text
-  terms                  Boolean          @default(true)
-  providers              Provider[]
-  billingAddresses       BillingAddress[]
-  adminUser              Boolean          @default(false)
-  favorites              ShowFavorite[]
-  tickesBuyed            TicketSold[]
-  payments               Payment[]
-  invoices               Invoice[]
-  fiscalReceipts         FiscalReceipt[]
+  codClient               Int               @id @default(autoincrement())
+  numeClient              String
+  email                   String            @unique
+  emailVerificat          DateTime?         @db.Date
+  emailVerificatSemnatura String?           @db.Text
+  creatPe                 DateTime          @default(now())
+  actualizatPe            DateTime          @updatedAt
+  creatCuProvider         String?
+  dataNasterii            String
+  telefon                 String
+  parola                  String
+  parolaResetareSemnatura String?           @db.Text
+  termeni                 Boolean           @default(true)
+  utlizatorAdmin          Boolean           @default(false)
+  providerii              Provider[]
+  adreseFacturare         AdresaFacturare[]
+  bileteCumparate         BiletSpectacol[]
+  platiiEfectuate         Plata[]
+  bonuriFiscale           BonFiscal[]
+  facturiiEmise           FacturaFiscala[]
 }
 
 model Provider {
-  id                Int      @id @default(autoincrement())
-  name              String
-  linkedWith        String
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
-  providerAccountId String   @unique @db.VarChar(255)
-  providerEmail     String
-  providerFirstName String
-  providerLastName  String
-  client            Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
-  clientId          Int
+  codProvider      Int      @id @default(autoincrement())
+  numeProvider     String
+  asociatCu        String
+  creatPe          DateTime @default(now())
+  actualizatPe     DateTime @updatedAt
+  providerContCod  String   @unique @db.VarChar(255)
+  providerEmail    String
+  providerContNume String
+  client           Client   @relation(fields: [codClient], references: [codClient], onDelete: Cascade)
+  codClient        Int
 }
 
-model BillingAddress {
-  id           Int     @id @default(autoincrement())
-  country      String
-  city         String
-  address      String
-  zipCode      String
-  observations String? @db.VarChar(255)
-  client       Client  @relation(fields: [clientId], references: [id], onDelete: Cascade)
-  clientId     Int
+model AdresaFacturare {
+  codAdresa  Int     @id @default(autoincrement())
+  tara       String
+  oras       String
+  adresa     String  @db.VarChar(255)
+  codPostal  String
+  observatii String? @db.VarChar(255)
+  client     Client  @relation(fields: [codClient], references: [codClient], onDelete: Cascade)
+  codClient  Int
 }
 
-model ExchangeRate {
-  id         Int      @id @default(autoincrement())
-  currency   String
-  value      Float
-  multiplier Int
-  date       DateTime
-  createdAt  DateTime @default(now())
+model RataDeSchimbValutar {
+  codRataValutar Int      @id @default(autoincrement())
+  moneda         String
+  valuare        Float
+  multiplicator  Int
+  data           DateTime
+  creatPe        DateTime @default(now())
+  plati          Plata[]
 }
 
-model Show {
-  id             Int                          @id @default(autoincrement())
-  image          String
-  title          String
-  title_en       String
-  startTime      String
-  endTime        String
-  director       String
-  actors         String                       @db.VarChar(255)
-  createdAt      DateTime                     @default(now())
-  updatedAt      DateTime                     @updatedAt
-  description_en String                       @db.VarChar(150)
-  description    String                       @db.VarChar(150)
-  content        String                       @db.VarChar(500)
-  content_en     String                       @db.VarChar(500)
-  seasonId       Int
-  season         Season                       @relation(fields: [seasonId], references: [id], onDelete: Cascade)
-  showTypeId     Int
-  showType       ShowType                     @relation(fields: [showTypeId], references: [id], onDelete: Cascade)
-  showRoomId     Int
-  showRoom       ShowRoom                     @relation(fields: [showRoomId], references: [id], onDelete: Cascade)
-  favorites      ShowFavorite[]
-  ticketsSold    TicketSold[]
-  materials      ShowMaterialDecorationUsed[]
-  fiscalReceipts FiscalReceipt[]
+model Spectacol {
+  codSpectacol           Int                             @id @default(autoincrement())
+  imagine                String
+  titlu                  String
+  oraIncepere            String
+  oraTerminare           String
+  director               String
+  actorii                String                          @db.VarChar(255)
+  creatPe                DateTime                        @default(now())
+  actualizatPe           DateTime                        @updatedAt
+  descriereScurta        String                          @db.VarChar(150)
+  continut               String                          @db.VarChar(600)
+  sezon                  Sezon                           @relation(fields: [codSezon], references: [codSezon], onDelete: Cascade)
+  codSezon               Int
+  tipSpectacol           TipSpectacol                    @relation(fields: [codTipSpectacol], references: [codTipSpectacol], onDelete: Cascade)
+  codTipSpectacol        Int
+  salaSpectacol          SalaSpectacol                   @relation(fields: [codSalaSpectacol], references: [codSalaSpectacol], onDelete: Cascade)
+  codSalaSpectacol       Int
+  bileteVandute          BiletSpectacol[]
+  bonuriFiscale          BonFiscal[]
+  materialeDecorFolosite MaterialDecorSpectacolFolosit[]
 }
 
-model ShowFavorite {
-  id       Int    @id @default(autoincrement())
-  client   Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
-  show     Show   @relation(fields: [showId], references: [id], onDelete: Cascade)
-  showId   Int
-  clientId Int
+model TipSpectacol {
+  codTipSpectacol Int         @id @default(autoincrement())
+  numeTip         String
+  creatPe         DateTime    @default(now())
+  actualizatPe    DateTime    @updatedAt
+  spectacole      Spectacol[]
 }
 
-model ShowType {
-  id        Int      @id @default(autoincrement())
-  name      String
-  name_en   String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  shows     Show[]
+model Sezon {
+  codSezon     Int         @id @default(autoincrement())
+  numeSezon    String
+  creatPe      DateTime    @default(now())
+  actualizatPe DateTime    @updatedAt
+  spectacole   Spectacol[]
 }
 
-model Season {
-  id        Int      @id @default(autoincrement())
-  name      String
-  name_en   String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  shows     Show[]
+model SalaSpectacol {
+  codSalaSpectacol Int                @id @default(autoincrement())
+  numarSala        String
+  observatii       String?            @db.VarChar(255)
+  creatPe          DateTime           @default(now())
+  actualizatPe     DateTime           @updatedAt
+  locuriSala       LocSalaSpectacol[]
+  bileteVandute    BiletSpectacol[]
+  spectacole       Spectacol[]
 }
 
-model ShowRoom {
-  id           Int            @id @default(autoincrement())
-  number       String
-  observations String?        @db.VarChar(255)
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime       @updatedAt
-  seats        ShowRoomSeat[]
-  ticketsSold  TicketSold[]
-  shows        Show[]
+model LocSalaSpectacol {
+  codLocSala       Int              @id @default(autoincrement())
+  tipLoc           String
+  pretLoc          Float
+  rand             String
+  numarLoc         String
+  salaSpectacol    SalaSpectacol    @relation(fields: [codSalaSpectacol], references: [codSalaSpectacol], onDelete: Cascade)
+  codSalaSpectacol Int
+  creatPe          DateTime         @default(now())
+  actualizatPe     DateTime         @updatedAt
+  bileteVandute    BiletSpectacol[]
 }
 
-model ShowRoomSeat {
-  id          Int          @id @default(autoincrement())
-  showRoomId  Int
-  showRoom    ShowRoom     @relation(fields: [showRoomId], references: [id], onDelete: Cascade)
-  type        String
-  price       Float
-  row         String
-  number      String
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
-  ticketsSold TicketSold[]
+model BiletSpectacol {
+  codBiletSpectacol   Int              @id @default(autoincrement())
+  pretVanzare         Float
+  numarBilet          String
+  biletVerificat      Boolean
+  spectacol           Spectacol        @relation(fields: [codSpectacol], references: [codSpectacol], onDelete: Cascade)
+  codSpectacol        Int
+  client              Client           @relation(fields: [codClient], references: [codClient], onDelete: Cascade)
+  codClient           Int
+  salaSpectacol       SalaSpectacol    @relation(fields: [codSalaSpectacol], references: [codSalaSpectacol], onDelete: Cascade)
+  codSalaSpectacol    Int
+  locSalaSpectacol    LocSalaSpectacol @relation(fields: [codLocSalaSpectacol], references: [codLocSala], onDelete: Cascade)
+  codLocSalaSpectacol Int
+  plata               Plata            @relation(fields: [codPlata], references: [codPlata], onDelete: Cascade)
+  codPlata            Int
+  creatPe             DateTime         @default(now())
+  actualizatPe        DateTime         @updatedAt
+  bonFiscal           BonFiscal?       @relation(fields: [codBonFiscal], references: [codBonFiscal], onDelete: SetNull)
+  factura             FacturaFiscala?  @relation(fields: [codFacturaFiscala], references: [codFactura], onDelete: SetNull)
+  codBonFiscal        Int?
+  codFacturaFiscala   Int?
 }
 
-model TicketSold {
-  id             Int             @id @default(autoincrement())
-  number         String
-  show           Show            @relation(fields: [showId], references: [id], onDelete: Cascade)
-  client         Client          @relation(fields: [clientId], references: [id], onDelete: Cascade)
-  clientId       Int
-  showRoom       ShowRoom        @relation(fields: [showRoomId], references: [id], onDelete: Cascade)
-  showRoomId     Int
-  seat           ShowRoomSeat    @relation(fields: [seatId], references: [id], onDelete: Cascade)
-  seatId         Int
-  soldPrice      Float
-  createdAt      DateTime        @default(now())
-  updatedAt      DateTime        @updatedAt
-  showId         Int
-  ticketVerified TicketVerified?
-  payment        Payment?
-  invoice        Invoice?
-  fiscalReceipt  FiscalReceipt?
+model Plata {
+  codPlata               Int                 @id @default(autoincrement())
+  sumaPlatita            Float
+  rataDeSchimbValutar    RataDeSchimbValutar @relation(fields: [codRataDeSchimbValutar], references: [codRataValutar], onDelete: NoAction)
+  codRataDeSchimbValutar Int
+  platitPe               DateTime            @default(now())
+  tipPlata               TipPlata            @default(CARD_CREDIT)
+  starePlata             StarePlata          @default(ACCEPTATA)
+  creatPe                DateTime            @default(now())
+  actualizatPe           DateTime            @updatedAt
+  client                 Client              @relation(fields: [codClient], references: [codClient], onDelete: Cascade)
+  codClient              Int
+  bileteAsociate         BiletSpectacol[]
+  bonFiscal              BonFiscal?
+  factura                FacturaFiscala?
 }
 
-model TicketVerified {
-  id           Int        @id @default(autoincrement())
-  ticketSold   TicketSold @relation(fields: [ticketSoldId], references: [id], onDelete: Cascade)
-  ticketSoldId Int        @unique
-  verifiedAt   DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
-  createdAt    DateTime   @default(now())
+enum StarePlata {
+  RESPINSA
+  ACCEPTATA
 }
 
-model Payment {
-  id             Int            @id @default(autoincrement())
-  amount         Float
-  currency       String
-  currencyAmount Float
-  currencyDate   DateTime
-  status         PaymentStatus  @default(ACCEPTED)
-  paidAt         DateTime       @default(now())
-  type           PaymentType    @default(DEBIT_CARD)
-  createdAt      DateTime       @default(now())
-  updatedAt      DateTime       @updatedAt
-  client         Client         @relation(fields: [clientId], references: [id], onDelete: Cascade)
-  clientId       Int
-  ticket         TicketSold?    @relation(fields: [ticketId], references: [id], onDelete: SetNull)
-  ticketId       Int?           @unique
-  invoice        Invoice?
-  fiscalReceipt  FiscalReceipt?
-}
-
-enum PaymentStatus {
-  ACCEPTED
-  REJECTED
-}
-
-enum PaymentType {
+enum TipPlata {
   CASH
-  DEBIT_CARD
+  CARD_CREDIT
 }
 
-model FiscalReceipt {
-  id             Int         @id @default(autoincrement())
-  receiptNumber  String
-  receiptSeries  String      @default("ENIGMA")
-  amount         Float
-  currency       String
-  currencyAmount Float
-  currencyDate   DateTime
-  paidAt         DateTime    @default(now())
-  createdAt      DateTime    @default(now())
-  updatedAt      DateTime    @updatedAt
-  showId         Int
-  show           Show        @relation(fields: [showId], references: [id], onDelete: Cascade)
-  paymentId      Int         @unique
-  payment        Payment     @relation(fields: [paymentId], references: [id], onDelete: Cascade)
-  ticket         TicketSold? @relation(fields: [ticketId], references: [id], onDelete: SetNull)
-  ticketId       Int?        @unique
-  clientId       Int
-  client         Client      @relation(fields: [clientId], references: [id], onDelete: Cascade)
-  invoice        Invoice?
+model BonFiscal {
+  codBonFiscal    Int              @id @default(autoincrement())
+  numarBonFiscal  String
+  serieBonFiscal  String           @default("ENIGMA")
+  creatPe         DateTime         @default(now())
+  actualizatPe    DateTime         @updatedAt
+  spectacol       Spectacol        @relation(fields: [codSpectacol], references: [codSpectacol], onDelete: Cascade)
+  codSpectacol    Int
+  plata           Plata            @relation(fields: [codPlata], references: [codPlata], onDelete: Cascade)
+  codPlata        Int              @unique
+  client          Client           @relation(fields: [codClient], references: [codClient], onDelete: Cascade)
+  codClient       Int
+  factura         FacturaFiscala?
+  bileteSpectacol BiletSpectacol[]
 }
 
-model Invoice {
-  id              Int           @id @default(autoincrement())
-  billingAddress  String
-  firstName       String
-  lastName        String
-  phone           String
-  email           String
-  invoiceSeries   String        @default("ENIGMA")
-  invoiceNumber   String
-  issueDate       DateTime      @default(now())
-  dueDate         DateTime
-  totalAmount     Float
-  extraFees       Float
-  amount          Int
-  currency        String
-  currencyAmount  Float
-  currencyDate    DateTime
-  status          String        @default("paid")
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
-  client          Client        @relation(fields: [clientId], references: [id], onDelete: Cascade)
-  ticket          TicketSold?   @relation(fields: [ticketId], references: [id], onDelete: SetNull)
-  payment         Payment       @relation(fields: [paymentId], references: [id], onDelete: Cascade)
-  ticketId        Int?          @unique
-  paymentId       Int           @unique
-  clientId        Int
-  fiscalReceipt   FiscalReceipt @relation(fields: [fiscalReceiptId], references: [id], onDelete: Cascade)
-  fiscalReceiptId Int           @unique
+model FacturaFiscala {
+  codFactura       Int              @id @default(autoincrement())
+  serieFactura     String           @default("ENIGMA")
+  numarFactura     String
+  dataIntocmiri    DateTime         @default(now())
+  dataScadentei    DateTime
+  sumaPlatita      Float
+  costuriExtra     Float
+  totalSumaPlatita Float
+  creatPe          DateTime         @default(now())
+  actualizatPe     DateTime         @updatedAt
+  adresaFacturare  String
+  numeClient       String
+  telefon          String
+  email            String
+  client           Client           @relation(fields: [codClient], references: [codClient], onDelete: Cascade)
+  codClient        Int
+  plata            Plata            @relation(fields: [codPlata], references: [codPlata], onDelete: Cascade)
+  codPlata         Int              @unique
+  bonFiscal        BonFiscal        @relation(fields: [codBonFiscal], references: [codBonFiscal], onDelete: Cascade)
+  codBonFiscal     Int              @unique
+  bileteSpectacol  BiletSpectacol[]
 }
 
-model ShowMaterialDecoration {
-  id            Int                            @id @default(autoincrement())
-  name          String
-  name_en       String
-  stock         Int
-  unit          String
-  buyDate       String
-  buyPrice      Float
-  producer      String
-  categoryId    Int
-  category      ShowMaterialDecorationCategory @relation(fields: [categoryId], references: [id], onDelete: NoAction)
-  createdAt     DateTime                       @default(now())
-  updatedAt     DateTime                       @updatedAt
-  materialsUsed ShowMaterialDecorationUsed[]
+model MaterialDecorSpectacol {
+  codMaterialDecor          Int                             @id @default(autoincrement())
+  numeMaterial              String
+  cantitateStoc             Int
+  unitateMastura            String
+  dataAchizitie             String
+  pretAchizitie             Float
+  producator                String
+  categorieMaterialDecor    CategorieMaterialDecor          @relation(fields: [codCategorieMaterialDecor], references: [codCategorieMaterialDecor], onDelete: NoAction)
+  codCategorieMaterialDecor Int
+  creatPe                   DateTime                        @default(now())
+  actualizatPe              DateTime                        @updatedAt
+  materialeDecorFolosite    MaterialDecorSpectacolFolosit[]
 }
 
-model ShowMaterialDecorationCategory {
-  id                  Int                      @id @default(autoincrement())
-  name                String
-  name_en             String
-  createdAt           DateTime                 @default(now())
-  updatedAt           DateTime                 @updatedAt
-  materialDecorations ShowMaterialDecoration[]
+model CategorieMaterialDecor {
+  codCategorieMaterialDecor Int                      @id @default(autoincrement())
+  numeCategorie             String
+  creatPe                   DateTime                 @default(now())
+  actualizatPe              DateTime                 @updatedAt
+  materialeDecor            MaterialDecorSpectacol[]
 }
 
-model ShowMaterialDecorationUsed {
-  id           Int                    @id @default(autoincrement())
-  materialId   Int
-  material     ShowMaterialDecoration @relation(fields: [materialId], references: [id], onDelete: Cascade)
-  show         Show                   @relation(fields: [showId], references: [id], onDelete: Cascade)
-  showId       Int
-  usedDate     String
-  quantity     Int
-  leftQuantity Int
-  createdAt    DateTime               @default(now())
-  updatedAt    DateTime               @updatedAt
-  observations String?                @db.VarChar(255)
+model MaterialDecorSpectacolFolosit {
+  codMaterialDecorSpectacolFolosit Int                    @id @default(autoincrement())
+  materialDecorSpectacol           MaterialDecorSpectacol @relation(fields: [codMaterialDecorSpectacol], references: [codMaterialDecor], onDelete: Cascade)
+  codMaterialDecorSpectacol        Int
+  spectacol                        Spectacol              @relation(fields: [codSpectacol], references: [codSpectacol], onDelete: Cascade)
+  codSpectacol                     Int
+  dataFolosirii                    String
+  cantitateaFolosita               Int
+  cantitateaRamasaPeStoc           Int
+  observatii                       String?                @db.VarChar(255)
+  creatPe                          DateTime               @default(now())
+  actualizatPe                     DateTime               @updatedAt
 }

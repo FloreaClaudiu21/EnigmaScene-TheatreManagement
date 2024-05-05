@@ -11,7 +11,7 @@
 		"fetch-exchange-rates": "ts-node jobs/fetchExchangeRates.ts"
 	},
 	"prisma": {
-		"seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed1.ts"
+		"seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
 	},
 	"dependencies": {
 		"@emotion/cache": "^11.11.0",
@@ -19,7 +19,7 @@
 		"@emotion/styled": "^11.11.0",
 		"@formatjs/intl-localematcher": "^0.5.4",
 		"@hookform/resolvers": "^3.3.4",
-		"@internationalized/date": "^3.5.2",
+		"@internationalized/date": "^3.5.3",
 		"@mui/material": "^5.15.10",
 		"@mui/material-nextjs": "^5.15.9",
 		"@nextui-org/calendar": "^2.0.3",
@@ -40,6 +40,7 @@
 		"@radix-ui/react-slot": "^1.0.2",
 		"@radix-ui/react-tabs": "^1.0.4",
 		"@radix-ui/react-toast": "^1.1.5",
+		"@react-aria/i18n": "^3.11.0",
 		"@react-email/components": "0.0.14",
 		"@react-google-maps/api": "^2.19.3",
 		"@react-pdf/renderer": "^3.4.4",
@@ -85,6 +86,7 @@
 		"react-simple-star-rating": "^5.1.7",
 		"react-to-pdf": "^1.0.1",
 		"react-to-print": "^2.15.1",
+		"recharts": "^2.12.6",
 		"stripe": "^14.14.0",
 		"tailwind-merge": "^2.2.1",
 		"tailwindcss-animate": "^1.0.7",

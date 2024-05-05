@@ -12,27 +12,26 @@ import {
 
 declare module "next-auth" {
 	type User = {
-		id: number;
-		firstName: string;
-		lastName: string;
+		codClient: number;
+		numeClient: string;
 		email: string;
-		emailVerified?: Date | null;
-		emailVerifySignature: String | null;
-		createdAt: Date;
-		updatedAt: Date;
-		password: string;
-		createdWithProvider: string | null;
-		birthDate: string;
-		profileImage?: String | null;
-		phone: string;
-		adminUser: boolean;
-		providers?: Provider[] | null;
-		billingAddresses?: BillingAddress[] | null;
-		favorites?: ShowFavorite[] | null;
-		ticketsBuyed?: TicketSold[] | null;
-		payments?: Payment[] | null;
-		invoices?: Invoice[] | null;
-		fiscalReceipts?: FiscalReceipt[] | null;
+		emailVerificat?: Date | null;
+		emailVerificatSemnatura?: string | null;
+		creatPe: Date;
+		actualizatPe: Date;
+		creatCuProvider?: string | null;
+		dataNasterii: string;
+		telefon: string;
+		parola: string;
+		parolaResetareSemnatura?: string | null;
+		termeni: boolean;
+		utlizatorAdmin: boolean;
+		providerii?: Provider[] | null;
+		adreseFacturare?: AdresaFacturare[] | null;
+		bileteCumparate?: BiletSpectacol[] | null;
+		platiiEfectuate?: Plata[] | null;
+		bonuriFiscale?: BonFiscal[] | null;
+		facturiiEmise?: FacturaFiscala[] | null;
 	};
 	type Client = {} & User;
 	interface Session {

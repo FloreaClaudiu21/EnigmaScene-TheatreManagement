@@ -10,7 +10,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { User2 } from "lucide-react";
-import Link from "next/link";
 
 const DropdownUser = ({ user }: { user: User }) => {
 	return (
@@ -25,13 +24,9 @@ const DropdownUser = ({ user }: { user: User }) => {
 				</Button>
 			</DropdownMenuTrigger>
 			<DropdownMenuContent align="end">
-				<DropdownMenuLabel>My Account</DropdownMenuLabel>
+				<DropdownMenuLabel>Contul Meu</DropdownMenuLabel>
 				<DropdownMenuItem className="text-red-500 font-semibold hover:text-red-800">
-					{user?.firstName + " " + user?.lastName}
-				</DropdownMenuItem>
-				<DropdownMenuSeparator />
-				<DropdownMenuItem>
-					<Link href={""}>Settings</Link>
+					{user?.numeClient}
 				</DropdownMenuItem>
 				<DropdownMenuSeparator />
 				<DropdownMenuItem
@@ -40,7 +35,7 @@ const DropdownUser = ({ user }: { user: User }) => {
 					}}
 					className="group hover:cursor-pointer"
 				>
-					<span className="group-hover:text-red-500">Logout</span>
+					<span className="group-hover:text-red-500">Deconectare</span>
 				</DropdownMenuItem>
 			</DropdownMenuContent>
 		</DropdownMenu>

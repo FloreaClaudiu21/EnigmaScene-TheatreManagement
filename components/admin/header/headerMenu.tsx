@@ -8,7 +8,6 @@ import {
 	CircleUserIcon,
 	DramaIcon,
 	FileArchiveIcon,
-	Home,
 	MenuIcon,
 	MoonIcon,
 	PaintRollerIcon,
@@ -83,59 +82,59 @@ export default function HeaderMenuAdmin() {
 					/>
 					<MenuLinkAdmin
 						icon={<CircleUserIcon size={20} />}
-						include="clients"
+						include="clientii"
 						pathName={pathname}
-						title="Clients"
-						url={urlLink(pathname) + "clients"}
+						title="Clienții"
+						url={urlLink(pathname) + "clientii"}
 					/>
 					<MenuLinkAdmin
 						icon={<DramaIcon size={20} />}
-						include="shows"
+						include="spectacole"
 						pathName={pathname}
-						title="Shows"
-						url={urlLink(pathname) + "shows"}
+						title="Spectacole"
+						url={urlLink(pathname) + "spectacole"}
 					/>
 					<MenuLinkAdmin
 						icon={<ArmchairIcon size={20} />}
-						include="showRooms"
+						include="camereSpectacol"
 						pathName={pathname}
-						title="Show Rooms"
-						url={urlLink(pathname) + "showRooms"}
+						title="Sălii Spectacole"
+						url={urlLink(pathname) + "camereSpectacol"}
 					/>
 					<MenuLinkAdmin
 						icon={<TicketIcon size={20} />}
-						include="tickets"
+						include="bilete"
 						pathName={pathname}
-						title="Tickets"
-						url={urlLink(pathname) + "tickets"}
+						title="Bilete Vandute"
+						url={urlLink(pathname) + "bilete"}
 					/>
 					<MenuLinkAdmin
 						icon={<PaintRollerIcon size={20} />}
-						include="materials"
+						include="materialeDecor"
 						pathName={pathname}
-						title="Decoration Materials"
-						url={urlLink(pathname) + "materials"}
+						title="Materiale Decor"
+						url={urlLink(pathname) + "materialeDecor"}
 					/>
 					<MenuLinkAdmin
 						icon={<PiggyBankIcon size={20} />}
-						include="payments"
+						include="platii"
 						pathName={pathname}
-						title="Payments"
-						url={urlLink(pathname) + "payments"}
+						title="Plății"
+						url={urlLink(pathname) + "platii"}
 					/>
 					<MenuLinkAdmin
 						icon={<StickyNoteIcon size={20} />}
-						include="fiscalreceipt"
+						include="bonulFiscal"
 						pathName={pathname}
-						title="Fiscal Receipt"
-						url={urlLink(pathname) + "fiscalReceipt"}
+						title="Bonuri Fiscale"
+						url={urlLink(pathname) + "bonulFiscal"}
 					/>
 					<MenuLinkAdmin
 						icon={<FileArchiveIcon size={20} />}
-						include="invoices"
+						include="facturi"
 						pathName={pathname}
-						title="Invoices"
-						url={urlLink(pathname) + "invoices"}
+						title="Facturi Fiscale"
+						url={urlLink(pathname) + "facturi"}
 					/>
 					<Button
 						variant="outline"
@@ -149,7 +148,7 @@ export default function HeaderMenuAdmin() {
 						) : (
 							<SunIcon size={20} />
 						)}
-						Toggle Theme
+						Schimbă tema
 					</Button>
 				</nav>
 			</SheetContent>

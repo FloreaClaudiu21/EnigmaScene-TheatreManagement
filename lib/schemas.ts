@@ -1,6 +1,6 @@
 import * as z from "zod";
 import { isNumeric } from "./utils";
-import { PaymentType } from "@prisma/client";
+import { BileteAchizitionate } from "./types";
 
 const isStrongPassword = (password: string | undefined) => {
 	if (!password || password.length <= 0) {
@@ -33,508 +33,288 @@ const isDateOneMonthOld = (dateString: string | undefined) => {
 	return date <= oneMonthAgo;
 };
 
-export const loginFormSchema = z.object({
-	email: z.string().min(4).max(100),
-	password: z.string().min(8).max(60),
+export const schemaLogareAdmin = z.object({
+	email: z.string().min(4).max(150),
+	parola: z.string().min(8).max(60),
 });
 
-export const updateSchema = z
+export const schemaCreareClient = z
 	.object({
 		email: z
 			.string()
 			.min(4)
-			.max(100)
+			.max(150)
 			.refine((value) => (typeof value === "string" ? value.trim() : value)),
-		firstName: z
-			.string()
-			.min(4)
-			.max(120)
-			.refine((value) => (typeof value === "string" ? value.trim() : value)),
-		lastName: z
-			.string()
-			.min(4)
-			.max(120)
-			.refine((value) => (typeof value === "string" ? value.trim() : value)),
+		numeClient: z.string().min(4).max(150),
 		prefix: z.string(),
-		phone: z
+		telefon: z
 			.string()
 			.min(8)
 			.max(15)
 			.refine((value) => (typeof value === "string" ? value.trim() : value)),
-		birthDate: z.string().optional(),
-		password: z.string().optional(),
+		dataNasterii: z.string(),
+		parola: z
+			.string()
+			.min(8)
+			.max(60)
+			.refine((value) => (typeof value === "string" ? value.trim() : value)),
+		reParola: z
+			.string()
+			.min(8)
+			.max(60)
+			.refine((value) => (typeof value === "string" ? value.trim() : value)),
+		termeni: z.boolean().default(false),
 	})
-	.refine((data) => isStrongPassword(data.password), {
+	.refine((data) => data.reParola === data.parola, {
+		message: "Parolele trebuie să se potrivească!",
+		path: ["reParola"],
+	})
+	.refine((data) => isStrongPassword(data.parola), {
 		message:
-			"Password must be strong (include uppercase, lowercase, special characters, and be at least 8 characters long)",
-		path: ["password"],
+			"Parola trebuie să fie puternică (să conțină litere mari, litere mici, caractere speciale și să aibă cel puțin 8 caractere).",
+		path: ["parola"],
 	})
-	.refine((data) => isDateInPast(data.birthDate), {
-		message: "Birth date must be in the past",
-		path: ["birthDate"],
+	.refine((data) => isDateInPast(data.dataNasterii), {
+		message: "Data nașterii trebuie să nu fie în viitor!",
+		path: ["dataNasterii"],
 	})
-	.refine((data) => isDateOneMonthOld(data.birthDate), {
-		message: "Birth date must be at least one month old",
-		path: ["birthDate"],
+	.refine((data) => isDateOneMonthOld(data.dataNasterii), {
+		message: "Data nașterii trebuie să fie de cel puțin o lună în urmă!",
+		path: ["dataNasterii"],
 	});
 
-export const registerSchema = z
+export const schemaActualizareClient = z
 	.object({
 		email: z
 			.string()
 			.min(4)
-			.max(100)
+			.max(150)
 			.refine((value) => (typeof value === "string" ? value.trim() : value)),
-		firstName: z
-			.string()
-			.min(4)
-			.max(120)
-			.refine((value) => (typeof value === "string" ? value.trim() : value)),
-		lastName: z
-			.string()
-			.min(4)
-			.max(120)
-			.refine((value) => (typeof value === "string" ? value.trim() : value)),
+		numeClient: z.string().min(4).max(150),
 		prefix: z.string(),
-		phone: z
+		telefon: z
 			.string()
 			.min(8)
 			.max(15)
 			.refine((value) => (typeof value === "string" ? value.trim() : value)),
-		birthDate: z.string(),
-		password: z
+		dataNasterii: z.string(),
+		parola: z
 			.string()
 			.min(8)
+			.max(60)
 			.refine((value) => (typeof value === "string" ? value.trim() : value)),
-		rePassword: z
-			.string()
-			.refine((value) => (typeof value === "string" ? value.trim() : value)),
-		terms: z.boolean().default(false),
 	})
-	.refine((data) => data.rePassword === data.password, {
-		message: "Passwords must match",
-		path: ["rePassword"],
-	})
-	.refine((data) => isStrongPassword(data.password), {
+	.refine((data) => isStrongPassword(data.parola), {
 		message:
-			"Password must be strong (include uppercase, lowercase, special characters, and be at least 8 characters long)",
-		path: ["password"],
+			"Parola trebuie să fie puternică (să conțină litere mari, litere mici, caractere speciale și să aibă cel puțin 8 caractere).",
+		path: ["parola"],
 	})
-	.refine((data) => isDateInPast(data.birthDate), {
-		message: "Birth date must be in the past",
-		path: ["birthDate"],
+	.refine((data) => isDateInPast(data.dataNasterii), {
+		message: "Data nașterii trebuie să nu fie în viitor!",
+		path: ["dataNasterii"],
 	})
-	.refine((data) => isDateOneMonthOld(data.birthDate), {
-		message: "Birth date must be at least one month old",
-		path: ["birthDate"],
+	.refine((data) => isDateOneMonthOld(data.dataNasterii), {
+		message: "Data nașterii trebuie să fie de cel puțin o lună în urmă!",
+		path: ["dataNasterii"],
 	});
 
-export const firstTimeAccountSchema = z
-	.object({
-		email: z
-			.string()
-			.min(4)
-			.max(100)
-			.refine((value) => (typeof value === "string" ? value.trim() : value)),
-		firstName: z
-			.string()
-			.min(4)
-			.max(120)
-			.refine((value) => (typeof value === "string" ? value.trim() : value)),
-		lastName: z
-			.string()
-			.min(4)
-			.max(120)
-			.refine((value) => (typeof value === "string" ? value.trim() : value)),
-		prefix: z.string(),
-		phone: z
-			.string()
-			.min(8)
-			.max(15)
-			.refine((value) => (typeof value === "string" ? value.trim() : value)),
-		birthDate: z.string(),
-		terms: z.boolean().default(false),
-	})
-	.refine((data) => isDateInPast(data.birthDate), {
-		message: "Birth date must be in the past",
-		path: ["birthDate"],
-	})
-	.refine((data) => isDateOneMonthOld(data.birthDate), {
-		message: "Birth date must be at least one month old",
-		path: ["birthDate"],
-	});
-
-export const resetPassSchema = z
-	.object({
-		password: z
-			.string()
-			.min(8)
-			.refine((value) => (typeof value === "string" ? value.trim() : value)),
-		rePassword: z
-			.string()
-			.refine((value) => (typeof value === "string" ? value.trim() : value)),
-	})
-	.refine((data) => data.rePassword === data.password, {
-		message: "Passwords must match",
-		path: ["rePassword"],
-	})
-	.refine((data) => isStrongPassword(data.password), {
-		message:
-			"Password must be strong (include uppercase, lowercase, special characters, and be at least 8 characters long)",
-		path: ["password"],
-	});
-
-export const createShowSchema = z.object({
-	image: z
-		.string()
-		.min(1)
-		.refine((value) => (typeof value === "string" ? value.trim() : value)),
-	title: z
+export const schemaCreareSpectacol = z.object({
+	imagine: z.string(),
+	titlu: z
 		.string()
 		.min(3)
-		.max(100)
+		.max(150)
 		.refine((value) => (typeof value === "string" ? value.trim() : value)),
-	title_en: z
-		.string()
-		.min(3)
-		.max(100)
-		.refine((value) => (typeof value === "string" ? value.trim() : value)),
-	description: z.string().min(3).max(150),
-	description_en: z.string().min(3).max(150),
-	content: z.string().min(3).max(500),
-	content_en: z.string().min(3).max(500),
+	descriereScurta: z.string().min(3).max(150),
+	continut: z.string().min(3).max(600),
 	director: z.string().min(3).max(150),
-	actors: z.string().min(3).max(200),
-	startTime: z.string(),
-	endTime: z.string(),
-	showRoomId: z
-		.string()
-		.min(1)
-		.refine((value) => (typeof value === "string" ? value.trim() : value)),
-	showTypeId: z
-		.string()
-		.min(1)
-		.refine((value) => (typeof value === "string" ? value.trim() : value)),
-	seasonId: z
-		.string()
-		.min(1)
-		.refine((value) => (typeof value === "string" ? value.trim() : value)),
+	actorii: z.string().min(3).max(255),
+	oraIncepere: z.string(),
+	oraTerminare: z.string(),
+	codSalaSpectacol: z.number(),
+	codTipSpectacol: z.number(),
+	codSezon: z.number(),
 });
 
-export const createShowSeason = z.object({
-	name: z.string().min(3).max(100),
-	name_en: z.string().min(3).max(100),
+export const schemaCreareTipSpectacol = z.object({
+	numeTip: z.string().min(3).max(150),
 });
 
-export const createShowType = z.object({
-	name: z.string().min(3).max(100),
-	name_en: z.string().min(3).max(100),
+export const schemaCreareSezonSpectacol = z.object({
+	numeSezon: z.string().min(3).max(150),
 });
 
-export const createShowDistribution = z.object({
-	name: z.string().min(3).max(100),
-	name_en: z.string().min(3).max(100),
-});
-
-export const createShowRoom = z.object({
-	number: z
+export const schemaCreareSalaSpectacol = z.object({
+	numarSala: z
 		.string()
 		.min(1)
 		.max(150)
 		.refine((value) => (typeof value === "string" ? value.trim() : value)),
-	observations: z.string().min(5).max(200).optional(),
+	observatii: z.string().min(5).max(255).optional(),
 });
 
-export const createShowRoomSeat = z
+export const schemaCreareLocSalaSpectacol = z
 	.object({
-		type: z.string().min(3).max(150),
-		price: z.string(),
-		row: z.string().max(3),
-		number: z
+		tipLoc: z.string().min(3).max(150),
+		pretLoc: z.string(),
+		rand: z.string().max(3),
+		numarLoc: z
 			.string()
 			.min(1)
 			.max(150)
 			.refine((value) => (typeof value === "string" ? value.trim() : value)),
-		showRoomId: z
-			.string()
-			.min(1)
-			.refine((value) => (typeof value === "string" ? value.trim() : value)),
+		codSalaSpectacol: z.number(),
 	})
-	.refine((data) => isNumeric(data.price), {
-		message: "Invalid price, must be a number!",
-		path: ["price"],
+	.refine((data) => isNumeric(data.pretLoc), {
+		message: "Prețul invalid, trebuie să fie un număr!",
+		path: ["pretLoc"],
 	})
-	.refine((data) => parseFloat(data.price) > 0, {
-		message: "Invalid price, must be a greater than 0!",
-		path: ["price"],
+	.refine((data) => parseFloat(data.pretLoc) > 0, {
+		message: "Prețul invalid, trebuie să fie mai mare decât 0!",
+		path: ["pretLoc"],
 	});
 
-export const createTicketSold = z
-	.object({
-		number: z.string().min(3).max(150),
-		soldPrice: z.string().min(1),
-		clientId: z
-			.string()
-			.min(1)
-			.refine((value) => (typeof value === "string" ? value.trim() : value)),
-		seatId: z
-			.string()
-			.min(1)
-			.refine((value) => (typeof value === "string" ? value.trim() : value)),
-		showId: z
-			.string()
-			.min(1)
-			.refine((value) => (typeof value === "string" ? value.trim() : value)),
-		showRoomId: z
-			.string()
-			.min(1)
-			.refine((value) => (typeof value === "string" ? value.trim() : value)),
-		showRoomName: z.string(),
-		currency: z.string().min(2).max(150),
-		currencyDate: z.string().min(2).max(150),
-		currencyAmount: z.string().min(1).max(150),
-		paymentType: z.enum(["DEBIT_CARD", "CASH"]).default("CASH"),
-		generateInvoice: z.string().default("false"),
-		email: z
-			.string()
-			.max(100)
-			.refine((value) => (typeof value === "string" ? value.trim() : value)),
-		firstName: z
-			.string()
-			.max(120)
-			.refine((value) => (typeof value === "string" ? value.trim() : value)),
-		lastName: z
-			.string()
-			.max(120)
-			.refine((value) => (typeof value === "string" ? value.trim() : value)),
-		prefix: z.string(),
-		billingAddress: z.string(),
-		phone: z
-			.string()
-			.max(15)
-			.refine((value) => (typeof value === "string" ? value.trim() : value)),
-	})
-	.refine((data) => isNumeric(data.soldPrice), {
-		message: "Invalid price, must be a number!",
-		path: ["soldPrice"],
-	})
-	.refine((data) => isNumeric(data.currencyAmount), {
-		message: "Invalid price, must be a number!",
-		path: ["currencyAmount"],
-	})
-	.refine((data) => parseFloat(data.soldPrice) > 0, {
-		message: "Invalid price, must be greater than 0!",
-		path: ["soldPrice"],
-	})
-	.refine((data) => parseFloat(data.currencyAmount) > 0, {
-		message: "Invalid currency amount, must be greater than 0!",
-		path: ["currencyAmount"],
-	});
-
-export const createTicketVerified = z.object({
-	ticketSoldId: z
+export const schemaCreareBiletSpectacol = z.object({
+	pretVanzare: z.string(),
+	codClient: z.number(),
+	codSpectacol: z.number(),
+	codSalaSpectacol: z.number(),
+	codRataDeSchimbValutar: z.number(),
+	tipPlata: z.enum(["CARD_CREDIT", "CASH"]).default("CASH"),
+	genereazaFacturaFiscala: z.string().default("false"),
+	email: z
 		.string()
-		.min(1)
+		.min(4)
+		.max(150)
 		.refine((value) => (typeof value === "string" ? value.trim() : value)),
+	numeClient: z.string().min(4).max(150),
+	prefix: z.string(),
+	telefon: z
+		.string()
+		.min(8)
+		.max(15)
+		.refine((value) => (typeof value === "string" ? value.trim() : value)),
+	adresaFacturare: z.string(),
+	bileteDetalii: z
+		.object({
+			pretTotal: z.number(),
+			numarLocuri: z.number(),
+			locuriAlese: z.any(),
+		})
+		.optional(),
 });
 
-export const createInvoiceSchema = z
+export const schemaCreareFacturaFiscala = z
 	.object({
-		invoiceNumber: z.string(),
-		totalAmount: z.string(),
-		clientId: z
-			.string()
-			.min(1)
-			.refine((value) => (typeof value === "string" ? value.trim() : value)),
-		paymentId: z
-			.string()
-			.min(1)
-			.refine((value) => (typeof value === "string" ? value.trim() : value)),
-		fiscalReceiptId: z
-			.string()
-			.min(1)
-			.refine((value) => (typeof value === "string" ? value.trim() : value)),
-		ticketId: z
-			.string()
-			.min(1)
-			.refine((value) => (typeof value === "string" ? value.trim() : value)),
-		currency: z.string().min(2).max(150),
-		currencyDate: z.string().min(2).max(150),
-		currencyAmount: z.string().min(1).max(150),
+		numarFactura: z.string(),
+		sumaPlatita: z.string(),
+		codClient: z.number(),
+		codPlata: z.number(),
+		codBonFiscal: z.number(),
 		email: z
 			.string()
-			.max(100)
+			.min(4)
+			.max(150)
 			.refine((value) => (typeof value === "string" ? value.trim() : value)),
-		firstName: z
-			.string()
-			.max(120)
-			.refine((value) => (typeof value === "string" ? value.trim() : value)),
-		lastName: z
-			.string()
-			.max(120)
-			.refine((value) => (typeof value === "string" ? value.trim() : value)),
+		numeClient: z.string().min(4).max(150),
 		prefix: z.string(),
-		billingAddress: z.string(),
-		phone: z
+		telefon: z
 			.string()
+			.min(8)
 			.max(15)
 			.refine((value) => (typeof value === "string" ? value.trim() : value)),
+		adresaFacturare: z.string(),
 	})
-	.refine((data) => isNumeric(data.totalAmount), {
-		message: "Invalid price, must be a number!",
-		path: ["totalAmount"],
+	.refine((data) => isNumeric(data.sumaPlatita), {
+		message: "Prețul total este invalid, trebuie să fie un număr!",
+		path: ["sumaPlatita"],
 	})
-	.refine((data) => isNumeric(data.currencyAmount), {
-		message: "Invalid price, must be a number!",
-		path: ["currencyAmount"],
-	})
-	.refine((data) => parseFloat(data.totalAmount) > 0, {
-		message: "Invalid price, must be greater than 0!",
-		path: ["totalAmount"],
-	})
-	.refine((data) => parseFloat(data.currencyAmount) > 0, {
-		message: "Invalid price, must be greater than 0!",
-		path: ["currencyAmount"],
+	.refine((data) => parseFloat(data.sumaPlatita) > 0, {
+		message: "Prețul total este invalid, trebuie să fie mai mare decât 0!",
+		path: ["sumaPlatitat"],
 	});
 
-export const createMaterialSchema = z
+export const schemaCreareMaterialDecorSpectacol = z
 	.object({
-		name: z.string().min(3).max(100),
-		name_en: z.string().min(3).max(100),
-		stock: z.string(),
-		buyPrice: z.string(),
-		buyDate: z.string().min(2).max(150),
-		unit: z
+		numeMaterial: z.string().min(3).max(150),
+		cantitateStoc: z.number(),
+		pretAchizitie: z.string(),
+		dataAchizitie: z.string().min(2).max(150),
+		unitateMastura: z
 			.string()
-			.min(1)
 			.refine((value) => (typeof value === "string" ? value.trim() : value)),
-		producer: z
+		producator: z
 			.string()
 			.min(3)
-			.max(130)
+			.max(150)
 			.refine((value) => (typeof value === "string" ? value.trim() : value)),
-		categoryId: z
-			.string()
-			.min(1)
-			.refine((value) => (typeof value === "string" ? value.trim() : value)),
+		codCategorieMaterialDecor: z.number(),
 	})
-	.refine((data) => isNumeric(data.stock), {
-		message: "Invalid stock, must be a number!",
-		path: ["stock"],
+	.refine((data) => isNumeric(data.cantitateStoc), {
+		message: "Stocul este invalid, trebuie să fie un număr!",
+		path: ["cantitateStoc"],
 	})
-	.refine((data) => isNumeric(data.buyPrice), {
-		message: "Invalid buy price, must be a number!",
-		path: ["buyPrice"],
+	.refine((data) => isNumeric(data.pretAchizitie), {
+		message: "Prețul de achiziție este invalid, trebuie să fie un număr!",
+		path: ["pretAchizitie"],
 	})
-	.refine((data) => parseInt(data.stock) > 0, {
-		message: "Invalid stock, must be greater than 0!",
-		path: ["stock"],
+	.refine((data) => data.cantitateStoc > 0, {
+		message: "Stocul este invalid, trebuie să fie mai mare decât 0!",
+		path: ["cantitateStoc"],
 	})
-	.refine((data) => parseFloat(data.buyPrice) > 0, {
-		message: "Invalid buy price, must be greater than 0!",
-		path: ["buyPrice"],
+	.refine((data) => parseFloat(data.pretAchizitie) > 0, {
+		message:
+			"Prețul de achiziție este invalid, trebuie să fie mai mare decât 0!",
+		path: ["pretAchizitie"],
 	});
 
-export const createMaterialUsed = z
+export const schemaCreareMaterialDecorSpectacolFolosit = z
 	.object({
-		quantity: z.string(),
-		leftQuantity: z.string(),
-		usedDate: z.string().min(2).max(150),
-		showId: z
-			.string()
-			.min(1)
-			.refine((value) => (typeof value === "string" ? value.trim() : value)),
-		materialId: z
-			.string()
-			.min(1)
-			.refine((value) => (typeof value === "string" ? value.trim() : value)),
-		observations: z.string().min(5).max(200).optional(),
+		cantitateaFolosita: z.number(),
+		cantitateaRamasaPeStoc: z.number(),
+		dataFolosirii: z.string().min(2).max(150),
+		codSpectacol: z.number(),
+		codMaterialDecorSpectacol: z.number(),
+		observatii: z.string().min(5).max(255).optional(),
 	})
-	.refine((data) => isNumeric(data.quantity), {
-		message: "Invalid quantity, must be a number!",
-		path: ["quantity"],
+	.refine((data) => isNumeric(data.cantitateaFolosita), {
+		message: "Cantitatea folosita este invalidă, trebuie să fie un număr!",
+		path: ["cantitateaFolosita"],
 	})
-	.refine((data) => parseInt(data.quantity) > 0, {
-		message: "Invalid quantity, must be greater than 0!",
-		path: ["quantity"],
+	.refine((data) => data.cantitateaFolosita > 0, {
+		message:
+			"Cantitatea folosita este invalidă, trebuie să fie mai mare decât 0!",
+		path: ["cantitateaFolosita"],
 	})
-	.refine((data) => isNumeric(data.leftQuantity), {
-		message: "Invalid left quantity, must be a number!",
-		path: ["leftQuantity"],
+	.refine((data) => isNumeric(data.cantitateaRamasaPeStoc), {
+		message:
+			"Cantitatea rămasă pe stoc este invalidă, trebuie să fie un număr!",
+		path: ["cantitateRamasaPeStoc"],
 	})
-	.refine((data) => parseInt(data.leftQuantity) >= 0, {
-		message: "Invalid left quantity, must be greater than 0!",
-		path: ["leftQuantity"],
+	.refine((data) => data.cantitateaRamasaPeStoc >= 0, {
+		message:
+			"Cantitatea rămasă pe stoc este invalidă, trebuie să fie mai mare sau egală cu 0!",
+		path: ["cantitateRamasaPeStoc"],
 	});
 
-export const createMaterialCategory = z.object({
-	name: z.string().min(3).max(100),
-	name_en: z.string().min(3).max(100),
+export const schemaCreareCategorieMaterialDecor = z.object({
+	numeCategorie: z.string().min(3).max(150),
 });
 
-export const messageSchema = z.object({
-	email: z
-		.string()
-		.min(4)
-		.max(100)
-		.refine((value) => (typeof value === "string" ? value.trim() : value)),
-	firstName: z
-		.string()
-		.min(4)
-		.max(120)
-		.refine((value) => (typeof value === "string" ? value.trim() : value)),
-	lastName: z
-		.string()
-		.min(4)
-		.max(120)
-		.refine((value) => (typeof value === "string" ? value.trim() : value)),
-	phone: z
-		.string()
-		.min(8)
-		.max(15)
-		.refine((value) => (typeof value === "string" ? value.trim() : value)),
-	message: z.string().max(250),
-});
-
-export const facturareDetailsSchema = z.object({
-	email: z
-		.string()
-		.min(4)
-		.max(100)
-		.refine((value) => (typeof value === "string" ? value.trim() : value)),
-	firstName: z
-		.string()
-		.min(4)
-		.max(120)
-		.refine((value) => (typeof value === "string" ? value.trim() : value)),
-	lastName: z
-		.string()
-		.min(4)
-		.max(120)
-		.refine((value) => (typeof value === "string" ? value.trim() : value)),
-	prefix: z.string(),
-	billingAddress: z.string().min(4),
-	phone: z
-		.string()
-		.min(8)
-		.max(15)
-		.refine((value) => (typeof value === "string" ? value.trim() : value)),
-});
-
-export const addAddressFormSchema = z.object({
-	address: z.string().min(5).max(150),
-	observations: z.string().min(5).max(200).optional(),
-	type: z.enum(["BILLING", "SHIPPING"]).default("BILLING"),
-	zipCode: z
+export const schemaCreareAdresaFacturareClient = z.object({
+	codClient: z.number(),
+	adresa: z.string().min(5).max(255),
+	observatii: z.string().min(5).max(255).optional(),
+	codPostal: z
 		.string()
 		.min(4)
 		.refine((value) => (typeof value === "string" ? value.trim() : value)),
-	city: z
+	oras: z
 		.string()
 		.min(5)
 		.max(30)
 		.refine((value) => (typeof value === "string" ? value.trim() : value)),
-	country: z
+	tara: z
 		.string()
 		.min(4)
 		.max(30)

@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/popover";
 import { CalendarIcon } from "lucide-react";
 import { Button } from "./button";
+import { formatDate } from "@/lib/rangeOptions";
 
 export function DatePickerWithRange({
 	className,
@@ -40,14 +41,13 @@ export function DatePickerWithRange({
 						{date?.from ? (
 							date.to ? (
 								<span className="text-sm">
-									{format(date.from, "LLL dd, y")} -{" "}
-									{format(date.to, "LLL dd, y")}
+									{formatDate(date.from)} - {formatDate(date.to)}
 								</span>
 							) : (
 								format(date.from, "LLL dd, y")
 							)
 						) : (
-							<span className="text-sm">Pick a date</span>
+							<span className="text-sm">Alege o data</span>
 						)}
 					</Button>
 				</PopoverTrigger>

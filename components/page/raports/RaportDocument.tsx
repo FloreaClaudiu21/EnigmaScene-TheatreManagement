@@ -1,6 +1,7 @@
 /* eslint-disable jsx-a11y/alt-text */
 "use client";
-import { validRowsAndCols } from "@/lib/utils";
+import { formatDate } from "@/lib/rangeOptions";
+import { capitalizeFirst, validRowsAndCols } from "@/lib/utils";
 import { RaportModal } from "@/services/StateProvider";
 import config from "@/tailwind.config";
 import { Document, Page, View, Text, Image } from "@react-pdf/renderer";
@@ -48,7 +49,7 @@ export const RaportDocument = ({
 						src={"https://i.imgur.com/QJCzXqh.png"}
 						style={{ height: "64px", width: "120px" }}
 					/>
-					<Text style={{ fontSize: 14, marginBottom: 5 }}>{title}</Text>
+					<Text style={{ fontSize: 16, marginBottom: 5 }}>{title}</Text>
 				</View>
 				<View
 					wrap
@@ -80,7 +81,7 @@ export const RaportDocument = ({
 									width: column.id != "id" ? "25%" : "10%",
 								}}
 							>
-								{column.column.id}
+								{capitalizeFirst(column.column.id)}
 							</Text>
 						))}
 					</View>
@@ -109,7 +110,7 @@ export const RaportDocument = ({
 											width: column.id != "id" ? "25%" : "10%",
 										}}
 									>
-										{isDate ? value.toUTCString() : value}
+										{isDate ? formatDate(value) : value}
 									</Text>
 								);
 							})}
@@ -124,7 +125,7 @@ export const RaportDocument = ({
 						textAlign: "center",
 					}}
 					render={({ pageNumber, totalPages }) =>
-						`Page ${pageNumber} / ${totalPages}`
+						`Pagina ${pageNumber} / ${totalPages}`
 					}
 					fixed
 				/>

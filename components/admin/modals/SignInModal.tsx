@@ -1,5 +1,5 @@
 "use client";
-import { useAuth, useLoadingScreen } from "@/services/StateProvider";
+import { useLoadingScreen } from "@/services/StateProvider";
 import { useToast } from "../../ui/use-toast";
 import {
 	Button,
@@ -10,13 +10,10 @@ import {
 	ModalContent,
 	ModalHeader,
 } from "@nextui-org/react";
-import { LanguageData } from "@/lib/types";
 import { useRouter } from "next-nprogress-bar";
 import { deleteCookie } from "cookies-next";
 import { signIn, signOut, useSession } from "next-auth/react";
-import { loginFormSchema } from "@/lib/schemas";
 import { z } from "zod";
-import { verifyAccountIsActivated } from "@/services/general/EmailProvider";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -29,24 +26,22 @@ import {
 } from "@/components/ui/form";
 import { EyeIcon, EyeOffIcon, MailIcon } from "lucide-react";
 import { getClientByEmail } from "@/services/general/AuthProvider";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { urlLink } from "@/lib/utils";
 import { usePathname } from "next/navigation";
+import { schemaLogareAdmin } from "@/lib/schemas";
+import { AuthContext } from "@/app/AuthContext";
 
-export default function AdminSignInModal({
-	langData,
-}: {
-	langData: LanguageData;
-}) {
-	const auth = useAuth();
+export default function AdminSignInModal() {
 	const router = useRouter();
+	const { toast } = useToast();
 	const pathname = usePathname();
 	const { status } = useSession();
-	const { toast } = useToast();
+	const auth = useContext(AuthContext);
 	const loadingScreen = useLoadingScreen();
 	const [showPassLogin, setShowPassLogin] = useState(false);
-	const loginForm = useForm<z.infer<typeof loginFormSchema>>({
-		resolver: zodResolver(loginFormSchema),
+	const loginForm = useForm<z.infer<typeof schemaLogareAdmin>>({
+		resolver: zodResolver(schemaLogareAdmin),
 	});
 	useEffect(() => {
 		if (status === "loading") return;
@@ -60,51 +55,46 @@ export default function AdminSignInModal({
 			redirect: false,
 		});
 	}
-	async function onSubmitLogin(values: z.infer<typeof loginFormSchema>) {
+	async function onSubmitLogin(values: z.infer<typeof schemaLogareAdmin>) {
 		loadingScreen.setLoading(true);
-		const accountActive = await verifyAccountIsActivated("en", values.email);
-		if (!accountActive.ok) {
-			loadingScreen.setLoading(false);
-			toast({
-				variant: "destructive",
-				title: "Account verfication",
-				description: accountActive.message,
-			});
-			return;
-		}
+		// const accountActive = await verifyAccountIsActivated(values.email);
+		// if (!accountActive.ok) {
+		// 	loadingScreen.setLoading(false);
+		// 	toast({
+		// 		variant: "destructive",
+		// 		title: "Account verfication",
+		// 		description: accountActive.message,
+		// 	});
+		// 	return;
+		// }
 		const data = await signIn("credentials", {
 			redirect: false,
 			email: values.email,
-			password: values.password,
+			password: values.parola,
 		});
-		if (!data) {
-			return;
-		}
-		if (data.ok) {
+		if (data && data.ok) {
 			loginForm.reset();
 			const user = await getClientByEmail(values.email);
-			if (!user?.adminUser) {
-				router.push("/");
+			if (!user?.utlizatorAdmin) {
 				toast({
 					variant: "destructive",
-					title: "Member Login: Access Your Account",
-					description: `You must be admin in order to access the dashboard.`,
+					title: "Autentificare Membru: Accesează-ți Contul",
+					description: `Trebuie să fii administrator pentru a accesa panoul de control.`,
 				});
-				await signOut({
-					redirect: false,
-				});
+				await signOut();
 				return;
 			}
 			document.body.style.overflowY = "auto";
 			toast({
-				title: "Member Login: Access Your Account",
-				description: `Successfully logged in with the account associated with the email address: ${values.email}.`,
+				title: "Autentificare Membru: Accesează-ți Contul",
+				description: `Ai fost autentificat cu succes cu contul asociat adresei de email: ${values.email}.`,
 			});
+			router.refresh();
 		} else {
 			toast({
-				title: "Member Login: Access Your Account",
+				title: "Autentificare Membru: Accesează-ți Contul",
 				variant: "destructive",
-				description: data.error,
+				description: data?.error,
 			});
 		}
 		loadingScreen.setLoading(false);
@@ -129,9 +119,9 @@ export default function AdminSignInModal({
 					<>
 						<ModalHeader className="flex flex-col gap-1 text-center pb-1">
 							<p>
-								Sign In to{" "}
-								<span className="text-red-500">Enigma Scene Theatre</span>
-								<br /> Admin Panel
+								Autentifică-te la{" "}
+								<span className="text-red-500">Teatrul EnigmaScene</span>
+								<br /> Panoul de Administrare
 							</p>
 						</ModalHeader>
 						<ModalBody>
@@ -164,11 +154,11 @@ export default function AdminSignInModal({
 										)}
 									/>
 									<FormField
+										name="parola"
 										control={loginForm.control}
-										name="password"
 										render={({ field }) => (
 											<FormItem>
-												<FormLabel>Password*</FormLabel>
+												<FormLabel>Parola*</FormLabel>
 												<FormControl>
 													<Input
 														required
@@ -219,7 +209,7 @@ export default function AdminSignInModal({
 												/>
 											}
 										>
-											Sign in with Google
+											Logare cu cont Google
 										</Button>
 									</div>
 									<div className="flex flex-row justify-end gap-4 !mt-6">
@@ -228,7 +218,7 @@ export default function AdminSignInModal({
 											type="submit"
 											className="bg-black font-bold text-white"
 										>
-											Sign In
+											Logare
 										</Button>
 									</div>
 								</form>

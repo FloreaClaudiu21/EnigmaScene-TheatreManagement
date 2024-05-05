@@ -1,417 +1,378 @@
 "use server";
-import { Locale } from "@/i18n.config";
-import {
-	isEmailAssociated,
-	makeDictionaryBE,
-} from "../general/AccountProviders";
-import { RegisterResponse, TableTypes } from "@/lib/types";
+import { isEmailAssociated } from "../general/AccountProviders";
 import { encryptPassword, getClientByEmail } from "../general/AuthProvider";
 import { prisma } from "@/lib/prismaClient";
-import { capitalizeFirstLetter, generateRandomString } from "@/lib/utils";
 import {
-	createInvoiceSchema,
-	createMaterialSchema,
-	createMaterialUsed,
-	createTicketSold,
+	schemaCreareBiletSpectacol,
+	schemaCreareFacturaFiscala,
+	schemaCreareMaterialDecorSpectacol,
+	schemaCreareMaterialDecorSpectacolFolosit,
+	schemaCreareSpectacol,
 } from "@/lib/schemas";
+import {
+	BiletSpectacol,
+	LocSalaSpectacol,
+	MailSendResponse,
+	TipuriTabel,
+} from "@/lib/types";
+import { capitalizeFirstLetter, generateRandomString } from "@/lib/utils";
+import { revalidateTag } from "next/cache";
 import { z } from "zod";
 
-const typeByName = (type: TableTypes) => {
+const typeByName = (type: TipuriTabel) => {
 	return capitalizeFirstLetter(type.toString().toLowerCase());
 };
 
 export const getShowById = async (id: number) => {
-	const found = await prisma.show.findFirst({
+	const found = await prisma.spectacol.findFirst({
 		where: {
-			id: id,
+			codSpectacol: id,
 		},
 		include: {
-			favorites: {
-				include: {
-					client: true,
-				},
-			},
-			ticketsSold: true,
-			showType: true,
-			season: true,
-			materials: {
-				include: {
-					material: {
-						include: {
-							category: true,
-						},
-					},
-				},
-			},
+			bileteVandute: true,
+			bonuriFiscale: true,
+			materialeDecorFolosite: true,
+			salaSpectacol: true,
+			sezon: true,
+			tipSpectacol: true,
 		},
 	});
 	return found;
 };
 
 export const getSeasonById = async (id: number) => {
-	const found = await prisma.season.findFirst({
+	const found = await prisma.sezon.findFirst({
 		where: {
-			id: id,
+			codSezon: id,
 		},
 	});
 	return found;
 };
 
 export const getTicketSoldById = async (id: number) => {
-	const found = await prisma.ticketSold.findFirst({
+	const found = await prisma.biletSpectacol.findFirst({
 		where: {
-			id: id,
-		},
-	});
-	return found;
-};
-
-export const getTicketVerifiedById = async (id: number) => {
-	const found = await prisma.ticketVerified.findFirst({
-		where: {
-			id: id,
+			codBiletSpectacol: id,
 		},
 	});
 	return found;
 };
 
 export const getCategoryById = async (id: number) => {
-	const found = await prisma.showType.findFirst({
+	const found = await prisma.tipSpectacol.findFirst({
 		where: {
-			id: id,
+			codTipSpectacol: id,
 		},
 	});
 	return found;
 };
 
 export const getShowRoomById = async (id: number) => {
-	return await prisma.showRoom.findFirst({
+	return await prisma.salaSpectacol.findFirst({
 		where: {
-			id: id,
+			codSalaSpectacol: id,
 		},
 	});
 };
 
 export const getShowRoomSeatById = async (id: number) => {
-	return await prisma.showRoomSeat.findFirst({
+	return await prisma.locSalaSpectacol.findFirst({
 		where: {
-			id: id,
+			codLocSala: id,
+		},
+		include: {
+			salaSpectacol: true,
 		},
 	});
 };
 
 export const getShowMaterialById = async (id: number) => {
-	return await prisma.showMaterialDecoration.findFirst({
+	return await prisma.materialDecorSpectacol.findFirst({
 		where: {
-			id: id,
+			codMaterialDecor: id,
+		},
+		include: {
+			categorieMaterialDecor: true,
 		},
 	});
 };
 
 export const getShowMaterialUsedById = async (id: number) => {
-	return await prisma.showMaterialDecorationUsed.findFirst({
+	return await prisma.materialDecorSpectacolFolosit.findFirst({
 		where: {
-			id: id,
+			codMaterialDecorSpectacolFolosit: id,
 		},
 		include: {
-			material: true,
-			show: {
-				include: {
-					showType: true,
-					season: true,
-				},
-			},
+			materialDecorSpectacol: true,
+			spectacol: true,
 		},
 	});
 };
 
 export const getShowMaterialCategoryById = async (id: number) => {
-	return await prisma.showMaterialDecorationCategory.findFirst({
+	return await prisma.categorieMaterialDecor.findFirst({
 		where: {
-			id: id,
+			codCategorieMaterialDecor: id,
 		},
 	});
 };
 
-export const insert = async (lang: Locale, type: TableTypes, data: any) => {
+///////////////////////////////////////////////////////////////////////////
+
+export const verifyTicket = async (data: BiletSpectacol) => {
+	const response = await prisma.biletSpectacol.update({
+		where: {
+			codBiletSpectacol: data.codBiletSpectacol,
+		},
+		data: {
+			biletVerificat: !data.biletVerificat,
+		},
+	});
+	revalidateTag("checked");
+	return response;
+};
+
+export const insert = async (type: TipuriTabel, data: any) => {
 	const what = typeByName(type);
-	const { dictionary } = await makeDictionaryBE(lang);
 	try {
 		switch (type) {
-			case TableTypes.CLIENT: {
+			case TipuriTabel.CLIENT: {
 				const registerData = {
 					...data,
-					password: await encryptPassword(data.password),
-					emailVerified: new Date(),
+					parola: await encryptPassword(data.parola),
+					emailVerificat: new Date(),
 				};
 				const found = await getClientByEmail(registerData.email);
 				if (found) {
 					return {
-						error: dictionary.backend.createGeneral.alreadyExistsEmail
-							.replace("{email}", found.email)
-							.replace("{what}", what),
+						message: `${what} cu adresa de email '${found.email}' există deja.`,
 						status: 404,
 						ok: false,
-					} as RegisterResponse;
+					} as MailSendResponse;
 				}
 				const associatonFound = await isEmailAssociated(registerData.email);
 				if (associatonFound) {
 					return {
-						error: dictionary.backend.createGeneral.emailAssociatedWithAnotherAccount.replace(
-							"{email}",
-							registerData.email
-						),
+						message: `Adresa de email '${registerData.email}' este deja asociată cu un alt cont.`,
 						status: 404,
 						ok: false,
-					} as RegisterResponse;
+					} as MailSendResponse;
 				}
 				const client = await prisma.client.create({
 					data: registerData,
 				});
 				return {
-					error: dictionary.backend.createGeneral.createdSuccess.replace(
-						"{what}",
-						what
-					),
+					message: `${what} creat cu succes.`,
 					ok: true,
 					status: 200,
 					client: client,
-				} as RegisterResponse;
+				} as MailSendResponse;
 			}
-			case TableTypes.SHOW: {
-				await prisma.show.create({
+			case TipuriTabel.SPECTACOL: {
+				const val = data as z.infer<typeof schemaCreareSpectacol>;
+				await prisma.spectacol.create({
+					data: {
+						...val,
+					},
+				});
+				break;
+			}
+			case TipuriTabel.SPECTACOL_CATEGORIE: {
+				await prisma.tipSpectacol.create({
+					data,
+				});
+				break;
+			}
+			case TipuriTabel.SPECTACOL_SEZON: {
+				await prisma.sezon.create({
+					data,
+				});
+				break;
+			}
+			case TipuriTabel.CAMERA_SPECTACOL: {
+				await prisma.salaSpectacol.create({
+					data,
+				});
+				break;
+			}
+			case TipuriTabel.SCAUN_CAMERA_SPECTACOL: {
+				await prisma.locSalaSpectacol.create({
 					data: {
 						...data,
-						seasonId: parseInt(data.seasonId),
-						showTypeId: parseInt(data.showTypeId),
-						showRoomId: parseInt(data.showRoomId),
+						codSalaSpectacol: parseInt(data.codSalaSpectacol),
 					},
 				});
 				break;
 			}
-			case TableTypes.SHOW_CATEGORY: {
-				await prisma.showType.create({
-					data,
-				});
-				break;
-			}
-			case TableTypes.SHOW_SEASON: {
-				await prisma.season.create({
-					data,
-				});
-				break;
-			}
-			case TableTypes.SHOWROOM: {
-				await prisma.showRoom.create({
-					data,
-				});
-				break;
-			}
-			case TableTypes.SHOWROOM_SEAT: {
-				await prisma.showRoomSeat.create({
+			case TipuriTabel.BILET: {
+				const values = data as z.infer<typeof schemaCreareBiletSpectacol>;
+				const payment = await prisma.plata.create({
 					data: {
-						...data,
-						showRoomId: parseInt(data.showRoomId),
+						tipPlata: values.tipPlata,
+						codClient: values.codClient,
+						codRataDeSchimbValutar: values.codRataDeSchimbValutar,
+						sumaPlatita: parseFloat(values.bileteDetalii?.pretTotal + ""),
 					},
 				});
-				break;
-			}
-			case TableTypes.TICKET_SOLD: {
-				const values = data as z.infer<typeof createTicketSold>;
-				const payment = await prisma.payment.create({
+				const fiscal = await prisma.bonFiscal.create({
 					data: {
-						type: values.paymentType,
-						clientId: parseInt(values.clientId),
-						amount: parseFloat(values.soldPrice),
-						currencyAmount: parseFloat(values.currencyAmount),
-						currency: values.currency,
-						currencyDate: values.currencyDate,
+						codPlata: payment.codPlata,
+						codClient: values.codClient,
+						codSpectacol: values.codSpectacol,
+						numarBonFiscal: "#" + generateRandomString(6),
 					},
 				});
-				const ticket = await prisma.ticketSold.create({
-					data: {
-						number: values.number,
-						clientId: parseInt(values.clientId),
-						seatId: parseInt(values.seatId),
-						showId: parseInt(values.showId),
-						showRoomId: parseInt(values.showRoomId),
-						soldPrice: parseFloat(values.soldPrice),
-					},
-				});
-				await prisma.payment.update({
-					where: {
-						id: payment.id,
-					},
-					data: {
-						ticketId: ticket.id,
-					},
-				});
-				const fiscal = await prisma.fiscalReceipt.create({
-					data: {
-						clientId: parseInt(values.clientId),
-						currency: values.currency,
-						currencyDate: values.currencyDate,
-						showId: parseInt(values.showId),
-						ticketId: ticket.id,
-						paymentId: payment.id,
-						paidAt: new Date(),
-						amount: parseFloat(values.soldPrice),
-						receiptNumber: "#" + generateRandomString(6),
-						currencyAmount: parseFloat(values.currencyAmount),
-					},
-				});
-				if (values.generateInvoice == "true") {
-					await prisma.invoice.create({
+				const locuri: LocSalaSpectacol[] =
+					values.bileteDetalii?.locuriAlese ?? [];
+				let codFactura = undefined;
+				if (values.genereazaFacturaFiscala == "true") {
+					const factura = await prisma.facturaFiscala.create({
 						data: {
-							billingAddress: values.billingAddress,
-							firstName: values.firstName,
-							lastName: values.lastName,
-							phone: values.prefix + values.phone,
+							adresaFacturare: values.adresaFacturare,
 							email: values.email,
-							clientId: parseInt(values.clientId),
-							paymentId: payment.id,
-							ticketId: ticket.id,
-							amount: 1,
-							dueDate: new Date(),
-							extraFees: 0,
-							totalAmount: parseFloat(values.soldPrice),
-							currencyAmount: parseFloat(values.currencyAmount),
-							invoiceNumber: generateRandomString(6),
-							fiscalReceiptId: fiscal.id,
-							currency: values.currency,
-							currencyDate: values.currencyDate,
+							numeClient: values.numeClient,
+							codClient: values.codClient,
+							telefon: values.prefix + values.telefon,
+							numarFactura: generateRandomString(6),
+							costuriExtra: 0,
+							totalSumaPlatita:
+								parseFloat(values.bileteDetalii?.pretTotal + "") + 0,
+							sumaPlatita: parseFloat(values.bileteDetalii?.pretTotal + ""),
+							dataScadentei: new Date(),
+							codBonFiscal: fiscal.codBonFiscal,
+							codPlata: payment.codPlata,
 						},
 					});
+					codFactura = factura.codFactura;
 				}
+				await Promise.all(
+					locuri.map(async (loc) => {
+						await prisma.biletSpectacol.create({
+							data: {
+								biletVerificat: false,
+								numarBilet: generateRandomString(5),
+								codPlata: payment.codPlata,
+								codClient: values.codClient,
+								codSpectacol: values.codSpectacol,
+								codSalaSpectacol: values.codSalaSpectacol,
+								codLocSalaSpectacol: loc.codLocSala,
+								codBonFiscal: fiscal.codBonFiscal,
+								codFacturaFiscala: codFactura,
+								pretVanzare: parseFloat(values.bileteDetalii?.pretTotal + ""),
+							},
+						});
+					})
+				);
 				break;
 			}
-			case TableTypes.TICKET_VERIFIED: {
-				await prisma.ticketVerified.create({
+			case TipuriTabel.FACTURA_FISCALA: {
+				const values = data as z.infer<typeof schemaCreareFacturaFiscala>;
+				const factura = await prisma.facturaFiscala.create({
 					data: {
-						...data,
-						ticketSoldId: parseInt(data.ticketSoldId),
-					},
-				});
-				break;
-			}
-			case TableTypes.INVOICE: {
-				const values = data as z.infer<typeof createInvoiceSchema>;
-				await prisma.invoice.create({
-					data: {
-						billingAddress: values.billingAddress,
-						firstName: values.firstName,
-						lastName: values.lastName,
-						phone: values.prefix + values.phone,
+						costuriExtra: 0,
+						codPlata: values.codPlata,
+						codClient: values.codClient,
+						codBonFiscal: values.codBonFiscal,
+						telefon: values.prefix + values.telefon,
+						numarFactura: values.numarFactura,
+						adresaFacturare: values.adresaFacturare,
 						email: values.email,
-						clientId: parseInt(values.clientId),
-						paymentId: parseInt(values.paymentId),
-						ticketId: parseInt(values.ticketId),
-						amount: 1,
-						dueDate: new Date(),
-						extraFees: 0,
-						totalAmount: parseFloat(values.totalAmount),
-						currencyAmount: parseFloat(values.currencyAmount),
-						invoiceNumber: generateRandomString(6),
-						fiscalReceiptId: parseInt(values.fiscalReceiptId),
-						currency: values.currency,
-						currencyDate: values.currencyDate,
+						numeClient: values.numeClient,
+						sumaPlatita: parseFloat(values.sumaPlatita),
+						dataScadentei: new Date(),
+						totalSumaPlatita: parseFloat(values.sumaPlatita) + 0,
 					},
 				});
-				break;
-			}
-			case TableTypes.MATERIAL: {
-				const values = data as z.infer<typeof createMaterialSchema>;
-				await prisma.showMaterialDecoration.create({
-					data: {
-						...values,
-						stock: parseInt(values.stock),
-						buyPrice: parseFloat(values.buyPrice),
-						categoryId: parseInt(values.categoryId),
-					},
-				});
-				break;
-			}
-			case TableTypes.MATERIAL_USED: {
-				const values = data as z.infer<typeof createMaterialUsed>;
-				await prisma.showMaterialDecorationUsed.create({
-					data: {
-						...values,
-						quantity: parseInt(values.quantity),
-						leftQuantity: parseInt(values.leftQuantity),
-						materialId: parseInt(values.materialId),
-						showId: parseInt(values.showId),
-					},
-				});
-				await prisma.showMaterialDecoration.update({
+				await prisma.biletSpectacol.updateMany({
 					where: {
-						id: parseInt(values.materialId),
+						codBonFiscal: values.codBonFiscal,
+						codPlata: values.codPlata,
 					},
 					data: {
-						stock: parseInt(values.leftQuantity),
+						codBonFiscal: values.codBonFiscal,
+						codFacturaFiscala: factura.codFactura,
 					},
 				});
 				break;
 			}
-			case TableTypes.MATERIAL_CATEGORY: {
-				await prisma.showMaterialDecorationCategory.create({
+			case TipuriTabel.MATERIAL_DECOR: {
+				const values = data as z.infer<
+					typeof schemaCreareMaterialDecorSpectacol
+				>;
+				await prisma.materialDecorSpectacol.create({
+					data: {
+						...values,
+						pretAchizitie: parseFloat(values.pretAchizitie),
+					},
+				});
+				break;
+			}
+			case TipuriTabel.MATERIAL_DECOR_FOLOSIT: {
+				const values = data as z.infer<
+					typeof schemaCreareMaterialDecorSpectacolFolosit
+				>;
+				await prisma.materialDecorSpectacolFolosit.create({
+					data: {
+						...values,
+					},
+				});
+				await prisma.materialDecorSpectacol.update({
+					where: {
+						codMaterialDecor: values.codMaterialDecorSpectacol,
+					},
+					data: {
+						cantitateStoc: values.cantitateaRamasaPeStoc,
+					},
+				});
+				break;
+			}
+			case TipuriTabel.MATERIAL_DECOR_CATEGORIE: {
+				await prisma.categorieMaterialDecor.create({
 					data,
 				});
 				break;
 			}
 		}
 		return {
-			error: dictionary.backend.createGeneral.createdSuccess.replace(
-				"{what}",
-				what
-			),
+			message: `${what} creat cu succes.`,
 			ok: true,
 			status: 200,
-		} as RegisterResponse;
+		} as MailSendResponse;
 	} catch (e) {
 		console.log("Add Error: " + e);
 		if (e instanceof Error) {
+			console.log(e.stack);
 			return {
-				error: e.toString(),
+				message: e.toString(),
 				status: 500,
 				ok: false,
-			} as RegisterResponse;
+			} as MailSendResponse;
 		} else {
 			return {
-				error: dictionary.backend.createGeneral.unknownError.replace(
-					"{what}",
-					what
-				),
+				message: `A apărut o eroare necunoscută în timpul creării '${what}'. Vă rugăm să încercați din nou mai târziu.`,
 				status: 500,
 				ok: false,
-			} as RegisterResponse;
+			} as MailSendResponse;
 		}
 	}
 };
 
-export const update = async (
-	lang: Locale,
-	type: TableTypes,
-	data: any,
-	id: number
-) => {
+export const update = async (type: TipuriTabel, data: any, id: number) => {
 	const what = typeByName(type);
-	const { dictionary } = await makeDictionaryBE(lang);
 	try {
 		switch (type) {
-			case TableTypes.CLIENT: {
+			case TipuriTabel.CLIENT: {
 				const registerData = {
 					...data,
-					password: await encryptPassword(data.password),
+					parola: await encryptPassword(data.parola),
 				};
 				const found = await getClientByEmail(registerData.email);
 				if (!found) {
 					return {
-						error: dictionary.backend.updateGeneral.withEmailNotFound
-							.replace("{email}", data.email)
-							.replace("{what}", what),
+						message: `${what} cu adresa de email '${registerData.email}' nu există.`,
 						status: 404,
 						ok: false,
-					} as RegisterResponse;
+					} as MailSendResponse;
 				}
 				await prisma.client.update({
 					where: {
@@ -420,317 +381,283 @@ export const update = async (
 					data: registerData,
 				});
 				return {
-					error: dictionary.backend.updateGeneral.updatedSuccess.replace(
-						"{what}",
-						what
-					),
-					ok: false,
-					status: 404,
-				} as RegisterResponse;
+					message: `${what} actualizat cu succes.`,
+					ok: true,
+					status: 200,
+				} as MailSendResponse;
 			}
-			case TableTypes.SHOW: {
+			case TipuriTabel.SPECTACOL: {
 				const found = await getShowById(id);
 				if (!found) {
 					return {
-						error: dictionary.backend.updateGeneral.withIDNotFound
-							.replace("{what}", what)
-							.replace("{id}", id),
+						message: `${what} cu ID-ul '${id}' nu există.`,
 						ok: false,
 						status: 404,
-					} as RegisterResponse;
+					} as MailSendResponse;
 				}
-				await prisma.show.update({
+				await prisma.spectacol.update({
 					where: {
-						id,
+						codSpectacol: id,
 					},
 					data: {
 						...data,
-						showRoomId: parseInt(data.showRoomId),
-						seasonId: parseInt(data.seasonId),
-						showTypeId: parseInt(data.showTypeId),
 					},
 				});
 				break;
 			}
-			case TableTypes.SHOW_CATEGORY: {
+			case TipuriTabel.SPECTACOL_CATEGORIE: {
 				const found = await getCategoryById(id);
 				if (!found) {
 					return {
-						error: dictionary.backend.updateGeneral.withIDNotFound
-							.replace("{what}", what)
-							.replace("{id}", id),
+						message: `${what} cu ID-ul '${id}' nu există.`,
 						ok: false,
 						status: 404,
-					} as RegisterResponse;
+					} as MailSendResponse;
 				}
-				await prisma.showType.update({
+				await prisma.tipSpectacol.update({
 					where: {
-						id,
+						codTipSpectacol: id,
 					},
 					data,
 				});
 				break;
 			}
-			case TableTypes.SHOW_SEASON: {
+			case TipuriTabel.SPECTACOL_SEZON: {
 				const found = await getSeasonById(id);
 				if (!found) {
 					return {
-						error: dictionary.backend.updateGeneral.withIDNotFound
-							.replace("{what}", what)
-							.replace("{id}", id),
+						message: `${what} cu ID-ul '${id}' nu există.`,
 						ok: false,
 						status: 404,
-					} as RegisterResponse;
+					} as MailSendResponse;
 				}
-				await prisma.season.update({
+				await prisma.sezon.update({
 					where: {
-						id,
+						codSezon: id,
 					},
 					data,
 				});
 				break;
 			}
-			case TableTypes.SHOWROOM: {
+			case TipuriTabel.CAMERA_SPECTACOL: {
 				const found = await getShowRoomById(id);
 				if (!found) {
 					return {
-						error: dictionary.backend.updateGeneral.withIDNotFound
-							.replace("{what}", what)
-							.replace("{id}", id),
+						message: `${what} cu ID-ul '${id}' nu există.`,
 						ok: false,
 						status: 404,
-					} as RegisterResponse;
+					} as MailSendResponse;
 				}
-				await prisma.showRoom.update({
+				await prisma.salaSpectacol.update({
 					where: {
-						id,
+						codSalaSpectacol: id,
 					},
 					data,
 				});
 				break;
 			}
-			case TableTypes.SHOWROOM_SEAT: {
+			case TipuriTabel.SCAUN_CAMERA_SPECTACOL: {
 				const found = await getShowRoomSeatById(id);
 				if (!found) {
 					return {
-						error: dictionary.backend.updateGeneral.withIDNotFound
-							.replace("{what}", what)
-							.replace("{id}", id),
+						message: `${what} cu ID-ul '${id}' nu există.`,
 						ok: false,
 						status: 404,
-					} as RegisterResponse;
+					} as MailSendResponse;
 				}
-				await prisma.showRoomSeat.update({
+				await prisma.locSalaSpectacol.update({
 					where: {
-						id,
+						codLocSala: id,
 					},
 					data: {
 						...data,
-						showRoomId: parseInt(data.showRoomId),
 					},
 				});
 				break;
 			}
-			case TableTypes.TICKET_SOLD: {
+			case TipuriTabel.BILET: {
 				const found = await getTicketSoldById(id);
 				if (!found) {
 					return {
-						error: dictionary.backend.updateGeneral.withIDNotFound
-							.replace("{what}", what)
-							.replace("{id}", id),
+						message: `${what} cu ID-ul '${id}' nu există.`,
 						ok: false,
 						status: 404,
-					} as RegisterResponse;
+					} as MailSendResponse;
 				}
-				const values = data as z.infer<typeof createTicketSold>;
-				const payment = await prisma.payment.update({
+				const values = data as z.infer<typeof schemaCreareBiletSpectacol>;
+				const payment = await prisma.plata.update({
 					where: {
-						ticketId: id,
+						codPlata: found.codPlata,
 					},
 					data: {
-						ticketId: id,
-						type: values.paymentType,
-						clientId: parseInt(values.clientId),
-						amount: parseFloat(values.soldPrice),
-						currencyAmount: parseFloat(values.currencyAmount),
-						currency: values.currency,
-						currencyDate: values.currencyDate,
+						codClient: values.codClient,
+						sumaPlatita: parseFloat(values.pretVanzare),
+						codRataDeSchimbValutar: values.codRataDeSchimbValutar,
 					},
 				});
-				const ticket = await prisma.ticketSold.update({
+				await prisma.biletSpectacol.update({
 					where: {
-						id,
+						codBiletSpectacol: id,
 					},
 					data: {
-						number: values.number,
-						clientId: parseInt(values.clientId),
-						seatId: parseInt(values.seatId),
-						showId: parseInt(values.showId),
-						showRoomId: parseInt(values.showRoomId),
-						soldPrice: parseFloat(values.soldPrice),
+						codPlata: payment.codPlata,
+						codClient: values.codClient,
+						codSpectacol: values.codSpectacol,
+						codSalaSpectacol: values.codSalaSpectacol,
+						pretVanzare: parseFloat(values.pretVanzare),
 					},
 				});
-				await prisma.fiscalReceipt.update({
+				const fiscal = await prisma.bonFiscal.update({
 					where: {
-						ticketId: id,
+						codPlata: payment.codPlata,
 					},
 					data: {
-						clientId: parseInt(values.clientId),
-						currency: values.currency,
-						currencyDate: values.currencyDate,
-						showId: parseInt(values.showId),
-						ticketId: ticket.id,
-						paymentId: payment.id,
-						paidAt: new Date(),
-						amount: parseFloat(values.soldPrice),
-						currencyAmount: parseFloat(values.currencyAmount),
+						codClient: values.codClient,
+						codSpectacol: values.codSpectacol,
 					},
 				});
-				if (values.generateInvoice == "true") {
-					await prisma.invoice.update({
-						where: {
-							ticketId: id,
-						},
-						data: {
-							extraFees: 0,
-							billingAddress: values.billingAddress,
-							firstName: values.firstName,
-							lastName: values.lastName,
-							phone: values.prefix + values.phone,
-							email: values.email,
-							clientId: parseInt(values.clientId),
-							paymentId: payment.id,
-							ticketId: ticket.id,
-							dueDate: new Date(),
-							currency: values.currency,
-							currencyDate: values.currencyDate,
-							amount: parseFloat(values.soldPrice),
-							totalAmount: parseFloat(values.soldPrice),
-							currencyAmount: parseFloat(values.currencyAmount),
-						},
-					});
+				let codFactura = undefined;
+				if (values.genereazaFacturaFiscala == "true") {
+					if (found.codFacturaFiscala != null) {
+						await prisma.facturaFiscala.update({
+							where: {
+								codPlata: payment.codPlata,
+							},
+							data: {
+								email: values.email,
+								telefon: values.prefix + values.telefon,
+								numeClient: values.numeClient,
+								adresaFacturare: values.adresaFacturare,
+								costuriExtra: 0,
+								codClient: values.codClient,
+								totalSumaPlatita: parseFloat(values.pretVanzare) + 0,
+								sumaPlatita: parseFloat(values.pretVanzare),
+								codBonFiscal: fiscal.codBonFiscal,
+								codPlata: payment.codPlata,
+							},
+						});
+					} else {
+						const factura = await prisma.facturaFiscala.create({
+							data: {
+								email: values.email,
+								telefon: values.prefix + values.telefon,
+								numeClient: values.numeClient,
+								costuriExtra: 0,
+								adresaFacturare: values.adresaFacturare,
+								numarFactura: generateRandomString(6),
+								totalSumaPlatita: parseFloat(values.pretVanzare) + 0,
+								sumaPlatita: parseFloat(values.pretVanzare),
+								dataScadentei: new Date(),
+								codBonFiscal: fiscal.codBonFiscal,
+								codPlata: payment.codPlata,
+								codClient: values.codClient,
+							},
+						});
+						codFactura = factura.codFactura;
+					}
 				}
-				break;
-			}
-			case TableTypes.TICKET_VERIFIED: {
-				const found = await getTicketVerifiedById(id);
-				if (!found) {
-					return {
-						error: dictionary.backend.updateGeneral.withIDNotFound
-							.replace("{what}", what)
-							.replace("{id}", id),
-						ok: false,
-						status: 404,
-					} as RegisterResponse;
-				}
-				await prisma.ticketVerified.update({
+				await prisma.biletSpectacol.updateMany({
 					where: {
-						id,
+						codPlata: found.codPlata,
 					},
 					data: {
-						...data,
-						ticketSoldId: parseInt(data.ticketSoldId),
+						codPlata: payment.codPlata,
+						codClient: values.codClient,
+						codSpectacol: values.codSpectacol,
+						codSalaSpectacol: values.codSalaSpectacol,
+						pretVanzare: parseFloat(values.pretVanzare),
+						codFacturaFiscala: codFactura ?? found.codFacturaFiscala,
 					},
 				});
 				break;
 			}
-			case TableTypes.INVOICE: {
-				const values = data as z.infer<typeof createInvoiceSchema>;
-				await prisma.invoice.update({
+			case TipuriTabel.FACTURA_FISCALA: {
+				const values = data as z.infer<typeof schemaCreareFacturaFiscala>;
+				await prisma.facturaFiscala.update({
 					where: {
-						id,
+						codFactura: id,
 					},
 					data: {
-						billingAddress: values.billingAddress,
-						firstName: values.firstName,
-						lastName: values.lastName,
-						phone: values.prefix + values.phone,
+						costuriExtra: 0,
+						codPlata: values.codPlata,
+						codClient: values.codClient,
+						codBonFiscal: values.codBonFiscal,
+						telefon: values.prefix + values.telefon,
+						numarFactura: values.numarFactura,
+						adresaFacturare: values.adresaFacturare,
 						email: values.email,
-						clientId: parseInt(values.clientId),
-						paymentId: parseInt(values.paymentId),
-						ticketId: parseInt(values.ticketId),
-						totalAmount: parseFloat(values.totalAmount),
-						currencyAmount: parseFloat(values.currencyAmount),
-						fiscalReceiptId: parseInt(values.fiscalReceiptId),
-						currency: values.currency,
-						currencyDate: values.currencyDate,
+						numeClient: values.numeClient,
+						sumaPlatita: parseFloat(values.sumaPlatita),
+						totalSumaPlatita: parseFloat(values.sumaPlatita) + 0,
 					},
 				});
 				break;
 			}
-			case TableTypes.MATERIAL: {
+			case TipuriTabel.MATERIAL_DECOR: {
 				const found = await getShowMaterialById(id);
 				if (!found) {
 					return {
-						error: dictionary.backend.updateGeneral.withIDNotFound
-							.replace("{what}", what)
-							.replace("{id}", id),
+						message: `${what} cu ID-ul '${id}' nu există.`,
 						ok: false,
 						status: 404,
-					} as RegisterResponse;
+					} as MailSendResponse;
 				}
-				const values = data as z.infer<typeof createMaterialSchema>;
-				await prisma.showMaterialDecoration.update({
+				const values = data as z.infer<
+					typeof schemaCreareMaterialDecorSpectacol
+				>;
+				await prisma.materialDecorSpectacol.update({
 					where: {
-						id,
+						codMaterialDecor: id,
 					},
 					data: {
 						...values,
-						stock: parseInt(values.stock),
-						buyPrice: parseFloat(values.buyPrice),
-						categoryId: parseInt(values.categoryId),
+						pretAchizitie: parseFloat(values.pretAchizitie),
 					},
 				});
 				break;
 			}
-			case TableTypes.MATERIAL_USED: {
+			case TipuriTabel.MATERIAL_DECOR_FOLOSIT: {
 				const found = await getShowMaterialUsedById(id);
 				if (!found) {
 					return {
-						error: dictionary.backend.updateGeneral.withIDNotFound
-							.replace("{what}", what)
-							.replace("{id}", id),
+						message: `${what} cu ID-ul '${id}' nu există.`,
 						ok: false,
 						status: 404,
-					} as RegisterResponse;
+					} as MailSendResponse;
 				}
-				const values = data as z.infer<typeof createMaterialUsed>;
-				await prisma.showMaterialDecorationUsed.update({
+				const values = data as z.infer<
+					typeof schemaCreareMaterialDecorSpectacolFolosit
+				>;
+				await prisma.materialDecorSpectacolFolosit.update({
 					where: {
-						id,
+						codMaterialDecorSpectacolFolosit: id,
 					},
 					data: {
 						...values,
-						quantity: parseInt(values.quantity),
-						leftQuantity: parseInt(values.leftQuantity),
-						materialId: parseInt(values.materialId),
-						showId: parseInt(values.showId),
 					},
 				});
-				await prisma.showMaterialDecoration.update({
+				await prisma.materialDecorSpectacol.update({
 					where: {
-						id: parseInt(values.materialId),
+						codMaterialDecor: values.codMaterialDecorSpectacol,
 					},
 					data: {
-						stock: parseInt(values.leftQuantity),
+						cantitateStoc: values.cantitateaRamasaPeStoc,
 					},
 				});
 				break;
 			}
-			case TableTypes.MATERIAL_CATEGORY: {
+			case TipuriTabel.MATERIAL_DECOR_CATEGORIE: {
 				const found = await getShowMaterialCategoryById(id);
 				if (!found) {
 					return {
-						error: dictionary.backend.updateGeneral.withIDNotFound
-							.replace("{what}", what)
-							.replace("{id}", id),
+						message: `${what} cu ID-ul '${id}' nu există.`,
 						ok: false,
 						status: 404,
-					} as RegisterResponse;
+					} as MailSendResponse;
 				}
-				await prisma.showMaterialDecorationCategory.update({
+				await prisma.categorieMaterialDecor.update({
 					where: {
-						id,
+						codCategorieMaterialDecor: id,
 					},
 					data,
 				});
@@ -738,135 +665,145 @@ export const update = async (
 			}
 		}
 		return {
-			error: dictionary.backend.updateGeneral.updatedSuccess.replace(
-				"{what}",
-				what
-			),
+			message: `${what} actualizat cu succes.`,
 			ok: true,
 			status: 200,
-		} as RegisterResponse;
+		} as MailSendResponse;
 	} catch (e) {
 		console.log("Update Error: " + e);
 		if (e instanceof Error) {
 			return {
-				error: e.toString(),
+				message: e.toString(),
 				status: 500,
 				ok: false,
-			} as RegisterResponse;
+			} as MailSendResponse;
 		} else {
 			return {
-				error: dictionary.backend.updateGeneral.unknownError.replace(
-					"{what}",
-					what
-				),
+				message: `A apărut o eroare necunoscută în timpul actualizării ${what}. Vă rugăm să încercați din nou mai târziu.`,
 				status: 500,
 				ok: false,
-			} as RegisterResponse;
+			} as MailSendResponse;
 		}
 	}
 };
 
-export const remove = async (lang: Locale, type: TableTypes, id: number) => {
+export const remove = async (type: TipuriTabel, id: number) => {
 	const what = typeByName(type);
-	const { dictionary } = await makeDictionaryBE(lang);
 	try {
 		let deletedResponse = undefined;
 		switch (type) {
-			case TableTypes.CLIENT:
+			case TipuriTabel.CLIENT:
 				deletedResponse = await prisma.client.delete({
 					where: {
-						id,
+						codClient: id,
 					},
 				});
 				break;
-			case TableTypes.SHOW:
-				deletedResponse = await prisma.show.delete({
+			case TipuriTabel.SPECTACOL:
+				deletedResponse = await prisma.spectacol.delete({
 					where: {
-						id,
+						codSpectacol: id,
 					},
 				});
 				break;
-			case TableTypes.SHOW_CATEGORY:
-				deletedResponse = await prisma.showType.delete({
+			case TipuriTabel.SPECTACOL_CATEGORIE:
+				deletedResponse = await prisma.tipSpectacol.delete({
 					where: {
-						id,
+						codTipSpectacol: id,
 					},
 				});
 				break;
-			case TableTypes.SHOW_SEASON:
-				deletedResponse = await prisma.season.delete({
+			case TipuriTabel.SPECTACOL_SEZON:
+				deletedResponse = await prisma.sezon.delete({
 					where: {
-						id,
+						codSezon: id,
 					},
 				});
 				break;
-			case TableTypes.SHOWROOM:
-				deletedResponse = await prisma.showRoom.delete({
+			case TipuriTabel.CAMERA_SPECTACOL:
+				deletedResponse = await prisma.salaSpectacol.delete({
 					where: {
-						id,
+						codSalaSpectacol: id,
 					},
 				});
 				break;
-			case TableTypes.SHOWROOM_SEAT:
-				deletedResponse = await prisma.showRoomSeat.delete({
+			case TipuriTabel.SCAUN_CAMERA_SPECTACOL:
+				deletedResponse = await prisma.locSalaSpectacol.delete({
 					where: {
-						id,
+						codLocSala: id,
 					},
 				});
 				break;
-			case TableTypes.TICKET_SOLD:
-				deletedResponse = await prisma.ticketSold.delete({
+			case TipuriTabel.BILET:
+				deletedResponse = await prisma.biletSpectacol.delete({
 					where: {
-						id,
+						codBiletSpectacol: id,
+					},
+				});
+				if (deletedResponse.codBonFiscal != null) {
+					const bonFiscal = await prisma.bonFiscal.findFirst({
+						where: {
+							codBonFiscal: deletedResponse.codBonFiscal,
+						},
+						include: {
+							bileteSpectacol: true,
+						},
+					});
+					if (bonFiscal?.bileteSpectacol?.length ?? 0 <= 0) {
+						await prisma.bonFiscal.delete({
+							where: {
+								codBonFiscal: bonFiscal?.codBonFiscal,
+							},
+						});
+						if (deletedResponse.codFacturaFiscala != null) {
+							await prisma.facturaFiscala.delete({
+								where: {
+									codFactura: deletedResponse.codFacturaFiscala,
+								},
+							});
+						}
+					}
+				}
+				break;
+			case TipuriTabel.FACTURA_FISCALA:
+				deletedResponse = await prisma.facturaFiscala.delete({
+					where: {
+						codFactura: id,
 					},
 				});
 				break;
-			case TableTypes.TICKET_VERIFIED:
-				deletedResponse = await prisma.ticketVerified.delete({
+			case TipuriTabel.MATERIAL_DECOR:
+				deletedResponse = await prisma.materialDecorSpectacol.delete({
 					where: {
-						id,
+						codMaterialDecor: id,
 					},
 				});
 				break;
-			case TableTypes.INVOICE:
-				deletedResponse = await prisma.invoice.delete({
+			case TipuriTabel.MATERIAL_DECOR_FOLOSIT:
+				const mat = await prisma.materialDecorSpectacolFolosit.findFirst({
 					where: {
-						id,
-					},
-				});
-				break;
-			case TableTypes.MATERIAL:
-				deletedResponse = await prisma.showMaterialDecoration.delete({
-					where: {
-						id,
-					},
-				});
-				break;
-			case TableTypes.MATERIAL_USED:
-				const mat = await prisma.showMaterialDecorationUsed.findFirst({
-					where: {
-						id,
+						codMaterialDecorSpectacolFolosit: id,
 					},
 				});
 				if (!mat) break;
-				deletedResponse = await prisma.showMaterialDecorationUsed.delete({
+				deletedResponse = await prisma.materialDecorSpectacolFolosit.delete({
 					where: {
-						id,
+						codMaterialDecorSpectacolFolosit: id,
 					},
 				});
-				await prisma.showMaterialDecoration.update({
+				await prisma.materialDecorSpectacol.update({
 					where: {
-						id: mat.materialId,
+						codMaterialDecor: mat.codMaterialDecorSpectacol,
 					},
 					data: {
-						stock: { increment: mat?.quantity },
+						cantitateStoc: { increment: mat?.cantitateaFolosita },
 					},
 				});
 				break;
-			case TableTypes.MATERIAL_CATEGORY:
-				deletedResponse = await prisma.showMaterialDecorationCategory.delete({
+			case TipuriTabel.MATERIAL_DECOR_CATEGORIE:
+				deletedResponse = await prisma.categorieMaterialDecor.delete({
 					where: {
-						id,
+						codCategorieMaterialDecor: id,
 					},
 				});
 				break;
@@ -875,35 +812,28 @@ export const remove = async (lang: Locale, type: TableTypes, id: number) => {
 			return {
 				ok: false,
 				status: 404,
-				error: dictionary.backend.deleteGeneral.notFoundID
-					.replace("{id}", id)
-					.replace("{what}", what),
-			} as RegisterResponse;
+				message: `${what} cu ID-ul '${id}' nu a fost găsit!`,
+			} as MailSendResponse;
 		}
 		return {
 			ok: true,
 			status: 200,
-			error: dictionary.backend.deleteGeneral.deletedSuccess
-				.replace("{id}", id)
-				.replace("{what}", what),
-		} as RegisterResponse;
+			message: `${what} cu ID-ul '${id}' a fost sters!`,
+		} as MailSendResponse;
 	} catch (e) {
 		console.log("Delete Error: " + e);
 		if (e instanceof Error) {
 			return {
-				error: e.toString(),
+				message: e.toString(),
 				status: 500,
 				ok: false,
-			} as RegisterResponse;
+			} as MailSendResponse;
 		} else {
 			return {
-				error: dictionary.backend.updateGeneral.unknownError.replace(
-					"{what}",
-					what
-				),
+				message: `A apărut o eroare necunoscută în timpul ștergerii ${what}. Vă rugăm să încercați din nou mai târziu.`,
 				status: 500,
 				ok: false,
-			} as RegisterResponse;
+			} as MailSendResponse;
 		}
 	}
 };

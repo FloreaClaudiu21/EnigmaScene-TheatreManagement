@@ -41,7 +41,7 @@ export const AuthOption: NextAuthOptions = {
 						if (!credentials?.email) {
 							throw Error("You must specify the email of the account!");
 						}
-						const data = await LoginWithProvider("en", credentials.email);
+						const data = await LoginWithProvider(credentials.email);
 						return data as User;
 					} else {
 						if (!credentials?.email || !credentials?.password) {
@@ -50,7 +50,6 @@ export const AuthOption: NextAuthOptions = {
 							);
 						}
 						const data = await LoginWithCredentials(
-							"en",
 							credentials.email,
 							credentials.password
 						);
@@ -89,19 +88,17 @@ export const AuthOption: NextAuthOptions = {
 							throw new Error("Login failed, no tokens");
 						}
 						const partialClient = {
-							id: user.id,
-							name: account.provider,
-							email: user.email,
+							codPartialClient: profile?.id,
+							email: profile?.email,
 							provider: account.provider,
-							firstName:
+							numeClient:
 								profile?.family_name ?? profile?.name
 									? profile.name?.split(" ")[0]
+									: "" + " " + profile?.given_name ?? profile?.name
+									? profile?.name?.split(" ")[1]
 									: "",
-							lastName:
-								profile?.given_name ?? profile?.name
-									? profile.name?.split(" ")[1]
-									: "",
-							providerAccountId: account.providerAccountId,
+							providerContCod: account.providerAccountId,
+							numeProvider: account.provider,
 						} as PartialClient;
 						const res = await findAssociatedAccount(partialClient);
 						if (res == null) {
@@ -153,21 +150,19 @@ export const AuthOption: NextAuthOptions = {
 				) as SignInProviderParams;
 				if (profile && account) {
 					const partialClient = {
-						id: profile.id,
-						email: profile.email,
+						codPartialClient: profile.id,
+						email: profile?.email,
 						provider: account.provider,
-						firstName:
+						providerContCod: account.providerAccountId,
+						numeProvider: account.provider,
+						numeClient:
 							profile?.family_name ?? profile?.name
 								? profile.name?.split(" ")[0]
+								: "" + " " + profile?.given_name ?? profile?.name
+								? profile?.name?.split(" ")[1]
 								: "",
-						lastName:
-							profile?.given_name ?? profile?.name
-								? profile.name?.split(" ")[1]
-								: "",
-						providerAccountId: account.providerAccountId,
 					} as PartialClient;
 					const response = await createAccountProvider(
-						"en",
 						linkWith,
 						partialClient,
 						false

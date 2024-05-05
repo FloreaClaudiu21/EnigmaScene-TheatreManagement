@@ -28,14 +28,14 @@ class CursBNR {
 		});
 	}
 	async saveToDatabase() {
-		const { count } = await prisma.exchangeRate.deleteMany();
+		const { count } = await prisma.rataDeSchimbValutar.deleteMany();
 		console.log("Deleted old exchange rates: " + count);
-		await prisma.exchangeRate.createMany({
+		await prisma.rataDeSchimbValutar.createMany({
 			data: this.currency.map((line) => ({
-				currency: line.name,
-				value: line.value,
-				multiplier: line.multiplier,
-				date: new Date(this.date),
+				moneda: line.name,
+				valuare: line.value,
+				multiplicator: line.multiplier,
+				data: new Date(this.date),
 			})),
 		});
 	}
@@ -46,7 +46,7 @@ export async function runCronJob() {
 	const cursInstance = new CursBNR();
 	await cursInstance.fetchAndParseXML(url);
 	await cursInstance.saveToDatabase();
-	const found = await prisma.exchangeRate.findMany();
+	const found = await prisma.rataDeSchimbValutar.findMany();
 	console.log(found.length);
 	console.log(
 		`Exchange rates fetched and saved to the database at ${new Date().toLocaleString()}`

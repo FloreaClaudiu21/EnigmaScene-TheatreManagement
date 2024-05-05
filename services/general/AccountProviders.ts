@@ -2,33 +2,16 @@
 import { prisma } from "@/lib/prismaClient";
 import {
 	AssociatedAccountData,
-	LanguageData,
 	MailSendResponse,
 	PartialClient,
 	Provider,
 } from "@/lib/types";
 import { User } from "next-auth";
-import { generateDictionary, getDictionary } from "@/lib/dictionary";
-import { Locale } from "@/i18n.config";
 import { getClientByEmail } from "./AuthProvider";
-
-export const makeDictionaryBE = async (lang: Locale) => {
-	const dict = await getDictionary(lang);
-	const languageData = {
-		dictionary: dict,
-		language: lang,
-	} as LanguageData;
-	return languageData;
-};
-
-export const makeDictionaryClient = async (lang: any) => {
-	const dict = await generateDictionary(lang);
-	return dict;
-};
 
 export const fetchAccountProviders = async (client: User) => {
 	const mainAccountsData = (await Promise.all(
-		(client.providers ?? []).map(async (v: Provider) => {
+		(client.providerii ?? []).map(async (v: Provider) => {
 			const isMain = await isMainAccount(client, v);
 			return {
 				provider: v,
@@ -45,7 +28,7 @@ export const findAssociatedAccount = async (partialUser: PartialClient) => {
 	const main = await getClientByEmail(partialUser.email);
 	if (
 		main &&
-		main?.createdWithProvider &&
+		main?.creatCuProvider &&
 		(await isMainAccount(main as User, partialUser))
 	) {
 		mainFound = true;
@@ -53,7 +36,7 @@ export const findAssociatedAccount = async (partialUser: PartialClient) => {
 	// FIND ASSOCIATED ACCOUNTS
 	const providers = await prisma.provider.findMany({
 		where: {
-			name: partialUser.name,
+			numeProvider: partialUser.provider,
 			providerEmail: partialUser.email,
 		},
 		include: {
@@ -82,11 +65,11 @@ export const isMainAccount = async (
 	client: User,
 	p: Provider | PartialClient
 ) => {
-	if (client.createdWithProvider) {
-		const dataCreated = client.createdWithProvider.split("|");
+	if (client.creatCuProvider) {
+		const dataCreated = client.creatCuProvider.split("|");
 		const provName = dataCreated[0];
 		const provAccId = dataCreated[1];
-		if (provName === p.name && provAccId === p.providerAccountId) {
+		if (provName === p.numeProvider && provAccId === p.providerContCod) {
 			return true;
 		}
 	}
@@ -121,12 +104,12 @@ export const isEmailAssociated = async (email: string) => {
 export const isAlreadyAssociated = async (partialUser: PartialClient) => {
 	const list = await prisma.provider.findMany({
 		where: {
-			name: partialUser.name,
+			numeProvider: partialUser.numeProvider,
 			providerEmail: partialUser.email,
 		},
 	});
 	if (list.length > 0) {
-		return { found: true, email: list[0].linkedWith };
+		return { found: true, email: list[0].asociatCu };
 	}
 	return {
 		found: false,
@@ -134,31 +117,29 @@ export const isAlreadyAssociated = async (partialUser: PartialClient) => {
 };
 
 export const existsAccountProvider = async (
-	lang: Locale,
 	email: string,
 	partialUser: PartialClient
 ) => {
-	const { dictionary } = await makeDictionaryBE(lang);
 	try {
 		const client = await getClientByEmail(email);
 		if (!client) {
 			return {
 				ok: false,
 				status: 404,
-				message: dictionary.backend.existsAccountProvider.notFound,
+				message: "Utilizatorul nu a fost găsit.",
 			} as MailSendResponse;
 		}
-		const providers = client.providers;
+		const providers = client.providerii;
 		const found = providers.filter(
 			(p: Provider) =>
-				p.providerAccountId === partialUser.providerAccountId &&
-				p.name === partialUser.provider
+				p.providerContCod === partialUser.providerContCod &&
+				p.numeProvider === partialUser.numeProvider
 		);
 		if (found.length > 0) {
 			return {
 				ok: false,
 				status: 500,
-				message: dictionary.backend.existsAccountProvider.providerExists,
+				message: `Providerul de cont '${found[0].numeProvider}' există deja.`,
 			} as MailSendResponse;
 		}
 		return {
@@ -166,132 +147,120 @@ export const existsAccountProvider = async (
 			status: 200,
 		} as MailSendResponse;
 	} catch (e) {
+		console.log("Error Verficare Provider: " + e);
 		return {
 			ok: false,
 			status: 500,
-			message: dictionary.backend.existsAccountProvider.error,
+			message:
+				"A apărut o eroare în timpul verificării existenței providerului de cont.",
 		} as MailSendResponse;
 	}
 };
 
 export const deleteMainAccountProvider = async (
-	lang: Locale,
 	email: string,
 	providerId: number
 ) => {
-	const { dictionary } = await makeDictionaryBE(lang);
 	try {
 		const client = await getClientByEmail(email);
 		if (!client) {
 			return {
 				ok: false,
 				status: 404,
-				message: dictionary.backend.deleteMainAccountProvider.notFound,
+				message: "Utilizatorul nu a fost găsit.",
 			} as MailSendResponse;
 		}
-		if (client.password == null || client.password.length <= 1) {
+		if (client.parola == null || client.parola.length <= 1) {
 			return {
 				ok: false,
 				status: 404,
-				message: dictionary.backend.deleteMainAccountProvider.noPassword,
+				message:
+					"Trebuie să setați o parolă pentru contul dvs. înainte de a elimina providerul principal.",
 			} as MailSendResponse;
 		}
 		const prov = await prisma.provider.delete({
 			where: {
-				id: providerId,
-				clientId: client.id,
+				codProvider: providerId,
+				codClient: client.codClient,
 			},
 		});
 		if (!prov) {
 			return {
 				ok: false,
 				status: 404,
-				message: dictionary.backend.deleteMainAccountProvider.providerNotFound,
+				message: "Providerul nu a fost găsit.",
 			} as MailSendResponse;
 		}
 		return {
 			ok: true,
 			status: 200,
-			message: dictionary.backend.deleteMainAccountProvider.success.replace(
-				"{providerEmail}",
-				email
-			),
+			message: `Providerul de cont principal '${email}' a fost șters cu succes.`,
 		} as MailSendResponse;
 	} catch (e) {
 		return {
 			ok: false,
 			status: 500,
-			message: dictionary.backend.deleteMainAccountProvider.error,
+			message:
+				"A apărut o eroare în timpul ștergerii providerului principal de cont.",
 		} as MailSendResponse;
 	}
 };
 
 export const deleteAccountProvider = async (
-	lang: Locale,
 	email: string,
 	providerId: number
 ) => {
-	const { dictionary } = await makeDictionaryBE(lang);
 	try {
 		const client = await getClientByEmail(email);
 		if (!client) {
 			return {
 				ok: false,
 				status: 404,
-				message: dictionary.backend.deleteAccountProvider.notFound,
+				message: "Utilizatorul nu a fost găsit.",
 			} as MailSendResponse;
 		}
 		const prov = await prisma.provider.delete({
 			where: {
-				id: providerId,
-				clientId: client.id,
+				codProvider: providerId,
+				codClient: client.codClient,
 			},
 		});
 		if (!prov) {
 			return {
 				ok: false,
 				status: 404,
-				message: dictionary.backend.deleteAccountProvider.providerNotFound,
+				message: "Providerul nu a fost găsit.",
 			} as MailSendResponse;
 		}
 		return {
 			ok: true,
 			status: 200,
-			message: dictionary.backend.deleteAccountProvider.success.replace(
-				"{providerEmail}",
-				email
-			),
+			message: `Providerul de cont '${email}' a fost șters cu succes.`,
 		} as MailSendResponse;
 	} catch (e) {
 		return {
 			ok: false,
 			status: 500,
-			message: dictionary.backend.deleteAccountProvider.error,
+			message: "A apărut o eroare în timpul ștergerii providerului de cont.",
 		} as MailSendResponse;
 	}
 };
 
 export const createAccountProvider = async (
-	lang: Locale,
 	email: string,
 	partialUser: PartialClient,
 	bypass: boolean
 ) => {
-	const { dictionary } = await makeDictionaryBE(lang);
 	try {
 		const client = await getClientByEmail(email);
 		if (!client) {
 			return {
 				ok: false,
 				status: 404,
-				message: dictionary.backend.deleteAccountProvider.notFound,
+				message: "Utilizatorul nu a fost găsit.",
 			} as MailSendResponse;
 		}
-		const existsProvider = await existsAccountProvider(
-			lang,
-			email,
-			partialUser
-		);
+		const existsProvider = await existsAccountProvider(email, partialUser);
 		if (!existsProvider.ok) {
 			return existsProvider;
 		}
@@ -300,7 +269,7 @@ export const createAccountProvider = async (
 			return {
 				ok: false,
 				status: 500,
-				message: dictionary.backend.createAccountProvider.existsAccount,
+				message: "Nu puteți asocia contul dvs. cu un altul care deja există.",
 			};
 		}
 		const associated = await isAlreadyAssociated(partialUser);
@@ -308,35 +277,29 @@ export const createAccountProvider = async (
 			return {
 				ok: false,
 				status: 500,
-				message: dictionary.backend.createAccountProvider.alreadyAssociated.replace(
-					"{existingEmail}",
-					associated.email
-				),
+				message: `Contul este deja asociat cu un alt email '${associated.email}'.`,
 			};
 		}
 		await prisma.provider.create({
 			data: {
-				linkedWith: email,
-				name: partialUser.provider,
-				providerAccountId: partialUser.providerAccountId,
+				asociatCu: email,
+				numeProvider: partialUser.numeProvider,
+				providerContCod: partialUser.providerContCod,
+				providerContNume: partialUser.numeClient,
 				providerEmail: partialUser.email,
-				providerFirstName: partialUser.firstName,
-				providerLastName: partialUser.lastName,
-				clientId: client.id,
+				codClient: client.codClient,
 			},
 		});
 		return {
 			ok: true,
 			status: 200,
-			message: dictionary.backend.createAccountProvider.success
-				.replace("{email}", email)
-				.replace("{provider}", partialUser.provider),
+			message: `Contul dvs. a fost asociat cu succes cu emailul '${email}' și providerul '${partialUser.numeProvider}'.`,
 		} as MailSendResponse;
 	} catch (e) {
 		return {
 			ok: false,
 			status: 500,
-			message: dictionary.backend.createAccountProvider.error,
+			message: "A apărut o eroare în timpul creării providerului de cont.",
 		} as MailSendResponse;
 	}
 };

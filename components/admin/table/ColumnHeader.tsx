@@ -10,11 +10,11 @@ export default function ColumnHeader({
 	title: string;
 }) {
 	return (
-		<div className="text-center">
+		<div className="text-center overflow-hidden">
 			<Button
 				radius="md"
 				variant="light"
-				className="font-bold"
+				className="font-bold text-sm text-red-500"
 				onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
 			>
 				{title}

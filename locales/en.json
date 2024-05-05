@@ -625,6 +625,7 @@
 			"emailAssociatedWithAnotherAccount": "Email '{email}' it's already associated with another account.",
 			"unknownError": "An unknown error occurred while creating the {what}. Please try again later."
 		},
+
 		"updateGeneral": {
 			"withEmailNotFound": "{what} with email '{email}' does not exist.",
 			"withNameNotFound": "{what} with name '{name}' does not exist.",

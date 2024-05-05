@@ -1,5 +1,4 @@
 "use client";
-import { LanguageData } from "@/lib/types";
 import {
 	Button,
 	Divider,
@@ -14,13 +13,12 @@ import { useInvoiceModal } from "@/services/StateProvider";
 import { useRef } from "react";
 import { useReactToPrint } from "react-to-print";
 
-const InvoiceModal = ({ langData }: { langData: LanguageData }) => {
+const InvoiceModal = () => {
 	const invoiceModal = useInvoiceModal();
 	const componentRef = useRef(null);
 	const handlePrint = useReactToPrint({
 		content: () => componentRef.current,
 	});
-	const dict = langData.dictionary;
 	return (
 		<Modal
 			radius="md"
@@ -42,10 +40,7 @@ const InvoiceModal = ({ langData }: { langData: LanguageData }) => {
 				{(onClose) => (
 					<>
 						<ModalHeader className="flex flex-col gap-1">
-							{dict.modals.titles.invoiceId.replace(
-								"{id}",
-								invoiceModal.invoice?.id
-							)}
+							Factura Fiscală #{invoiceModal.invoice?.numarFactura}
 							<Divider />
 						</ModalHeader>
 						<ModalBody className="max-w-full overflow-scroll">
@@ -54,10 +49,7 @@ const InvoiceModal = ({ langData }: { langData: LanguageData }) => {
 								ref={componentRef}
 								className="h-full"
 							>
-								<InvoicePrintPaper
-									data={invoiceModal.invoice!}
-									langData={langData}
-								/>
+								<InvoicePrintPaper data={invoiceModal.invoice!} />
 							</div>
 						</ModalBody>
 						<ModalFooter>
@@ -67,10 +59,10 @@ const InvoiceModal = ({ langData }: { langData: LanguageData }) => {
 								variant="light"
 								onPress={onClose}
 							>
-								{dict.buttons.cancel}
+								ANULARE
 							</Button>
 							<Button color="primary" onPress={handlePrint} radius="md">
-								{dict.buttons.print}
+								PRINTARE
 							</Button>
 						</ModalFooter>
 					</>

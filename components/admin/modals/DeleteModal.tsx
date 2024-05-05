@@ -1,9 +1,8 @@
 "use client";
-import { useDeleteModal } from "@/services/StateProvider";
+import { useDeleteModal, useLoadingScreen } from "@/services/StateProvider";
 import { useToast } from "../../ui/use-toast";
 import {
 	Button,
-	CircularProgress,
 	Modal,
 	ModalBody,
 	ModalContent,
@@ -11,38 +10,30 @@ import {
 	ModalHeader,
 } from "@nextui-org/react";
 import { useState } from "react";
-import { LanguageData } from "@/lib/types";
 import { useRouter } from "next-nprogress-bar";
 import { remove } from "@/services/admin/ControlProvider";
 
-export default function DeleteModalGeneral({
-	langData,
-}: {
-	langData: LanguageData;
-}) {
+export default function DeleteModalGeneral() {
 	const router = useRouter();
 	const { toast } = useToast();
 	const deleteModal = useDeleteModal();
+	const loadingScreen = useLoadingScreen();
 	const [loading, setLoading] = useState(false);
 	//////////////////////////////////////////////
 	const deleteAction = async (onClose: any) => {
 		setLoading(true);
-		let response = await remove(
-			langData.language,
-			deleteModal.type,
-			deleteModal.deleteId
-		);
+		let response = await remove(deleteModal.type, deleteModal.deleteId);
 		if (!response) return;
 		if (response.ok) {
 			toast({
-				title: "Record Delete",
-				description: response.error,
+				title: "Ștergere înregistrare",
+				description: response.message,
 			});
 			router.refresh();
 		} else {
 			toast({
-				title: "Record Delete",
-				description: response.error,
+				title: "Ștergere înregistrare",
+				description: response.message,
 				variant: "destructive",
 			});
 		}
@@ -65,33 +56,26 @@ export default function DeleteModalGeneral({
 					"bg-gradient-to-t from-zinc-900 to-zinc-900/10 backdrop-opacity-20 !z-[99998]",
 			}}
 		>
-			{loading && (
-				<div className="absolute flex flex-col gap-4 justify-center place-items-center top-0 left-0 w-full h-full bg-[rgba(0,0,0,0.8)] z-[999999]">
-					<CircularProgress color="primary" />
-					<p className="text-base text-white font-bold">Loading...</p>
-				</div>
-			)}
 			<ModalContent>
 				{(onClose) => (
 					<>
 						<ModalHeader className="flex flex-col gap-1">
-							Delete the record with ID #{deleteModal.deleteId}
+							Ștergere înregistrare
 						</ModalHeader>
 						<ModalBody>
-							<hr />
-							Are you sure you want to delete this record, this action can`t be
-							undone!
+							Ești sigur că dorești să ștergi înregistrarea cu codul de
+							identificare `{deleteModal.deleteId}`?
 						</ModalBody>
 						<ModalFooter>
 							<Button variant="flat" radius="md" onPress={onClose}>
-								No
+								NU
 							</Button>
 							<Button
 								radius="md"
 								className="bg-red-500 text-white font-semibold"
 								onClick={() => deleteAction(onClose)}
 							>
-								Yes
+								DA
 							</Button>
 						</ModalFooter>
 					</>

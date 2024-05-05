@@ -52,7 +52,9 @@ export default function NewOrEditContent({
 							className="h-10 gap-1 shadow-sm rounded-md hover:bg-yellow-100"
 						>
 							<ArrowLeftIcon className="h-3.5 w-3.5" />
-							<span className="whitespace-nowrap">Back to prev page</span>
+							<span className="whitespace-nowrap">
+								Inapoi la pagina anterioara
+							</span>
 						</Button>
 					</Link>
 					<Button
@@ -63,7 +65,7 @@ export default function NewOrEditContent({
 					>
 						<SaveIcon className="h-3.5 w-3.5" />
 						<span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-							Save
+							Salvare
 						</span>
 					</Button>
 				</div>

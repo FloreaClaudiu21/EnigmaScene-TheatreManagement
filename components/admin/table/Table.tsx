@@ -51,11 +51,10 @@ import { urlLink } from "@/lib/utils";
 import { usePathname, useRouter } from "next/navigation";
 import { DataTablePagination } from "./TablePagination";
 import { useToast } from "@/components/ui/use-toast";
-import { TableTypes } from "@/lib/types";
-import { CircularProgress } from "@nextui-org/react";
 import { remove } from "@/services/admin/ControlProvider";
-import { useRaportModal } from "@/services/StateProvider";
+import { useLoadingScreen, useRaportModal } from "@/services/StateProvider";
 import { getCookie } from "cookies-next";
+import { TipuriTabel } from "@/lib/types";
 
 type FilterMap = {
 	label: string;
@@ -70,20 +69,16 @@ export default function DataTable({
 	title,
 	subtitle,
 	create_link,
-	create_title,
 	showControlBtns,
-	params,
 }: {
 	data: any[];
-	type: TableTypes;
+	type: TipuriTabel;
 	title: string;
 	subtitle: string;
-	create_title: string;
 	create_link: string;
 	showControlBtns: boolean;
 	columns: ColumnDef<any>[];
 	filters: FilterMap[];
-	params: any;
 }) {
 	const router = useRouter();
 	const { toast } = useToast();
@@ -93,7 +88,7 @@ export default function DataTable({
 		from: new Date("01.01.2024"),
 		to: new Date(),
 	});
-	const [loading, setLoading] = useState(false);
+	const { loading, setLoading } = useLoadingScreen();
 	const pageSize = getCookie("tableSize") ?? "10";
 	const [rowSelection, setRowSelection] = useState({});
 	const [sorting, setSorting] = useState<SortingState>([]);
@@ -102,7 +97,7 @@ export default function DataTable({
 	const filteredData = useMemo(() => {
 		return data.filter((item: any) => {
 			const dateD = new Date();
-			const itemDate = new Date(item.createdAt);
+			const itemDate = new Date(item.creatPe);
 			return (
 				itemDate >= (date?.from ?? dateD) && itemDate <= (date?.to ?? dateD)
 			);
@@ -132,29 +127,31 @@ export default function DataTable({
 		const selectedRows = table.getSelectedRowModel().rows;
 		if (selectedRows.length <= 0) {
 			toast({
-				title: "Delete multiple records",
-				description: "No rows have been selected!",
+				title: "Ștergere în masă",
+				description: "Nu au fost selectate rânduri!",
 			});
 			setLoading(false);
 			return;
 		}
 		const promises = table.getSelectedRowModel().rows.map(async (v) => {
 			const rowOriginal = v.original;
-			const id = rowOriginal.id;
-			return await remove(params.lang, type, id);
+			const codField =
+				Object.keys(rowOriginal).find((key) => key.startsWith("cod")) ?? "id";
+			const codValue = rowOriginal[codField];
+			return await remove(type, codValue);
 		});
 		const responses = await Promise.all(promises);
 		const errors = responses.filter((v) => !v?.ok);
 		if (errors.length > 0) {
 			toast({
-				title: "Delete multiple records",
+				title: "Ștergere în masă",
 				variant: "destructive",
-				description: "Some records couldnt be deleted!",
+				description: "Unele înregistrări nu au putut fi șterse!",
 			});
 		} else {
 			toast({
-				title: "Delete multiple records",
-				description: "All the records have been deleted!",
+				title: "Ștergere în masă",
+				description: "Toate înregistrările au fost șterse!",
 			});
 		}
 		router.refresh();
@@ -162,12 +159,6 @@ export default function DataTable({
 	};
 	return (
 		<>
-			{loading && (
-				<div className="absolute flex flex-col gap-4 justify-center place-items-center top-0 left-0 w-full h-full bg-[rgba(0,0,0,0.8)] z-[999999]">
-					<CircularProgress color="primary" />
-					<p className="text-base text-white font-bold">Loading...</p>
-				</div>
-			)}
 			<div className="ml-auto flex items-center flex-wrap gap-4">
 				<div className="flex items-center gap-2 z-50 flex-wrap md:flex-nowrap">
 					<DatePickerWithRange
@@ -185,7 +176,7 @@ export default function DataTable({
 								>
 									<SearchIcon className="h-3.5 w-3.5" />
 									<span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-										Search By
+										Caută după
 									</span>
 								</Button>
 							</DropdownMenuTrigger>
@@ -193,7 +184,7 @@ export default function DataTable({
 								align="end"
 								className="max-h-60 overflow-y-auto"
 							>
-								<DropdownMenuLabel>Search By</DropdownMenuLabel>
+								<DropdownMenuLabel>Caută după</DropdownMenuLabel>
 								<DropdownMenuSeparator />
 								{filters.map((v) => {
 									return (
@@ -218,7 +209,7 @@ export default function DataTable({
 						<Input
 							title={selectedFilter.label}
 							className="min-w-64 h-8 text-sm rounded-md"
-							placeholder={`Search by ${selectedFilter.label}...`}
+							placeholder={`Caută după ${selectedFilter.label}...`}
 							value={
 								(table
 									.getColumn(selectedFilter.column)
@@ -236,7 +227,7 @@ export default function DataTable({
 					<DropdownMenu>
 						<DropdownMenuTrigger asChild>
 							<Button variant="outline" className="h-8 ml-auto">
-								Columns <ChevronDown className="ml-2 h-4 w-4" />
+								Coloane <ChevronDown className="ml-2 h-4 w-4" />
 							</Button>
 						</DropdownMenuTrigger>
 						<DropdownMenuContent
@@ -274,7 +265,7 @@ export default function DataTable({
 					>
 						<File className="h-3.5 w-3.5" />
 						<span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-							Export Raport
+							Export
 						</span>
 					</Button>
 					{showControlBtns && (
@@ -288,7 +279,7 @@ export default function DataTable({
 							>
 								<TrashIcon className="h-3.5 w-3.5" />
 								<span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-									Delete Multiple
+									Ștergere multiplă
 								</span>
 							</Button>
 							<Link href={urlLink(pathName) + create_link}>
@@ -299,7 +290,7 @@ export default function DataTable({
 								>
 									<PlusCircle className="h-3.5 w-3.5" />
 									<span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-										{create_title}
+										Adăugare
 									</span>
 								</Button>
 							</Link>
@@ -320,7 +311,10 @@ export default function DataTable({
 									<TableRow key={headerGroup.id}>
 										{headerGroup.headers.map((header: any) => {
 											return (
-												<TableHead key={header.id}>
+												<TableHead
+													key={header.id}
+													className="px-1 w-auto min-w-0"
+												>
 													{header.isPlaceholder
 														? null
 														: flexRender(
@@ -341,7 +335,10 @@ export default function DataTable({
 											data-state={row.getIsSelected() && "selected"}
 										>
 											{row.getVisibleCells().map((cell: any) => (
-												<TableCell key={cell.id}>
+												<TableCell
+													key={cell.id}
+													className="px-1 max-w-[120px] w-auto min-w-0"
+												>
 													{flexRender(
 														cell.column.columnDef.cell,
 														cell.getContext()
@@ -354,9 +351,9 @@ export default function DataTable({
 									<TableRow>
 										<TableCell
 											colSpan={columns.length}
-											className="h-24 text-center"
+											className="h-24 text-center text-sm"
 										>
-											No results found.
+											Nu au fost găsite rezultate.
 										</TableCell>
 									</TableRow>
 								)}
@@ -365,13 +362,13 @@ export default function DataTable({
 					</CardContent>
 					<CardFooter className="flex flex-col md:flex-row gap-1">
 						<div className="flex w-full md:w-auto place-items-start md:place-items-center text-xs text-muted-foreground text-left gap-1">
-							Showing{" "}
+							Arată{" "}
 							<strong>
 								{data.length > 0
 									? "1-" + table.getState().pagination.pageSize
 									: "0"}
 							</strong>{" "}
-							of <strong>{filteredData.length}</strong> {title.toLowerCase()}
+							din <strong>{filteredData.length}</strong> {title.toLowerCase()}
 						</div>
 						<DataTablePagination table={table} />
 					</CardFooter>

@@ -1,9 +1,11 @@
 import "./globals.css";
 import type { Metadata } from "next";
-import { Providers } from "./providers";
 import { Roboto } from "next/font/google";
 import "@smastrom/react-rating/style.css";
 import "primereact/resources/themes/lara-light-cyan/theme.css";
+import { getServerSession } from "next-auth";
+import { AuthOption } from "./api/auth/authOptions";
+import AuthProvider from "./AuthContext";
 
 const roboto = Roboto({
 	weight: "400",
@@ -11,20 +13,20 @@ const roboto = Roboto({
 });
 
 export const metadata: Metadata = {
-	title: "Enigma Scene Theatre - A Theatrical Journey Beyond Imagination",
+	title: "Teatrul Scenei Enigma - O Călătorie Teatrală Dincolo de Imaginație",
 	description:
-		"Step into the realm of mystery and wonder as the curtains rise on the enigmatic stage. Enigma Scene invites you to embark on a theatrical journey that transcends imagination. Delve into a world of intrigue, luxury, and adventure, where every scene unfolds like a mesmerizing enigma waiting to be solved.",
+		"Intră în regatul misterului și al minunii în timp ce cortinele se ridică pe scena enigmatică. Scena Enigma te invită să începi o călătorie teatrală care transcende imaginația. Pătrunde într-o lume a intrigii, luxului și aventurii, unde fiecare scenă se desfășoară ca un enigmă fascinant așteptând să fie rezolvată.",
 	keywords: [
-		"Enigmatic Stage",
-		"Theatrical Journey",
-		"Mystery and Wonder",
-		"ENIGMA SCENE Showcase",
-		"Luxury Adventure",
-		"Mesmerizing Enigma",
-		"Theatrical Spectacle",
-		"Beyond Imagination",
-		"Intrigue and Excitement",
-		"Unraveling Mysteries",
+		"Scenă Enigmatică",
+		"Călătorie Teatrală",
+		"Mister și Minune",
+		"Spectacol ENIGMA SCENE",
+		"Aventură de Lux",
+		"Enigmă Fascinantă",
+		"Spectacol Teatral",
+		"Dincolo de Imaginație",
+		"Intrigă și Excitare",
+		"Descoperirea Misterelor",
 	],
 };
 
@@ -33,10 +35,11 @@ export default async function RootLayout({
 }: {
 	children: React.ReactNode;
 }) {
+	const session = await getServerSession(AuthOption);
 	return (
-		<html lang="en">
+		<html lang="ro">
 			<body className={roboto.className}>
-				<Providers>{children}</Providers>
+				<AuthProvider session={session}>{children}</AuthProvider>
 			</body>
 		</html>
 	);

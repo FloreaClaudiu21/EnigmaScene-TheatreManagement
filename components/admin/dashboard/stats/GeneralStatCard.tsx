@@ -1,28 +1,62 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+"use client";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
+import ChartDateSelector from "../ChartDateSelector";
+import { useGeneralChartModal } from "@/services/StateProvider";
+import { capitalizeFirst } from "@/lib/utils";
 
 export default function GeneralStatCard({
 	icon,
 	title,
 	subtitle,
-	subtitle_lastmonth,
+	body,
+	searchParams,
+	queryKey,
+	selectedRangeLabel,
+	bodyGeneralChart,
 }: {
 	icon: any;
 	title: string;
 	subtitle: string;
-	subtitle_lastmonth: string;
+	body: string;
+	queryKey: string;
+	searchParams: any;
+	bodyGeneralChart: any;
+	selectedRangeLabel: any;
 }) {
+	const chartModel = useGeneralChartModal();
 	return (
-		<Card className="w-full shadow-sm">
-			<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-				<CardTitle className="text-md font-medium text-red-500">
-					{title}
-				</CardTitle>
-				{icon}
+		<Card className="w-full shadow-md">
+			<CardHeader className="gap-2">
+				<div className="flex gap-4 justify-between items-center">
+					{icon}
+					<CardTitle>{title}</CardTitle>
+					<ChartDateSelector
+						queryKey={queryKey}
+						searchParams={searchParams}
+						selectedRange={selectedRangeLabel}
+					/>
+				</div>
+				<CardDescription>{subtitle}</CardDescription>
 			</CardHeader>
 			<CardContent>
-				<div className="text-2xl font-bold">{subtitle}</div>
-				<p className="text-xs text-muted-foreground">
-					{subtitle_lastmonth}% from last month
+				<p
+					title="Arata continutul"
+					className="hover:cursor-pointer"
+					onClick={() => {
+						chartModel.setTitle(
+							title + " - " + capitalizeFirst(selectedRangeLabel.label1.trim())
+						);
+						chartModel.setBody(bodyGeneralChart);
+						chartModel.setVisible(true);
+					}}
+				>
+					{body}
 				</p>
 			</CardContent>
 		</Card>

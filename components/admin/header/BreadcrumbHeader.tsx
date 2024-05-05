@@ -19,7 +19,7 @@ export default function BreadcrumbHeader() {
 		<Breadcrumb className="hidden md:flex">
 			<BreadcrumbList>
 				{pathNames.map((val: string, index: number) => {
-					if (index < 4) return <></>;
+					if (index < 2) return <></>;
 					const isLast = index === pathNames.length - 1;
 					if (val != "dashboard") {
 						link += val + "/";

@@ -1,5 +1,4 @@
 "use client";
-import { LanguageData } from "@/lib/types";
 import {
 	Button,
 	Divider,
@@ -14,13 +13,12 @@ import { useRef } from "react";
 import { useReactToPrint } from "react-to-print";
 import FiscalReceiptPaper from "./FiscalReceiptPaper";
 
-const FiscalReceiptModal = ({ langData }: { langData: LanguageData }) => {
+const FiscalReceiptModal = () => {
 	const fiscalModal = useFiscalReceiptModal();
 	const componentRef = useRef(null);
 	const handlePrint = useReactToPrint({
 		content: () => componentRef.current,
 	});
-	const dict = langData.dictionary;
 	return (
 		<Modal
 			radius="md"
@@ -42,10 +40,7 @@ const FiscalReceiptModal = ({ langData }: { langData: LanguageData }) => {
 				{(onClose) => (
 					<>
 						<ModalHeader className="flex flex-col gap-1">
-							{dict.modals.titles.receiptId.replace(
-								"{id}",
-								fiscalModal.receipt?.id
-							)}
+							Bon Fiscal #{fiscalModal.receipt?.numarBonFiscal}
 							<Divider />
 						</ModalHeader>
 						<ModalBody className="max-w-full overflow-scroll">
@@ -54,10 +49,7 @@ const FiscalReceiptModal = ({ langData }: { langData: LanguageData }) => {
 								ref={componentRef}
 								className="h-full"
 							>
-								<FiscalReceiptPaper
-									data={fiscalModal.receipt!}
-									langData={langData}
-								/>
+								<FiscalReceiptPaper data={fiscalModal.receipt!} />
 							</div>
 						</ModalBody>
 						<ModalFooter>
@@ -67,10 +59,10 @@ const FiscalReceiptModal = ({ langData }: { langData: LanguageData }) => {
 								onPress={onClose}
 								radius="md"
 							>
-								{dict.buttons.cancel}
+								ANULARE
 							</Button>
 							<Button color="primary" onPress={handlePrint} radius="md">
-								{dict.buttons.print}
+								PRINTARE
 							</Button>
 						</ModalFooter>
 					</>

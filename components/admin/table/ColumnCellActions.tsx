@@ -1,7 +1,7 @@
-import { TableTypes } from "@/lib/types";
+import { TipuriTabel } from "@/lib/types";
 import { useDeleteModal } from "@/services/StateProvider";
 import { Button } from "@nextui-org/react";
-import { Trash2Icon } from "lucide-react";
+import { Edit2Icon, Trash2Icon } from "lucide-react";
 import Link from "next/link";
 import React from "react";
 
@@ -10,23 +10,24 @@ export default function ColumnCellActions({
 	link_edit,
 	deleteId,
 }: {
-	type: TableTypes;
+	type: TipuriTabel;
 	link_edit: string;
 	deleteId: number;
 }) {
 	const deleteModal = useDeleteModal();
 	return (
-		<div className="flex flex-row items-center justify-center text-center gap-2">
+		<div className="flex flex-row items-center justify-start text-center gap-2">
 			<Button
 				size="sm"
 				as={Link}
 				radius="sm"
+				isIconOnly
 				variant="bordered"
 				aria-label="Edit"
 				className="text-zinc-600 font-medium hover:text-green-600"
 				href={link_edit}
 			>
-				Edit
+				<Edit2Icon size={18} />
 			</Button>
 			<Button
 				size="sm"

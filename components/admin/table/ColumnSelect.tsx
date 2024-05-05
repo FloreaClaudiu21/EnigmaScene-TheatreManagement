@@ -11,7 +11,6 @@ export function ColumnSelectHeader({ table }: { table: any }) {
 				}}
 				isIndeterminate={table.getIsSomePageRowsSelected()}
 				isSelected={table.getIsAllPageRowsSelected()}
-				aria-label="Select all"
 			/>
 		</div>
 	);
@@ -26,7 +25,6 @@ export function ColumnSelectCell({ row }: { row: any }) {
 					row.toggleSelected(event.target.checked);
 				}}
 				isSelected={row.getIsSelected()}
-				aria-label="Select row"
 			/>
 		</div>
 	);

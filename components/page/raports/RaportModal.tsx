@@ -1,5 +1,4 @@
 "use client";
-import { LanguageData } from "@/lib/types";
 import {
 	Button,
 	Divider,
@@ -17,8 +16,7 @@ import { FileTextIcon, RotateCcwIcon } from "lucide-react";
 import CSVRaport from "./CSVRaport";
 import { usePDF } from "@react-pdf/renderer";
 
-const RaportModal = ({ langData }: { langData: LanguageData }) => {
-	const dict = langData.dictionary;
+const RaportModal = () => {
 	const rapModal = useRaportModal();
 	const [title, setTitle] = useState("Raport evidenta");
 	const [instance, update] = usePDF({
@@ -63,7 +61,7 @@ const RaportModal = ({ langData }: { langData: LanguageData }) => {
 											size="sm"
 											radius="full"
 											color="primary"
-											title="Refresh"
+											title="Actualizare"
 											variant="bordered"
 											isDisabled={loadingRaport}
 											onClick={() =>
@@ -83,14 +81,13 @@ const RaportModal = ({ langData }: { langData: LanguageData }) => {
 									}}
 								/>
 								<CSVRaport
-									dict={dict}
 									loadingRaport={loadingRaport}
 									raportModal={rapModal}
 									title={title}
 								/>
 								<Button
 									as="a"
-									size="sm"
+									size="md"
 									radius="md"
 									color="primary"
 									isDisabled={loadingRaport}
@@ -100,7 +97,7 @@ const RaportModal = ({ langData }: { langData: LanguageData }) => {
 									}.pdf`}
 								>
 									<FileTextIcon className="h-10 w-10" />
-									{dict.buttons.savePDF}
+									Salvare PDF
 								</Button>
 							</div>
 							<Divider />
@@ -111,8 +108,8 @@ const RaportModal = ({ langData }: { langData: LanguageData }) => {
 									<Spinner size="md" />
 								) : (
 									<iframe
-										src={instance.url ?? ""}
 										title={title}
+										src={instance.url ?? ""}
 										className="w-full h-full"
 									></iframe>
 								)}

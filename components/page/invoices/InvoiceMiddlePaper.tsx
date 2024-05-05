@@ -1,58 +1,50 @@
 "use client";
-import { Invoice, LanguageData } from "@/lib/types";
+import { FacturaFiscala } from "@/lib/types";
 
-function InvoiceMiddle({
-	invoice,
-	langData,
-}: {
-	invoice: Invoice;
-	langData: LanguageData;
-}) {
-	const cur = invoice.currency;
-	const lang = langData.language;
-	const dictionary = langData.dictionary;
-	let priceConverted = invoice.totalAmount;
-	if (cur != "RON") {
-		priceConverted /= invoice.currencyAmount;
+function InvoiceMiddle({ invoice }: { invoice: FacturaFiscala }) {
+	const cur = invoice.plata?.rataDeSchimbValutar;
+	let priceConvertedTotal = invoice.sumaPlatita;
+	if (cur ?? "RON" != "RON") {
+		priceConvertedTotal /= invoice.plata?.rataDeSchimbValutar?.valuare ?? 1;
 	}
-	const priceWithoutVAT = priceConverted / 1.19;
-	const vatAmount = priceConverted - priceWithoutVAT;
-	const ticket = invoice.ticketId != null ? invoice.ticket : undefined;
+	const priceTotalWithoutVAT = priceConvertedTotal / 1.19;
+	const vatAmountTotal = priceConvertedTotal - priceTotalWithoutVAT;
+	const bilete = invoice.bileteSpectacol ?? [];
 	return (
 		<div className="flex flex-1 mx-8 border-2 bg-white">
 			<div className="flex flex-col w-full">
 				<table className="invoice-table">
 					<tr className="text-center break-normal place-items-center bg-red-500 text-white text-[13px] font-bold">
 						<th>
-							<span>{dictionary.invoice.table.number}</span>
+							<span>Nr. crt</span>
 						</th>
 						<th>
-							<span>{dictionary.invoice.table.productService}</span>
+							<span>Descriere Produs/Serviciu</span>
 						</th>
 						<th>
-							<span>{dictionary.invoice.table.unitMeasure}</span>
+							<span>U.M.</span>
 						</th>
 						<th>
-							<span>{dictionary.invoice.table.quantity}</span>
+							<span>Cantitate</span>
 						</th>
 						<th>
 							<span>
-								{dictionary.invoice.table.unitPriceExVAT} <br /> --{cur}--
+								Preț Unitar (Fără TVA) <br /> --{cur?.moneda}--
 							</span>
 						</th>
 						<th>
 							<span>
-								{dictionary.invoice.table.value} <br /> --{cur}--
+								Valoare <br /> --{cur?.moneda}--
 							</span>
 						</th>
 						<th>
 							<span>
-								{dictionary.invoice.table.vatValue} <br /> --{cur}--
+								Valoare TVA <br /> --{cur?.moneda}--
 							</span>
 						</th>
 						<th>
 							<span>
-								{dictionary.invoice.table.unitPriceIncVAT} <br /> --{cur}--
+								Preț Unitar (Incl. TVA) <br /> --{cur?.moneda}--
 							</span>
 						</th>
 					</tr>
@@ -83,30 +75,38 @@ function InvoiceMiddle({
 								<span>7(5+6)</span>
 							</td>
 						</tr>
-						<tr className="border-y-2 min-h-11 h-11">
-							<td className="border-r-2">1</td>
-							<td className="max-w-[200px] border-r-2">
-								{dictionary.invoice.middle.text
-									.replace(
-										"{title}",
-										lang == "ro" ? ticket?.show?.title : ticket?.show?.title_en
-									)
-									.replace("{number}", ticket?.seat?.number)
-									.replace("{type}", ticket?.showRoom?.number)}
-							</td>
-							<td className="border-r-2 min-w-10">
-								{dictionary.invoice.table.show}
-							</td>
-							<td className="border-r-2">1</td>
-							<td className="border-r-2">{priceWithoutVAT.toFixed(2)}</td>
-							<td className="border-r-2">{priceWithoutVAT.toFixed(2)}</td>
-							<td className="border-r-2">{vatAmount.toFixed(2)}</td>
-							<td>{(priceWithoutVAT + vatAmount).toFixed(2)}</td>
-						</tr>
-						<tr></tr>
-						{Array.from({ length: 8 }).map((v, index) => {
+						{bilete.map((bilet, index) => {
+							let priceConverted = bilet.locSalaSpectacol?.pretLoc ?? 0;
+							if (cur ?? "RON" != "RON") {
+								priceConverted /=
+									invoice.plata?.rataDeSchimbValutar?.valuare ?? 1;
+							}
+							const priceWithoutVAT = priceConverted / 1.19;
+							const vatAmount = priceConverted - priceWithoutVAT;
 							return (
-								<tr key={index} className="border-y-2 min-h-11 h-11">
+								<tr
+									key={bilet.codBiletSpectacol}
+									className="border-y-2 min-h-12 h-auto"
+								>
+									<td className="border-r-2">{index + 1}</td>
+									<td className="max-w-[200px] border-r-2 break-words p-1">
+										Bilet Spectacol `{bilet.spectacol?.titlu}`, in sala
+										spectacol `{bilet.salaSpectacol?.numarSala}`, locul `
+										{bilet.locSalaSpectacol?.numarLoc} -{" "}
+										{bilet.locSalaSpectacol?.tipLoc}`.
+									</td>
+									<td className="border-r-2 min-w-10">BUC</td>
+									<td className="border-r-2">1</td>
+									<td className="border-r-2">{priceWithoutVAT.toFixed(2)}</td>
+									<td className="border-r-2">{priceWithoutVAT.toFixed(2)}</td>
+									<td className="border-r-2">{vatAmount.toFixed(2)}</td>
+									<td>{(priceWithoutVAT + vatAmount).toFixed(2)}</td>
+								</tr>
+							);
+						})}
+						{Array.from({ length: 10 - bilete.length }).map((v, index) => {
+							return (
+								<tr key={index} className="border-y-2 min-h-10 h-10">
 									<td className="border-r-2"></td>
 									<td className="max-w-[200px] border-r-2"></td>
 									<td className="border-r-2 min-w-10"></td>
@@ -125,46 +125,38 @@ function InvoiceMiddle({
 						<div className="w-1/2"></div>
 						<div className="flex flex-row justify-evenly w-1/2 p-1 place-items-center">
 							<p className="font-bold text-sm">
-								{(priceWithoutVAT + vatAmount).toFixed(2)}
+								{(priceTotalWithoutVAT + vatAmountTotal).toFixed(2)}
 							</p>
 							<p className="font-bold flex-1 text-center text-xs">
-								{priceWithoutVAT.toFixed(2)}
+								{priceTotalWithoutVAT.toFixed(2)}
 							</p>
 							<div className="font-bold flex flex-col justify-center place-items-center text-xs">
-								<p>{vatAmount.toFixed(2)}</p>
-								<p>{dictionary.invoice.table.vatOnCollection}</p>
+								<p>{vatAmountTotal.toFixed(2)}</p>
+								<p>TVA la colectare</p>
 							</div>
 						</div>
 					</div>
 					<div className="flex flex-row w-full bg-gray-200 py-1 flex-1">
 						<div className="w-1/2"></div>
 						<div className="flex flex-row justify-evenly w-1/2 p-1 place-items-center text-red-500">
-							<p className="font-bold text-sm">
-								{dictionary.invoice.totalPayment}
-							</p>
+							<p className="font-bold text-sm">Total Plată</p>
 							<p className="font-bold flex-1 text-right text-sm">
-								{(priceWithoutVAT + vatAmount).toFixed(2)}
+								{(priceTotalWithoutVAT + vatAmountTotal).toFixed(2)}
 							</p>
 						</div>
 					</div>
 					<div className="flex flex-row w-full flex-1 px-2">
 						<div className="flex flex-col w-1/2">
-							<p className="font-bold text-sm">
-								{dictionary.invoice.dispatchDate}
-							</p>
+							<p className="font-bold text-sm">Data Expedierii</p>
+							<p className="text-xs">De: {invoice.numeClient}</p>
 							<p className="text-xs">
-								{dictionary.invoice.by} {invoice.firstName} {invoice.lastName}
-							</p>
-							<p className="text-xs">
-								{dictionary.invoice.dispatchedInOurPresence}{" "}
+								Expediat în prezența noastră la{" "}
 								{new Date().toLocaleDateString()}
 							</p>
-							<p className="text-xs">{dictionary.invoice.signatures}</p>
+							<p className="text-xs">Semnături</p>
 						</div>
 						<div className="flex flex-col w-1/2 place-items-end">
-							<p className="font-bold text-sm">
-								{dictionary.invoice.receivingSignature}
-							</p>
+							<p className="font-bold text-sm">Semnătura de primire</p>
 						</div>
 					</div>
 				</div>

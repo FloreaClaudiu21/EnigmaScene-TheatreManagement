@@ -1,64 +1,88 @@
+import { BiletSpectacol, BonFiscal } from "@/lib/types";
 import React from "react";
 
 export default function FiscalReceiptMiddle({
-	dict,
 	data,
-	lang,
-	vatAmount,
-	priceConverted,
-	priceWithoutVat,
+	vatAmountTotal,
+	priceConvertedTotal,
+	priceTotalWithoutVat,
 }: {
-	lang: any;
-	dict: any;
-	data: any;
-	vatAmount: number;
-	priceWithoutVat: number;
-	priceConverted: number;
+	data: BonFiscal;
+	vatAmountTotal: number;
+	priceTotalWithoutVat: number;
+	priceConvertedTotal: number;
 }) {
+	const cur = data.plata?.rataDeSchimbValutar;
+	const bilete: BiletSpectacol[] = data.bileteSpectacol ?? [];
 	return (
 		<div className="flex flex-col text-sm">
 			<div className="text-center my-6">
-				<p className="font-bold">{dict.receipt.middle.receipt}</p>
-				<p>{dict.receipt.middle.daily}</p>
-				<p>{dict.receipt.middle.welcome}</p>
+				<p className="font-bold">--------- BON FISCAL ---------</p>
+				<p>ZILNIC 08:00 - 22:00</p>
+				<p>BUN VENIT LA TEATRUL NOSTRU!</p>
 			</div>
-			<div className="mb-4">
-				{dict.receipt.middle.show} `
-				{lang == "ro" ? data.show?.title : data.show?.title_en}` 1{" "}
-				{dict.receipt.middle.piece} x {priceConverted.toFixed(2)}
+			<div className="flex flex-col gap-1 mb-4">
+				{bilete.map((bilet) => {
+					let priceConverted = bilet.locSalaSpectacol?.pretLoc ?? 0;
+					if (cur ?? "RON" != "RON") {
+						priceConverted /= data.plata?.rataDeSchimbValutar?.valuare ?? 1;
+					}
+					return (
+						<div
+							key={bilet.codBiletSpectacol}
+							className="flex flex-row gap-1 place-items-center"
+						>
+							<p className="flex-1">
+								Bilet Spectacol `{bilet.spectacol?.titlu}` Sala `
+								{bilet.salaSpectacol?.numarSala}` Loc `
+								{bilet.locSalaSpectacol?.numarLoc} -{" "}
+								{bilet.locSalaSpectacol?.tipLoc}`
+							</p>
+							<p>1 BUC x {priceConverted.toFixed(2)}</p>
+						</div>
+					);
+				})}
 			</div>
 			<div>
 				<div className="flex flex-row justify-between py-2">
 					<p>SUBTOTAL</p>
-					<p>{priceConverted.toFixed(2)}</p>
+					<p>{priceConvertedTotal.toFixed(2)}</p>
 				</div>
 				<hr />
 				<div className="flex flex-col justify-between py-2">
-					<p>TOTAL: {priceConverted.toFixed(2)}</p>
+					<p>TOTAL: {priceConvertedTotal.toFixed(2)}</p>
 					<p>
-						{data.payment?.type} {priceConverted.toFixed(2)}{" "}
-						{data.payment?.currency}
+						{data.plata?.tipPlata} {priceConvertedTotal.toFixed(2)}{" "}
+						{data.plata?.rataDeSchimbValutar?.moneda}
 					</p>
 				</div>
 				<hr />
 				<div className="flex flex-row justify-between py-2">
-					<p>{dict.receipt.middle.vat}</p>
-					<p>{dict.receipt.middle.value}</p>
+					<p>TVA</p>
+					<p>VALUARE</p>
 					<p>TOTAL</p>
 				</div>
 				<hr />
 				<div className="flex flex-row justify-between py-2">
-					<p>{dict.receipt.middle.vat} 19%</p>
-					<p>{vatAmount.toFixed(2)}</p>
-					<p>{(priceWithoutVat + vatAmount).toFixed(2)}</p>
+					<p>TVA 19%</p>
+					<p>{vatAmountTotal.toFixed(2)}</p>
+					<p>{(priceTotalWithoutVat + vatAmountTotal).toFixed(2)}</p>
 				</div>
 				<hr />
 				<div className="flex flex-row justify-between py-2">
-					<p>{dict.receipt.middle.totalTaxes}</p>
-					<p>{vatAmount.toFixed(2)}</p>
+					<p>BRUT B</p>
+					<p>{priceTotalWithoutVat.toFixed(2)}</p>
 				</div>
 				<hr />
-				<p className="text-center pt-2">{dict.receipt.middle.ty}</p>
+				<div className="flex flex-row justify-between py-2">
+					<p>TOTAL TAXE:</p>
+					<p>{vatAmountTotal.toFixed(2)}</p>
+				</div>
+				<hr />
+				<p className="text-center pt-2">
+					Vă dorim o vizionare plăcută a spectacolului. Dacă aveți nevoie de
+					ceva în plus, nu ezitați să întrebați.
+				</p>
 			</div>
 		</div>
 	);

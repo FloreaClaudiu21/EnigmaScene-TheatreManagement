@@ -3,7 +3,6 @@ const nextConfig = {
 	reactStrictMode: false,
 	experimental: {
 		missingSuspenseWithCSRBailout: false,
-		serverComponentsExternalPackages: ["@react-pdf/renderer"],
 	},
 	typescript: {
 		ignoreBuildErrors: true,

@@ -3,23 +3,19 @@ import { cookies } from "next/headers";
 import { Client } from "next-auth";
 import crypto from "crypto";
 import { prisma } from "@/lib/prismaClient";
-import { addAddressFormSchema, updateSchema } from "@/lib/schemas";
 import { z } from "zod";
 import { deleteCookie, getCookie } from "cookies-next";
-import { sendVerifyAccountEmail } from "./EmailProvider";
+import { createAccountProvider, isEmailAssociated } from "./AccountProviders";
 import {
-	createAccountProvider,
-	isEmailAssociated,
-	makeDictionaryBE,
-} from "./AccountProviders";
+	schemaActualizareClient,
+	schemaCreareAdresaFacturareClient,
+} from "@/lib/schemas";
 import {
-	BillingAddress,
+	AdresaFacturare,
+	MailSendResponse,
 	PartialClient,
 	RegisterData,
-	RegisterResponse,
-	ResetPasswordResponse,
 } from "@/lib/types";
-import { Locale } from "@/i18n.config";
 
 const algorithm = "aes-256-cbc";
 const secretKey = process.env.AUTH_SECRET ?? "";
@@ -31,15 +27,15 @@ export const getAdminKey = async () => {
 export const getClientById = async (id: number) => {
 	const foundClient = await prisma.client.findFirst({
 		where: {
-			id,
+			codClient: id,
 		},
 		include: {
-			providers: true,
-			billingAddresses: true,
-			favorites: true,
-			invoices: true,
-			payments: true,
-			tickesBuyed: true,
+			providerii: true,
+			adreseFacturare: true,
+			bileteCumparate: true,
+			bonuriFiscale: true,
+			facturiiEmise: true,
+			platiiEfectuate: true,
 		},
 	});
 	return foundClient;
@@ -51,170 +47,143 @@ export const getClientByEmail = async (email: string) => {
 			email,
 		},
 		include: {
-			providers: true,
-			billingAddresses: true,
-			favorites: true,
-			invoices: true,
-			payments: true,
-			tickesBuyed: true,
+			providerii: true,
+			adreseFacturare: true,
+			bileteCumparate: true,
+			bonuriFiscale: true,
+			facturiiEmise: true,
+			platiiEfectuate: true,
 		},
 	});
 	return foundClient;
 };
 
-export const LoginWithProvider = async (lang: Locale, email: string) => {
-	const { dictionary } = await makeDictionaryBE(lang);
-	const Client = await getClientByEmail(email);
-	if (!Client) {
-		throw Error(dictionary.backend.loginWithProvider.notFound);
+export const LoginWithProvider = async (email: string) => {
+	const client = await getClientByEmail(email);
+	if (!client) {
+		throw Error(`Utilizatorul cu emailul '${email}' nu a fost găsit!`);
 	}
-	return Client;
+	return client;
 };
 
-export const LoginWithCredentials = async (
-	lang: Locale,
-	email: string,
-	password: string
-) => {
-	const { dictionary } = await makeDictionaryBE(lang);
-	const Client = await getClientByEmail(email);
-	if (!Client) {
-		throw Error(dictionary.backend.loginWithCredentials.notFound);
+export const LoginWithCredentials = async (email: string, password: string) => {
+	const client = await getClientByEmail(email);
+	if (!client) {
+		throw Error(`Utilizatorul cu emailul '${email}' nu a fost găsit!`);
 	}
-	if (Client.password == null || Client.password.length <= 0) {
-		throw Error(dictionary.backend.loginWithCredentials.noPassword);
+	if (client.parola == null || client.parola.length <= 0) {
+		throw Error(`Contul asociat cu emailul '${email}' nu are o parolă.`);
 	}
-	const passCorrect = await verifyPassword(Client.password, password);
+	const passCorrect = await verifyPassword(client.parola, password);
 	if (passCorrect) {
-		Client.password = "";
-		return Client as Client;
+		client.parola = "";
+		return client as Client;
 	} else {
-		throw Error(dictionary.backend.loginWithCredentials.invalidPassword);
+		throw Error(`Parolă incorectă pentru utilizatorul '${email}'.`);
 	}
 };
 
-export const deleteAccountClient = async (lang: Locale, clientId: number) => {
-	const { dictionary } = await makeDictionaryBE(lang);
+export const deleteAccountClient = async (clientId: number) => {
 	const client = await getClientById(clientId);
 	if (!client) {
 		return {
 			ok: false,
 			status: 404,
-			error: dictionary.backend.deleteAccountClient.notFound,
-		} as ResetPasswordResponse;
+			message:
+				"Utilizatorul nu a putut fi șters, încercați din nou mai târziu.",
+		} as MailSendResponse;
 	}
 	await prisma.client.delete({
 		where: {
-			id: client.id,
+			codClient: clientId,
 		},
 	});
 	return {
 		ok: true,
 		status: 200,
-		error: dictionary.backend.deleteAccountClient.success.replace(
-			"{email}",
-			client.email
-		),
-	} as ResetPasswordResponse;
+		message: `Contul '${client.email}' a fost șters din baza de date.`,
+	} as MailSendResponse;
 };
 
 export const updateDetailsClient = async (
-	lang: Locale,
 	clientId: number,
-	values: z.infer<typeof updateSchema>
+	values: z.infer<typeof schemaActualizareClient>
 ) => {
-	const { dictionary } = await makeDictionaryBE(lang);
 	let encryptedPassword = "";
-	if (values.password && values.password.trim().length > 0) {
-		encryptedPassword = await encryptPassword(values.password.trim());
+	if (values.parola && values.parola.trim().length > 0) {
+		encryptedPassword = await encryptPassword(values.parola.trim());
 	}
 	const updated = await prisma.client.update({
 		where: {
-			id: clientId,
+			codClient: clientId,
 		},
 		data: {
 			email: values.email,
-			lastName: values.lastName,
-			firstName: values.firstName,
-			password: encryptedPassword,
-			phone: values.prefix + values.phone,
-			birthDate: values.birthDate,
+			numeClient: values.numeClient,
+			parola: encryptedPassword,
+			telefon: values.prefix + values.telefon,
+			dataNasterii: values.dataNasterii,
 		},
 		include: {
-			providers: true,
+			providerii: true,
 		},
 	});
 	if (!updated) {
 		return {
 			ok: false,
 			status: 404,
-			error: dictionary.backend.updateDetailsClient.notFound,
-		} as ResetPasswordResponse;
+			message:
+				"Utilizatorul nu a putut fi actualizat, încercați din nou mai târziu.",
+		} as MailSendResponse;
 	}
 	return {
 		ok: true,
 		status: 200,
 		client: updated as Client,
-		error: dictionary.backend.updateDetailsClient.success.replace(
-			"{email}",
-			values.email
-		),
-	} as ResetPasswordResponse;
+		message: `Detaliile utilizatorului pentru contul '${updated.email}' au fost actualizate!`,
+	} as MailSendResponse;
 };
 
 export const registerWithCredentialsorProvider = async (
 	data: RegisterData,
-	lang: Locale,
 	sendFrom: string,
 	partialClient?: PartialClient
 ) => {
-	const { dictionary } = await makeDictionaryBE(lang);
 	try {
 		if (partialClient && partialClient.provider.length > 0) {
 			const registerData = {
 				...data,
-				password: "",
+				parola: "",
 			};
-			const ClientFound = await getClientByEmail(registerData.email);
-			if (ClientFound) {
+			const clientFound = await getClientByEmail(registerData.email);
+			if (clientFound) {
 				return {
-					error: dictionary.backend.registerWithCredentialsorProvider.emailExists.replace(
-						"{email}",
-						registerData.email
-					),
+					message: `Utilizatorul cu emailul '${registerData.email}' deja există.`,
 					status: 404,
 					ok: false,
-				} as RegisterResponse;
+				} as MailSendResponse;
 			}
 			const associatonFound = await isEmailAssociated(registerData.email);
 			if (associatonFound) {
 				return {
-					error: dictionary.backend.registerWithCredentialsorProvider.associatedEmail.replace(
-						"{email}",
-						registerData.email
-					),
+					message: `Utilizatorul cu emailul '${registerData.email}' este asociat cu un alt cont.`,
 					status: 404,
 					ok: false,
-				} as RegisterResponse;
+				} as MailSendResponse;
 			}
 			const client = await prisma.client.create({
 				data: {
 					...registerData,
-					emailVerified: new Date(),
-					createdWithProvider:
-						partialClient.provider + "|" + partialClient.providerAccountId,
+					telefon: registerData.prefix + registerData.telefon,
+					emailVerificat: new Date(),
+					creatCuProvider:
+						partialClient.provider + "|" + partialClient.providerContCod,
 				},
 				include: {
-					providers: true,
-					billingAddresses: true,
-					favorites: true,
-					invoices: true,
-					payments: true,
-					tickesBuyed: true,
+					providerii: true,
 				},
 			});
 			const providerCreate = await createAccountProvider(
-				lang,
 				client.email,
 				partialClient,
 				true
@@ -225,66 +194,52 @@ export const registerWithCredentialsorProvider = async (
 						email: client.email,
 					},
 					include: {
-						providers: true,
-						billingAddresses: true,
-						favorites: true,
-						invoices: true,
-						payments: true,
-						tickesBuyed: true,
+						providerii: true,
 					},
 				});
 				return {
 					ok: false,
-					error: providerCreate.message,
+					message: providerCreate.message,
 					status: providerCreate.status,
-				} as RegisterResponse;
+				} as MailSendResponse;
 			}
 			return {
-				error: dictionary.backend.registerWithCredentialsorProvider.success
-					.replace("{email}", client.email)
-					.replace("{provider}", partialClient.provider),
+				message: `Contul a fost creat cu succes pentru emailul '${client.email}' cu providerul '${partialClient.numeProvider}'.`,
 				ok: true,
 				status: 200,
 				client: client,
-			} as RegisterResponse;
+			} as MailSendResponse;
 		}
 		const registerData = {
 			...data,
-			password: await encryptPassword(data.password),
+			parola: await encryptPassword(data.parola),
 		};
-		const ClientFound = await getClientByEmail(registerData.email);
-		if (ClientFound) {
+		const clientFound = await getClientByEmail(registerData.email);
+		if (clientFound) {
 			return {
-				error: dictionary.backend.registerWithCredentialsorProvider.emailExists.replace(
-					"{email}",
-					registerData.email
-				),
+				message: `Utilizatorul cu emailul '${registerData.email}' deja există.`,
 				status: 404,
 				ok: false,
-			} as RegisterResponse;
+			} as MailSendResponse;
 		}
 		const associatonFound = await isEmailAssociated(registerData.email);
 		if (associatonFound) {
 			return {
-				error: dictionary.backend.registerWithCredentialsorProvider.associatedEmail.replace(
-					"{email}",
-					registerData.email
-				),
+				message: `Utilizatorul cu emailul '${registerData.email}' este asociat cu un alt cont.`,
 				status: 404,
 				ok: false,
-			} as RegisterResponse;
+			} as MailSendResponse;
 		}
 		const client = await prisma.client.create({
-			data: registerData,
+			data: {
+				...registerData,
+				telefon: registerData.prefix + registerData.telefon,
+			},
 			include: {
-				providers: true,
-				billingAddresses: true,
-				favorites: true,
-				invoices: true,
-				payments: true,
-				tickesBuyed: true,
+				providerii: true,
 			},
 		});
+		/*
 		const res = await sendVerifyAccountEmail(lang, client.email, sendFrom);
 		if (!res.ok) {
 			return {
@@ -294,48 +249,42 @@ export const registerWithCredentialsorProvider = async (
 				status: res.status,
 			} as RegisterResponse;
 		}
+		*/
 		return {
-			error: dictionary.backend.registerWithCredentialsorProvider.verifyEmail,
+			message:
+				"Contul a fost creat cu succes, verificați-vă emailul pentru a vă activa contul.",
 			ok: true,
 			status: 200,
 			client: client,
-		} as RegisterResponse;
+		} as MailSendResponse;
 	} catch (e) {
 		if (e instanceof Error) {
 			return {
-				error: e.toString(),
+				message: e.toString(),
 				status: 500,
 				ok: false,
-				client: undefined,
-			} as RegisterResponse;
+			} as MailSendResponse;
 		} else {
 			return {
-				error:
-					dictionary.backend.registerWithCredentialsorProvider.unknownError,
+				message: "A apărut o eroare necunoscută.",
 				status: 500,
 				ok: false,
-				client: undefined,
-			} as RegisterResponse;
+			} as MailSendResponse;
 		}
 	}
 };
 
 export const resetPasswordClient = async (
-	lang: Locale,
 	email: string,
 	newPassword: string
 ) => {
-	const { dictionary } = await makeDictionaryBE(lang);
 	const client = await getClientByEmail(email);
 	if (!client) {
 		return {
 			ok: false,
 			status: 404,
-			error: dictionary.backend.resetPasswordClient.notFound.replace(
-				"{email}",
-				email
-			),
-		} as ResetPasswordResponse;
+			message: `Utilizatorul cu emailul '${email}' nu a fost găsit!`,
+		} as MailSendResponse;
 	}
 	const encryptedPassword = await encryptPassword(newPassword);
 	const updated = await prisma.client.update({
@@ -343,23 +292,15 @@ export const resetPasswordClient = async (
 			email: email,
 		},
 		data: {
-			password: encryptedPassword,
-		},
-		include: {
-			providers: true,
-			billingAddresses: true,
-			favorites: true,
-			invoices: true,
-			payments: true,
-			tickesBuyed: true,
+			parola: encryptedPassword,
 		},
 	});
 	if (!updated) {
 		return {
 			ok: false,
 			status: 404,
-			error: dictionary.backend.resetPasswordClient.updateError,
-		} as ResetPasswordResponse;
+			message: "A apărut o eroare necunoscută",
+		} as MailSendResponse;
 	}
 	const emailSended = getCookie("resetMailSend", { cookies });
 	if (emailSended && emailSended === email) {
@@ -368,30 +309,26 @@ export const resetPasswordClient = async (
 	return {
 		ok: true,
 		status: 200,
-		client: updated as Client,
-		error: dictionary.backend.resetPasswordClient.success.replace(
-			"{email}",
-			email
-		),
-	} as ResetPasswordResponse;
+		message: `Parola pentru contul '${email}' a fost actualizată cu succes!`,
+	} as MailSendResponse;
 };
 
 export const addBillingAddress = async (
 	id: number,
-	values: z.infer<typeof addAddressFormSchema>
+	values: z.infer<typeof schemaCreareAdresaFacturareClient>
 ) => {
 	try {
-		const address = await prisma.billingAddress.create({
+		const address = await prisma.adresaFacturare.create({
 			data: {
-				clientId: id,
-				city: values.city,
-				address: values.address,
-				country: values.country,
-				zipCode: values.zipCode,
-				observations: values.observations,
+				codClient: id,
+				tara: values.tara,
+				adresa: values.adresa,
+				oras: values.oras,
+				codPostal: values.codPostal,
+				observatii: values.observatii,
 			},
 		});
-		return address as BillingAddress;
+		return address as AdresaFacturare;
 	} catch (e) {
 		console.log(e);
 		return null;
@@ -400,12 +337,12 @@ export const addBillingAddress = async (
 
 export const deleteBillingAddress = async (id: number) => {
 	try {
-		const address = await prisma.billingAddress.delete({
+		const address = await prisma.adresaFacturare.delete({
 			where: {
-				id: id,
+				codAdresa: id,
 			},
 		});
-		return address as BillingAddress;
+		return address as AdresaFacturare;
 	} catch (e) {
 		console.log(e);
 		return null;

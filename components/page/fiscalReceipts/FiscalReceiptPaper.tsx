@@ -1,21 +1,18 @@
-import { FiscalReceipt, LanguageData } from "@/lib/types";
 import FiscalReceiptHeader from "./FiscalReceiptHeader";
 import FiscalReceiptMiddle from "./FiscalReceiptMiddle";
 import FiscalReceiptFooter from "./FiscalReceiptFooter";
+import { BonFiscal } from "@/lib/types";
 
 const FiscalReceiptPaper: React.FC<{
-	data: FiscalReceipt;
-	langData: LanguageData;
-}> = ({ data, langData }) => {
-	const lang = langData.language;
-	const dict = langData.dictionary;
-	const cur = data.payment?.currency;
-	let priceConverted = data.invoice?.totalAmount ?? 0;
-	if (cur != "RON") {
-		priceConverted /= data.invoice?.currencyAmount ?? 0;
+	data: BonFiscal;
+}> = ({ data }) => {
+	const cur = data.plata?.rataDeSchimbValutar;
+	let priceConvertedTotal = data.plata?.sumaPlatita ?? 0;
+	if (cur ?? "RON" != "RON") {
+		priceConvertedTotal /= data.plata?.rataDeSchimbValutar?.valuare ?? 1;
 	}
-	const priceWithoutVAT = priceConverted / 1.19;
-	const vatAmount = priceConverted - priceWithoutVAT;
+	const priceTotalWithoutVAT = priceConvertedTotal / 1.19;
+	const vatAmountTotal = priceConvertedTotal - priceTotalWithoutVAT;
 	return (
 		<>
 			<style type="text/css" media="print">
@@ -33,18 +30,16 @@ const FiscalReceiptPaper: React.FC<{
         `}
 				1
 			</style>
-			<div className="flex flex-col w-[210mm] max-w-[210mm] h-[297mm] border-2">
+			<div className="flex flex-col w-[210mm] max-w-[210mm] min-h-[297mm] border-2">
 				<div className="flex flex-col w-[90mm] min-h-[150mm] h-auto p-4 border-2">
-					<FiscalReceiptHeader dict={dict} />
+					<FiscalReceiptHeader />
 					<FiscalReceiptMiddle
-						lang={lang}
 						data={data}
-						dict={dict}
-						priceConverted={priceConverted}
-						priceWithoutVat={priceWithoutVAT}
-						vatAmount={vatAmount}
+						priceConvertedTotal={priceConvertedTotal}
+						priceTotalWithoutVat={priceTotalWithoutVAT}
+						vatAmountTotal={vatAmountTotal}
 					/>
-					<FiscalReceiptFooter data={data} dict={dict} />
+					<FiscalReceiptFooter data={data} />
 				</div>
 			</div>
 		</>

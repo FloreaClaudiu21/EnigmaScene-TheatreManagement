@@ -1,6 +1,5 @@
 "use client";
-import { useDictionary } from "@/components/dictionary-provider";
-import { TicketSold } from "@/lib/types";
+import { BiletSpectacol } from "@/lib/types";
 import { useTicketModal } from "@/services/StateProvider";
 import { Button, Tooltip } from "@nextui-org/react";
 import { TicketIcon } from "lucide-react";
@@ -8,9 +7,8 @@ import { TicketIcon } from "lucide-react";
 export default function ModalViewTicket({
 	ticket,
 }: {
-	ticket?: TicketSold | null;
+	ticket?: BiletSpectacol | null;
 }) {
-	const dict = useDictionary();
 	const ticketModal = useTicketModal();
 	const clickShow = () => {
 		ticketModal.setTicket(ticket ?? null);
@@ -18,7 +16,7 @@ export default function ModalViewTicket({
 	};
 	return (
 		<div className="flex flex-row gap-2 justify-center">
-			<Tooltip content={dict.buttons.viewTicket} radius="md">
+			<Tooltip content="Vizualizare bilet spectacol" radius="md">
 				<Button
 					size="sm"
 					isIconOnly
