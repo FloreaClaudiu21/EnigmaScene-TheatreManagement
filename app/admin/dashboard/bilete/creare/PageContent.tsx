@@ -41,7 +41,9 @@ export default function AdminTicketNew({
 		cursValutarSelectat,
 		setCursValutarSelectat,
 	] = useState<RataDeSchimbValutar | null>(
-		cursuriValutare.length > 0 ? cursuriValutare[0] : null
+		cursuriValutare.length > 0
+			? cursuriValutare.filter((curs) => curs.moneda == "RON")[0]
+			: null
 	);
 	const adreseFacturare = useCallback(
 		() => clientSelectat?.adreseFacturare ?? [],

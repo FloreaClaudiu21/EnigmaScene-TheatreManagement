@@ -8,7 +8,8 @@ import {
 } from "@/components/admin/table/ColumnSelect";
 import ColumnCellActions from "@/components/admin/table/ColumnCellActions";
 import { TipSpectacol, TipuriTabel } from "@/lib/types";
-import { formatDate, formatDateFull } from "@/lib/rangeOptions";
+import { formatDateFull } from "@/lib/rangeOptions";
+import { capitalizeFirstLetter, formatDate } from "@/lib/utils";
 
 export const columnsShowType: ColumnDef<TipSpectacol>[] = [
 	{
@@ -43,7 +44,19 @@ export const columnsShowType: ColumnDef<TipSpectacol>[] = [
 		},
 		cell: ({ row }) => {
 			const user = row.original;
-			return <ColumnCell data={user.codTipSpectacol} />;
+			return (
+				<ColumnCell
+					filters={[
+						{
+							page: "spectacole",
+							column: "codTipSpectacol",
+							label: "Cod Categorie Spectacol",
+							value: user.codTipSpectacol + "",
+						},
+					]}
+					data={user.codTipSpectacol}
+				/>
+			);
 		},
 	},
 	{
@@ -52,7 +65,19 @@ export const columnsShowType: ColumnDef<TipSpectacol>[] = [
 			return <ColumnHeader column={column} title="Nume Categorie" />;
 		},
 		cell: ({ row: { original } }) => {
-			return <ColumnCell data={original.numeTip} />;
+			return (
+				<ColumnCell
+					filters={[
+						{
+							page: "spectacole",
+							column: "numeTip",
+							label: "Nume Categorie Spectacol",
+							value: original.numeTip + "",
+						},
+					]}
+					data={original.numeTip}
+				/>
+			);
 		},
 	},
 	{
@@ -62,7 +87,19 @@ export const columnsShowType: ColumnDef<TipSpectacol>[] = [
 		},
 		cell: ({ row }) => {
 			const show = row.original;
-			return <ColumnCell data={formatDateFull(show.creatPe)} />;
+			return (
+				<ColumnCell
+					filters={[
+						{
+							page: "spectacole",
+							label: "Adaugat Pe",
+							column: "creatPe",
+							value: formatDate(show.creatPe),
+						},
+					]}
+					data={capitalizeFirstLetter(formatDateFull(show.creatPe))}
+				/>
+			);
 		},
 	},
 ];

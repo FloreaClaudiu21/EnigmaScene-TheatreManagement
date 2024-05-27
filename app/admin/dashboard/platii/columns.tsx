@@ -1,13 +1,14 @@
 "use client";
 import { ColumnDef } from "@tanstack/react-table";
 import ColumnHeader from "@/components/admin/table/ColumnHeader";
-import ColumnCell from "@/components/admin/table/ColumnCell";
+import ColumnCell, { PushFilter } from "@/components/admin/table/ColumnCell";
 import { Chip } from "@nextui-org/react";
 import ModalViewInvoice from "@/components/page/invoices/ViewInvoiceBtn";
 import ModalViewFiscalReceipt from "@/components/page/fiscalReceipts/ViewFiscalReceiptBtn";
 import { Plata } from "@/lib/types";
-import { formatDate, formatDateFull } from "@/lib/rangeOptions";
+import { formatDateFull } from "@/lib/rangeOptions";
 import { StarePlata } from "@prisma/client";
+import { capitalizeFirstLetter, formatDate } from "@/lib/utils";
 
 export const columnsPayments: ColumnDef<Plata>[] = [
 	{
@@ -29,16 +30,60 @@ export const columnsPayments: ColumnDef<Plata>[] = [
 		},
 		cell: ({ row }) => {
 			const user = row.original;
-			return <ColumnCell data={user.codPlata} />;
+			return (
+				<ColumnCell
+					filters={[
+						{
+							page: "platii",
+							label: "Cod Plata",
+							column: "codPlata",
+							value: user.codPlata + "" ?? "",
+						},
+					]}
+					data={user.codPlata}
+				/>
+			);
 		},
 	},
 	{
 		accessorKey: "codClient",
 		header: ({ column }) => {
-			return <ColumnHeader column={column} title="Cod Client" />;
+			return <ColumnHeader column={column} title="Cod & Nume Client" />;
 		},
 		cell: ({ row: { original } }) => {
-			return <ColumnCell data={original.codClient} />;
+			return (
+				<ColumnCell
+					data={
+						<>
+							<PushFilter
+								filters={[
+									{
+										column: "codClient",
+										label: "Cod Client",
+										page: "platii",
+										value: original.codClient + "" ?? "",
+									},
+								]}
+							>
+								{original.codClient}
+							</PushFilter>
+							-
+							<PushFilter
+								filters={[
+									{
+										column: "numeClient",
+										page: "platii",
+										label: "Nume Client",
+										value: original.client?.numeClient ?? "",
+									},
+								]}
+							>
+								{original.client?.numeClient}
+							</PushFilter>
+						</>
+					}
+				/>
+			);
 		},
 	},
 	{
@@ -47,7 +92,19 @@ export const columnsPayments: ColumnDef<Plata>[] = [
 			return <ColumnHeader column={column} title="Suma Platita (RON)" />;
 		},
 		cell: ({ row: { original } }) => {
-			return <ColumnCell data={original.sumaPlatita} />;
+			return (
+				<ColumnCell
+					filters={[
+						{
+							page: "platii",
+							label: "Suma Platita",
+							column: "sumaPlatita",
+							value: original.sumaPlatita + "" ?? "",
+						},
+					]}
+					data={original.sumaPlatita}
+				/>
+			);
 		},
 	},
 	{
@@ -58,6 +115,14 @@ export const columnsPayments: ColumnDef<Plata>[] = [
 		cell: ({ row: { original } }) => {
 			return (
 				<ColumnCell
+					filters={[
+						{
+							page: "platii",
+							label: "Moneda",
+							column: "moneda",
+							value: original.rataDeSchimbValutar?.moneda ?? "",
+						},
+					]}
 					data={
 						(original.rataDeSchimbValutar?.moneda != "RON"
 							? original.sumaPlatita /
@@ -77,7 +142,19 @@ export const columnsPayments: ColumnDef<Plata>[] = [
 			return <ColumnHeader column={column} title="Platit Pe" />;
 		},
 		cell: ({ row: { original } }) => {
-			return <ColumnCell data={formatDateFull(original.platitPe)} />;
+			return (
+				<ColumnCell
+					filters={[
+						{
+							page: "platii",
+							label: "Platit Pe",
+							column: "platitPe",
+							value: formatDate(original.platitPe),
+						},
+					]}
+					data={capitalizeFirstLetter(formatDateFull(original.platitPe))}
+				/>
+			);
 		},
 	},
 	{
@@ -86,7 +163,19 @@ export const columnsPayments: ColumnDef<Plata>[] = [
 			return <ColumnHeader column={column} title="Tip Plata" />;
 		},
 		cell: ({ row: { original } }) => {
-			return <ColumnCell data={original.tipPlata} />;
+			return (
+				<ColumnCell
+					filters={[
+						{
+							page: "platii",
+							label: "Tip Plata",
+							column: "tipPlata",
+							value: original.tipPlata.toString(),
+						},
+					]}
+					data={original.tipPlata}
+				/>
+			);
 		},
 	},
 	{

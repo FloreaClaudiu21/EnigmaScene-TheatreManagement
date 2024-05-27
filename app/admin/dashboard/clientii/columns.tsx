@@ -12,12 +12,13 @@ import {
 	ColumnSelectHeader,
 } from "@/components/admin/table/ColumnSelect";
 import { TipuriTabel } from "@/lib/types";
-import { formatDate, formatDateFull } from "@/lib/rangeOptions";
+import { formatDateFull } from "@/lib/rangeOptions";
+import { capitalizeFirstLetter, formatDate } from "@/lib/utils";
 
 function PasswordField({ user }: { user: User }) {
 	const [visiblePass, setVisiblePass] = useState(false);
 	return (
-		<div className="flex flex-row items-center justify-center text-center">
+		<div className="flex flex-row items-center justify-center text-center break-all">
 			<Button
 				radius="none"
 				variant="light"
@@ -25,8 +26,12 @@ function PasswordField({ user }: { user: User }) {
 					setVisiblePass((old) => !old);
 					navigator.clipboard.writeText(user.parola);
 				}}
+				style={{ whiteSpace: "normal", wordBreak: "break-all" }}
+				title={!visiblePass ? "*".repeat(user.parola.length) : user.parola}
 			>
-				{!visiblePass ? "*".repeat(user.parola.length) : user.parola}
+				<p className="break-all">
+					{!visiblePass ? "*".repeat(user.parola.length) : user.parola}
+				</p>
 			</Button>
 		</div>
 	);
@@ -90,7 +95,19 @@ export const columns: ColumnDef<User>[] = [
 		},
 		cell: ({ row }) => {
 			const user = row.original;
-			return <ColumnCell data={user.codClient} />;
+			return (
+				<ColumnCell
+					filters={[
+						{
+							page: "clientii",
+							label: "Cod Client",
+							column: "codClient",
+							value: user.codClient + "" ?? "",
+						},
+					]}
+					data={user.codClient}
+				/>
+			);
 		},
 	},
 	{
@@ -100,7 +117,19 @@ export const columns: ColumnDef<User>[] = [
 		},
 		cell: ({ row }) => {
 			const user = row.original;
-			return <ColumnCell data={user.numeClient} />;
+			return (
+				<ColumnCell
+					filters={[
+						{
+							page: "clientii",
+							label: "Nume Client",
+							column: "numeClient",
+							value: user.numeClient + "" ?? "",
+						},
+					]}
+					data={user.numeClient}
+				/>
+			);
 		},
 	},
 	{
@@ -113,6 +142,14 @@ export const columns: ColumnDef<User>[] = [
 			return (
 				<ColumnCell
 					data={user.email}
+					filters={[
+						{
+							page: "clientii",
+							label: "Email",
+							column: "email",
+							value: user.email + "" ?? "",
+						},
+					]}
 					className={`${user.utlizatorAdmin && "text-red-500"}`}
 				/>
 			);
@@ -142,7 +179,19 @@ export const columns: ColumnDef<User>[] = [
 		},
 		cell: ({ row }) => {
 			const user = row.original;
-			return <ColumnCell data={user.telefon} />;
+			return (
+				<ColumnCell
+					filters={[
+						{
+							page: "clientii",
+							label: "Telefon",
+							column: "telefon",
+							value: user.telefon + "" ?? "",
+						},
+					]}
+					data={user.telefon}
+				/>
+			);
 		},
 	},
 	{
@@ -162,8 +211,76 @@ export const columns: ColumnDef<User>[] = [
 		},
 		cell: ({ row }) => {
 			const user = row.original;
-			const theDate = formatDateFull(user.creatPe);
-			return <ColumnCell data={theDate} />;
+			const theDate = capitalizeFirstLetter(formatDateFull(user.creatPe));
+			return (
+				<ColumnCell
+					filters={[
+						{
+							page: "clientii",
+							label: "Adăugat Pee",
+							column: "creatPe",
+							value: formatDate(row.original.creatPe),
+						},
+					]}
+					data={theDate}
+				/>
+			);
+		},
+	},
+	{
+		accessorKey: "bileteCumparate",
+		header: ({ column }) => {
+			return <ColumnHeader column={column} title="Bilete Cumpărate" />;
+		},
+		cell: ({ row }) => {
+			const user = row.original;
+			return (
+				<ColumnCell
+					filters={[
+						{
+							page: "bilete",
+							label: "Bilete Client",
+							column: "codClient",
+							value: user.codClient + "" ?? "",
+						},
+						{
+							page: "bilete",
+							label: "Bilete Client",
+							column: "numeClient",
+							value: user.numeClient + "" ?? "",
+						},
+					]}
+					data={user.bileteCumparate?.length ?? 0}
+				/>
+			);
+		},
+	},
+	{
+		accessorKey: "platiiEfectuate",
+		header: ({ column }) => {
+			return <ColumnHeader column={column} title="Plății" />;
+		},
+		cell: ({ row }) => {
+			const user = row.original;
+			return (
+				<ColumnCell
+					filters={[
+						{
+							page: "platii",
+							label: "Plății Client",
+							column: "codClient",
+							value: user.codClient + "" ?? "",
+						},
+						{
+							page: "platii",
+							label: "Bilete Client",
+							column: "numeClient",
+							value: user.numeClient + "" ?? "",
+						},
+					]}
+					data={user.platiiEfectuate?.length ?? 0}
+				/>
+			);
 		},
 	},
 ];

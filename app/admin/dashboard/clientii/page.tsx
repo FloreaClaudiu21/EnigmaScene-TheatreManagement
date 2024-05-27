@@ -9,9 +9,13 @@ import { TipuriTabel } from "@/lib/types";
 
 export default async function AdminClients() {
 	const clients: Client[] = await prisma.client.findMany({
+		orderBy: {
+			creatPe: "desc",
+		},
 		include: {
 			adreseFacturare: true,
 			bileteCumparate: true,
+			platiiEfectuate: true,
 			providerii: true,
 		},
 	});
@@ -35,9 +39,10 @@ export default async function AdminClients() {
 							create_link="clientii/creare"
 							subtitle="Gestionează-ți clienții și vezi adresele lor de facturare."
 							filters={[
-								{ column: "codClient", label: "codClient" },
+								{ column: "codClient", label: "Cod Client" },
 								{ column: "numeClient", label: "Nume Client" },
 								{ column: "email", label: "Email" },
+								{ column: "telefon", label: "Telefon" },
 								{ column: "phone", label: "Phone" },
 								{ column: "creatPe", label: "Creat Pe" },
 							]}

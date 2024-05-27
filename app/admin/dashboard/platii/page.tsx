@@ -6,6 +6,9 @@ import { Plata, TipuriTabel } from "@/lib/types";
 
 export default async function AdminPayments() {
 	const payments: Plata[] = await prisma.plata.findMany({
+		orderBy: {
+			platitPe: "desc",
+		},
 		include: {
 			client: true,
 			rataDeSchimbValutar: true,
@@ -73,10 +76,12 @@ export default async function AdminPayments() {
 							filters={[
 								{ column: "codPlata", label: "Cod Plata" },
 								{ column: "sumaPlatita", label: "Suma Platita" },
+								{ column: "moneda", label: "Moneda" },
 								{ column: "tipPlata", label: "Tip Plata" },
 								{ column: "starePlata", label: "Stare Plata" },
 								{ column: "platitPe", label: "Platit Pe" },
 								{ column: "codClient", label: "Cod Client" },
+								{ column: "numeClient", label: "Nume Client" },
 							]}
 						/>
 					),

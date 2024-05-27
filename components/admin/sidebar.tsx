@@ -98,13 +98,13 @@ export default function SidebarAdminComponent() {
 					title="Bilete"
 					url={urlLink(pathname) + "bilete"}
 				/>
-				<SidebarLink
+				{/* <SidebarLink
 					icon={<PaintRollerIcon size={20} />}
 					include="materialeDecor"
 					pathName={pathname}
 					title="Materiale Decor"
 					url={urlLink(pathname) + "materialeDecor"}
-				/>
+				/> */}
 				<SidebarLink
 					icon={<PiggyBankIcon size={20} />}
 					include="platii"

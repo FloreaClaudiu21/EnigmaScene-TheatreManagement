@@ -31,7 +31,15 @@ export function formatDate(date: Date) {
 }
 
 export function formatDateFull(date: Date) {
-	return DATE_FORMATTER_FULL.format(date).split("EEST")[0];
+	const dateString = DATE_FORMATTER_FULL.format(date)
+		.split("EEST")[0]
+		.split("EET")[0];
+	const timePart = dateString.split(" la ")[1];
+	const timeComponents = timePart.split(":");
+	const time =
+		dateString.split(" la ")[0] +
+		` la ${timeComponents[0]}:${timeComponents[1]}`;
+	return time;
 }
 
 const CURRENCY_FORMATTER = new Intl.NumberFormat("ro", {
@@ -58,8 +66,8 @@ export const RANGE_OPTIONS = {
 		endDate: null,
 	},
 	last_day: {
-		label: "Ieri",
-		label1: " ieri.",
+		label: "O zi in urmă",
+		label1: " cu o zi in urmă.",
 		startDate: startOfDay(subDays(new Date(), 1)),
 		endDate: null,
 	},

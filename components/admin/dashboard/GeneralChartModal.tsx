@@ -8,6 +8,7 @@ import {
 	ModalHeader,
 } from "@nextui-org/react";
 import React from "react";
+import { GeneralStatBody } from "./stats/GeneralStatCard";
 
 export default function GeneralChartModal() {
 	const generalChartModal = useGeneralChartModal();
@@ -37,7 +38,9 @@ export default function GeneralChartModal() {
 						<ModalHeader className="flex flex-col gap-1">
 							{generalChartModal.title}
 						</ModalHeader>
-						<ModalBody>{generalChartModal.body}</ModalBody>
+						<ModalBody>
+							<GeneralStatBody body={generalChartModal.body} />
+						</ModalBody>
 						<ModalFooter>
 							<Button
 								color="danger"

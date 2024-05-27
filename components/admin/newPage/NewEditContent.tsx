@@ -4,8 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form } from "@/components/ui/form";
 import { ArrowLeftIcon, SaveIcon } from "lucide-react";
 import Link from "next/link";
-import React, { useState } from "react";
-import { z } from "zod";
+import React from "react";
 
 export default function NewOrEditContent({
 	back_link,

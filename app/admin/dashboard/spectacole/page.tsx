@@ -10,6 +10,9 @@ export default async function AdminShows() {
 	const seasons: Sezon[] = await prisma.sezon.findMany({});
 	const categories: TipSpectacol[] = await prisma.tipSpectacol.findMany({});
 	const shows: Spectacol[] = await prisma.spectacol.findMany({
+		orderBy: {
+			creatPe: "desc",
+		},
 		include: {
 			bileteVandute: true,
 			bonuriFiscale: true,
@@ -41,9 +44,13 @@ export default async function AdminShows() {
 							filters={[
 								{ column: "codSpectacol", label: "Cod Spectacol" },
 								{ column: "codSezon", label: "Cod Sezon" },
+								{ column: "numeSezon", label: "Nume Sezon" },
 								{ column: "codTipSpectacol", label: "Cod Categorie" },
-								{ column: "codSalaSpectacol", label: "Cod Sala Spectacol" },
+								{ column: "numeTip", label: "Nume Categorie" },
+								{ column: "codSalaSpectacol", label: "Cod Sala" },
+								{ column: "numarSala", label: "Numar Sala" },
 								{ column: "titlu", label: "Titlu" },
+								{ column: "director", label: "Regizor" },
 								{ column: "actorii", label: "Actorii" },
 								{ column: "oraIncepere", label: "Ora & Data Inceperii" },
 								{ column: "oraTerminare", label: "Ora & Data Terminării" },

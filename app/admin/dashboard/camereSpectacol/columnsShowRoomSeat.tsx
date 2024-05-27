@@ -1,14 +1,15 @@
 "use client";
 import { ColumnDef } from "@tanstack/react-table";
 import ColumnHeader from "@/components/admin/table/ColumnHeader";
-import ColumnCell from "@/components/admin/table/ColumnCell";
+import ColumnCell, { PushFilter } from "@/components/admin/table/ColumnCell";
 import {
 	ColumnSelectCell,
 	ColumnSelectHeader,
 } from "@/components/admin/table/ColumnSelect";
 import ColumnCellActions from "@/components/admin/table/ColumnCellActions";
 import { LocSalaSpectacol, TipuriTabel } from "@/lib/types";
-import { formatDate, formatDateFull } from "@/lib/rangeOptions";
+import { formatDateFull } from "@/lib/rangeOptions";
+import { capitalizeFirstLetter, formatDate } from "@/lib/utils";
 
 export const columnsShowRoomSeat: ColumnDef<LocSalaSpectacol>[] = [
 	{
@@ -43,7 +44,19 @@ export const columnsShowRoomSeat: ColumnDef<LocSalaSpectacol>[] = [
 		},
 		cell: ({ row }) => {
 			const user = row.original;
-			return <ColumnCell data={user.codLocSala} />;
+			return (
+				<ColumnCell
+					filters={[
+						{
+							page: "camereSpectacol",
+							label: "Cod Loc Sala",
+							column: "codLocSala",
+							value: user.codLocSala + "" ?? "",
+						},
+					]}
+					data={user.codLocSala}
+				/>
+			);
 		},
 	},
 	{
@@ -52,7 +65,19 @@ export const columnsShowRoomSeat: ColumnDef<LocSalaSpectacol>[] = [
 			return <ColumnHeader column={column} title="Numar Loc" />;
 		},
 		cell: ({ row: { original } }) => {
-			return <ColumnCell data={original.numarLoc} />;
+			return (
+				<ColumnCell
+					filters={[
+						{
+							page: "camereSpectacol",
+							label: "Numar Loc",
+							column: "numarLoc",
+							value: original.numarLoc ?? "",
+						},
+					]}
+					data={original.numarLoc}
+				/>
+			);
 		},
 	},
 	{
@@ -61,7 +86,19 @@ export const columnsShowRoomSeat: ColumnDef<LocSalaSpectacol>[] = [
 			return <ColumnHeader column={column} title="Rand Loc" />;
 		},
 		cell: ({ row: { original } }) => {
-			return <ColumnCell data={original.rand} />;
+			return (
+				<ColumnCell
+					filters={[
+						{
+							page: "camereSpectacol",
+							label: "Rand Loc",
+							column: "rand",
+							value: original.rand ?? "",
+						},
+					]}
+					data={original.rand}
+				/>
+			);
 		},
 	},
 	{
@@ -70,7 +107,19 @@ export const columnsShowRoomSeat: ColumnDef<LocSalaSpectacol>[] = [
 			return <ColumnHeader column={column} title="Pret Loc (RON)" />;
 		},
 		cell: ({ row: { original } }) => {
-			return <ColumnCell data={original.pretLoc} />;
+			return (
+				<ColumnCell
+					filters={[
+						{
+							page: "camereSpectacol",
+							label: "Pret",
+							column: "pretLoc",
+							value: original.pretLoc + "" ?? "",
+						},
+					]}
+					data={original.pretLoc}
+				/>
+			);
 		},
 	},
 	{
@@ -79,7 +128,19 @@ export const columnsShowRoomSeat: ColumnDef<LocSalaSpectacol>[] = [
 			return <ColumnHeader column={column} title="Tip Loc" />;
 		},
 		cell: ({ row: { original } }) => {
-			return <ColumnCell data={original.tipLoc} />;
+			return (
+				<ColumnCell
+					filters={[
+						{
+							page: "camereSpectacol",
+							label: "Tip Loc Sala",
+							column: "tipLoc",
+							value: original.tipLoc ?? "",
+						},
+					]}
+					data={original.tipLoc}
+				/>
+			);
 		},
 	},
 	{
@@ -91,9 +152,33 @@ export const columnsShowRoomSeat: ColumnDef<LocSalaSpectacol>[] = [
 			return (
 				<ColumnCell
 					data={
-						original.codSalaSpectacol +
-						" - " +
-						original.salaSpectacol?.numarSala
+						<>
+							<PushFilter
+								filters={[
+									{
+										column: "codSalaSpectacol",
+										label: "Cod Sala Spectacol",
+										page: "camereSpectacol",
+										value: original.codSalaSpectacol + "" ?? "",
+									},
+								]}
+							>
+								{original.codSalaSpectacol}
+							</PushFilter>
+							-
+							<PushFilter
+								filters={[
+									{
+										column: "numarSala",
+										page: "camereSpectacol",
+										label: "Numar Sala",
+										value: original.salaSpectacol?.numarSala + "" ?? "",
+									},
+								]}
+							>
+								{original.salaSpectacol?.numarSala}
+							</PushFilter>
+						</>
 					}
 				/>
 			);
@@ -105,7 +190,19 @@ export const columnsShowRoomSeat: ColumnDef<LocSalaSpectacol>[] = [
 			return <ColumnHeader column={column} title="Adăugat Pe" />;
 		},
 		cell: ({ row }) => {
-			return <ColumnCell data={formatDateFull(row.original.creatPe)} />;
+			return (
+				<ColumnCell
+					filters={[
+						{
+							page: "camereSpectacol",
+							label: "Adăugat Pee",
+							column: "creatPe",
+							value: formatDate(row.original.creatPe),
+						},
+					]}
+					data={capitalizeFirstLetter(formatDateFull(row.original.creatPe))}
+				/>
+			);
 		},
 	},
 ];

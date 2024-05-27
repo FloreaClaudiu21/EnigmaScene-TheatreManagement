@@ -4,9 +4,246 @@ import { DateValue } from "@nextui-org/calendar";
 import { Header } from "@tanstack/react-table";
 import { type ClassValue, clsx } from "clsx"
 import { twMerge } from "tailwind-merge"
+import { FilterParams } from "./types";
+import { FilterMap, TableFilterMap } from "@/components/admin/table/Table";
+import { DateRange } from "react-day-picker";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
+}
+
+export function normalizeString(str: string): string {
+	return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+}
+
+export function startsWithIgnoringDiacritics(str: string, value: string): boolean {
+	const normalizedStr = normalizeString(str);
+	const normalizedPrefix = normalizeString(value);
+	return normalizedStr.startsWith(normalizedPrefix);
+}
+
+type AnyObject = { [key: string]: any };
+
+export function parseQueryParams(params: any, filters?: FilterMap[]): FilterParams[] {
+	const queryParams: FilterParams[] = [];
+	const allParams = new URLSearchParams(params);
+	const excludedKeys = ["tab", "to", "from"];
+	if (filters && filters.length > 0) {
+		for (const [key, value] of allParams.entries()) {
+			if (excludedKeys.includes(key)) continue;
+			let text = key;
+			const found = filters.filter((v) => v.column == key);
+			if (found.length > 0) {
+				text = found[0].label;
+			}
+			queryParams.push({ column: key, label: text, page: "", value: value });
+		}
+	} else {
+		for (const [key, value] of allParams.entries()) {
+			if (excludedKeys.includes(key)) continue;
+			queryParams.push({ column: key, label: key.toUpperCase(), page: "", value: value });
+		}
+	}
+	return queryParams;
+}
+
+export const formatDate = (date: Date) => {
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const year = date.getFullYear();
+  return `${day}-${month}-${year}`;
+};
+
+export const handlePredefinedDateChange = (period: string): DateRange | undefined => {
+	let fromDate;
+  const toDate = new Date();
+	switch (period) {
+		case 'today':
+			fromDate = new Date();
+			break;
+		case 'lastDay':
+			fromDate = new Date(toDate);
+			fromDate.setDate(toDate.getDate() - 1);
+			break;
+		case 'last7Days':
+			fromDate = new Date(toDate);
+			fromDate.setDate(toDate.getDate() - 7);
+			break;
+		case 'last30Days':
+			fromDate = new Date(toDate);
+			fromDate.setDate(toDate.getDate() - 30);
+			break;
+		case 'last60Days':
+			fromDate = new Date(toDate);
+			fromDate.setDate(toDate.getDate() - 60);
+			break;
+		case 'last90Days':
+			fromDate = new Date(toDate);
+			fromDate.setDate(toDate.getDate() - 90);
+			break;
+		case 'last6Months':
+			fromDate = new Date(toDate);
+			fromDate.setMonth(toDate.getMonth() - 6);
+			break;
+		case 'last9Months':
+			fromDate = new Date(toDate);
+			fromDate.setMonth(toDate.getMonth() - 9);
+			break;
+		default:
+			return;
+	}
+	return { from: fromDate, to: toDate };
+};
+
+export function deleteQueryParam(key: string, searchParams: any) {
+	const allParams = new URLSearchParams(searchParams);
+	allParams.delete(key);
+	return allParams.toString();
+}
+
+export function setQueryParams(searchParams: any, filtersTable: TableFilterMap) {
+	const params = new URLSearchParams(searchParams);
+	filtersTable.filters.map((filter) => {
+		if (!filter || !filter.column ||  filter.value.length <= 0) return;
+		const currentValue = params.get(filter.column);
+    if (currentValue === filter.value) {
+      params.delete(filter.column);
+    } else {
+      params.set(filter.column, filter.value || '');
+    }
+	});
+	params.set("from", formatDate(filtersTable.date?.from ?? new Date()));
+	if (filtersTable.date?.to) {
+		params.set("to", formatDate(filtersTable.date?.to));
+	}
+	return params.toString();
+}
+
+export function deleteQueryParams() {
+	return "";
+}
+
+export function isDateValue(str: string) {
+	if (isNumeric(str)) {
+		return false;
+	}
+	const date = new Date(str);
+	return !isNaN(date.getTime());
+}
+
+export function isDateString(str: string) {
+	if (isNumeric(str)) {
+		return {
+			check: false,
+			date: null
+		}
+	}
+	if (!str.includes("-")) {
+		return {
+			check: false,
+			date: null
+		}
+	}
+	const parts = str.split("-");
+  if (parts.length !== 3) {
+    console.error("Invalid date format. Expected format: DD-MM-YYYY");
+    return {
+			check: false,
+			date: null
+		}
+  }
+	const day = parseInt(parts[0]);
+  const month = parseInt(parts[1]) - 1;
+  const year = parseInt(parts[2]);
+  if (isNaN(day) || isNaN(month) || isNaN(year)) {
+    console.error("Invalid date components.");
+    return {
+			check: false,
+			date: null
+		}
+  }
+  const inputDate = new Date(year, month, day);
+	return {
+		check: true,
+		date: inputDate
+	};
+}
+
+export function isSameDay(currentDate: Date, dateString: string): boolean {
+	const result = isDateString(dateString);
+	if (!result.check) return false;
+	const inputDate = result.date!;
+	return (
+		currentDate.getFullYear() === inputDate.getFullYear() &&
+		currentDate.getMonth() === inputDate.getMonth() &&
+		currentDate.getDate() === inputDate.getDate()
+	);
+}
+
+export function findValueByKey(obj: AnyObject, key: string): any {
+  if (obj.hasOwnProperty(key)) {
+    return obj[key];
+  }
+  for (const k in obj) {
+    if (obj[k] && typeof obj[k] === 'object') {
+      const result = findValueByKey(obj[k], key);
+			if (result !== undefined && typeof result !== 'object') {
+				return result;
+			}
+    }
+  }
+  return undefined;
+}
+
+export function filterListByKeysAndValues(arr: any[], searchParams: any): any[] {
+	const filterCriteria = parseQueryParams(searchParams);
+	if (filterCriteria.length <= 0) return arr;
+	return arr.filter(item => {
+		for (const filter of filterCriteria) {
+			const value = filter.value;
+			const column = filter.column;
+			if (column === "tab" || column === "from" || column === "to") continue;
+			const itemValue = findValueByKey(item, column);
+			///////////////////////////////////////////////
+			if (itemValue === undefined || itemValue == '') {
+				return false;
+			} else if (typeof itemValue === "number" && (!isNumeric(value) || parseInt(value) !== itemValue)) {
+				return false;
+			} else if (isDateValue(itemValue)) {
+				return isSameDay(new Date(itemValue), value);
+			} else if (typeof itemValue === "string" && !startsWithIgnoringDiacritics(itemValue, value)) {
+				return false;
+			}
+		}
+		return true;
+	});
+}
+
+export function filterListByKeyValue(arr: any[], key: string, value: any): any[] {
+	return arr.filter(item => {
+		if (item[key] !== undefined) {
+			return item[key] === value;
+		}
+		const findValueByKey = (obj: any, key: string): any => {
+			if (obj.hasOwnProperty(key)) {
+				return obj[key];
+			}
+			for (const k in obj) {
+				if (obj[k] && typeof obj[k] === 'object') {
+					const result = findValueByKey(obj[k], key);
+					if (result !== undefined) {
+						return result;
+					}
+				}
+			}
+			return undefined;
+		};
+		const itemValue = findValueByKey(item, key);
+    if (itemValue !== undefined) {
+      return startsWithIgnoringDiacritics(itemValue, value);
+    }
+    return false;
+	});
 }
 
 export function validRowsAndCols(raportModal: RaportModal) {
@@ -151,8 +388,18 @@ export const homeUrl = (pathname: string) => {
 	}
 };
 
-export function isNumeric(num: any){
-  return !isNaN(num)
+export function isNumeric(value: any) {
+  if (typeof value === 'number') {
+    return !isNaN(value);
+  }
+  if (typeof value === 'string') {
+    value = value.trim();
+    if (value === '') {
+      return false;
+    }
+    return !isNaN(parseFloat(value)) && isFinite(value);
+  }
+  return false;
 }
 
 export function getRandomNumber(max: number): number {

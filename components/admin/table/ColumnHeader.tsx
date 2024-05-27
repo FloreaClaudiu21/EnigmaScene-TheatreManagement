@@ -20,9 +20,9 @@ export default function ColumnHeader({
 				{title}
 				{column.getIsSorted() ? (
 					column.getIsSorted() === "asc" ? (
-						<ArrowUpIcon className="ml-2 h-4 w-4" />
+						<ArrowUpIcon className="h-4 w-4" />
 					) : (
-						<ArrowDownIcon className="ml-2 h-4 w-4" />
+						<ArrowDownIcon className="h-4 w-4" />
 					)
 				) : (
 					""

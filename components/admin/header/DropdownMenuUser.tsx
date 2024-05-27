@@ -15,13 +15,21 @@ const DropdownUser = ({ user }: { user: User }) => {
 	return (
 		<DropdownMenu>
 			<DropdownMenuTrigger asChild>
-				<Button
-					size="icon"
-					variant="outline"
-					className="overflow-hidden rounded-full"
-				>
-					<User2 size={30} />
-				</Button>
+				<div className="flex flex-row gap-4 justify-center place-items-center hover:cursor-pointer">
+					<span className="hidden text-right lg:block">
+						<span className="block text-sm font-medium text-foreground">
+							{user?.numeClient}
+						</span>
+						<span className="block text-xs text-red-300">Administrator</span>
+					</span>
+					<Button
+						size="icon"
+						variant="outline"
+						className="overflow-hidden rounded-full"
+					>
+						<User2 size={30} />
+					</Button>
+				</div>
 			</DropdownMenuTrigger>
 			<DropdownMenuContent align="end">
 				<DropdownMenuLabel>Contul Meu</DropdownMenuLabel>

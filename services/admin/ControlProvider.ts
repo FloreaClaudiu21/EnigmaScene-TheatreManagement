@@ -16,7 +16,7 @@ import {
 	TipuriTabel,
 } from "@/lib/types";
 import { capitalizeFirstLetter, generateRandomString } from "@/lib/utils";
-import { revalidateTag } from "next/cache";
+import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
 const typeByName = (type: TipuriTabel) => {
@@ -117,19 +117,34 @@ export const getShowMaterialCategoryById = async (id: number) => {
 	});
 };
 
+export const getLastInvoiceRegistered = async () => {
+	return await prisma.facturaFiscala.findFirst({
+		orderBy: {
+			codFactura: "desc",
+		},
+		take: 1,
+	});
+};
+
 ///////////////////////////////////////////////////////////////////////////
 
 export const verifyTicket = async (data: BiletSpectacol) => {
-	const response = await prisma.biletSpectacol.update({
-		where: {
-			codBiletSpectacol: data.codBiletSpectacol,
-		},
-		data: {
-			biletVerificat: !data.biletVerificat,
-		},
-	});
-	revalidateTag("checked");
-	return response;
+	try {
+		await prisma.biletSpectacol.update({
+			where: {
+				codBiletSpectacol: data.codBiletSpectacol,
+			},
+			data: {
+				biletVerificat: !data.biletVerificat,
+			},
+		});
+		return { ok: true };
+	} catch (e) {
+		console.log("Verify ticket Error: " + e);
+		return { ok: false };
+	} finally {
+		revalidatePath("/");
+	}
 };
 
 export const insert = async (type: TipuriTabel, data: any) => {
@@ -226,6 +241,8 @@ export const insert = async (type: TipuriTabel, data: any) => {
 					values.bileteDetalii?.locuriAlese ?? [];
 				let codFactura = undefined;
 				if (values.genereazaFacturaFiscala == "true") {
+					const lastFactura = await getLastInvoiceRegistered();
+					const lastId = lastFactura ? lastFactura.codFactura + 1 : 1;
 					const factura = await prisma.facturaFiscala.create({
 						data: {
 							adresaFacturare: values.adresaFacturare,
@@ -233,7 +250,7 @@ export const insert = async (type: TipuriTabel, data: any) => {
 							numeClient: values.numeClient,
 							codClient: values.codClient,
 							telefon: values.prefix + values.telefon,
-							numarFactura: generateRandomString(6),
+							numarFactura: lastId.toString().padStart(6, "0"),
 							costuriExtra: 0,
 							totalSumaPlatita:
 								parseFloat(values.bileteDetalii?.pretTotal + "") + 0,
@@ -258,7 +275,7 @@ export const insert = async (type: TipuriTabel, data: any) => {
 								codLocSalaSpectacol: loc.codLocSala,
 								codBonFiscal: fiscal.codBonFiscal,
 								codFacturaFiscala: codFactura,
-								pretVanzare: parseFloat(values.bileteDetalii?.pretTotal + ""),
+								pretVanzare: parseFloat(loc.pretLoc + ""),
 							},
 						});
 					})
@@ -504,7 +521,6 @@ export const update = async (type: TipuriTabel, data: any, id: number) => {
 						codClient: values.codClient,
 						codSpectacol: values.codSpectacol,
 						codSalaSpectacol: values.codSalaSpectacol,
-						pretVanzare: parseFloat(values.pretVanzare),
 					},
 				});
 				const fiscal = await prisma.bonFiscal.update({
@@ -537,6 +553,8 @@ export const update = async (type: TipuriTabel, data: any, id: number) => {
 							},
 						});
 					} else {
+						const lastFactura = await getLastInvoiceRegistered();
+						const invId = lastFactura ? lastFactura.codFactura + 1 : 1;
 						const factura = await prisma.facturaFiscala.create({
 							data: {
 								email: values.email,
@@ -544,7 +562,7 @@ export const update = async (type: TipuriTabel, data: any, id: number) => {
 								numeClient: values.numeClient,
 								costuriExtra: 0,
 								adresaFacturare: values.adresaFacturare,
-								numarFactura: generateRandomString(6),
+								numarFactura: invId.toString().padStart(6, "0"),
 								totalSumaPlatita: parseFloat(values.pretVanzare) + 0,
 								sumaPlatita: parseFloat(values.pretVanzare),
 								dataScadentei: new Date(),
@@ -565,7 +583,6 @@ export const update = async (type: TipuriTabel, data: any, id: number) => {
 						codClient: values.codClient,
 						codSpectacol: values.codSpectacol,
 						codSalaSpectacol: values.codSalaSpectacol,
-						pretVanzare: parseFloat(values.pretVanzare),
 						codFacturaFiscala: codFactura ?? found.codFacturaFiscala,
 					},
 				});

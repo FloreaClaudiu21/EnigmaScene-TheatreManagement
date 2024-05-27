@@ -1,7 +1,7 @@
 "use client";
 import { ColumnDef } from "@tanstack/react-table";
 import ColumnHeader from "@/components/admin/table/ColumnHeader";
-import ColumnCell from "@/components/admin/table/ColumnCell";
+import ColumnCell, { PushFilter } from "@/components/admin/table/ColumnCell";
 import {
 	ColumnSelectCell,
 	ColumnSelectHeader,
@@ -14,16 +14,25 @@ import ModalViewTicket from "@/components/page/ticket/ViewTicketBtn";
 import { formatDateFull } from "@/lib/rangeOptions";
 import { Checkbox } from "@nextui-org/react";
 import { verifyTicket } from "@/services/admin/ControlProvider";
-import { useOptimistic } from "react";
+import { useOptimistic, useTransition } from "react";
+import { useToast } from "@/components/ui/use-toast";
+import { capitalizeFirstLetter, formatDate } from "@/lib/utils";
 
 const VerifyComponent = ({ bilet }: { bilet: BiletSpectacol }) => {
-	const [checked, setChecked] = useOptimistic(
-		bilet.biletVerificat,
-		(state, value) => !state
-	);
-	const verifiyMethod = async () => {
-		setChecked(true);
+	const { toast } = useToast();
+	const [isPending, startTransition] = useTransition();
+	const [checked, setChecked] = useOptimistic(bilet.biletVerificat);
+	const verifyMethod = async () => {
+		if (isPending) return;
+		setChecked(!bilet.biletVerificat);
 		const response = await verifyTicket(bilet);
+		if (!response.ok) {
+			toast({
+				title: "Verificare bilet la spectacol",
+				description:
+					"A apărut o eroare necunoscută în timpul verificari biletului. Vă rugăm să încercați din nou mai târziu.",
+			});
+		}
 	};
 	return (
 		<div className="flex flex-row items-center justify-center text-center break-all">
@@ -31,7 +40,7 @@ const VerifyComponent = ({ bilet }: { bilet: BiletSpectacol }) => {
 				isSelected={checked}
 				value={checked + ""}
 				onValueChange={() => {
-					verifiyMethod();
+					startTransition(() => verifyMethod());
 				}}
 			/>
 		</div>
@@ -86,7 +95,19 @@ export const columnsTicketsSold: ColumnDef<BiletSpectacol>[] = [
 		},
 		cell: ({ row }) => {
 			const user = row.original;
-			return <ColumnCell data={user.codBiletSpectacol} />;
+			return (
+				<ColumnCell
+					filters={[
+						{
+							page: "bilete",
+							label: "Cod Bilet Spectacol",
+							column: "codBiletSpectacol",
+							value: user.codBiletSpectacol + "" ?? "",
+						},
+					]}
+					data={user.codBiletSpectacol}
+				/>
+			);
 		},
 	},
 	{
@@ -95,26 +116,65 @@ export const columnsTicketsSold: ColumnDef<BiletSpectacol>[] = [
 			return <ColumnHeader column={column} title="Numar Bilet" />;
 		},
 		cell: ({ row: { original } }) => {
-			return <ColumnCell data={original.numarBilet} />;
+			return (
+				<ColumnCell
+					filters={[
+						{
+							page: "bilete",
+							label: "Numar Bilet",
+							column: "numarBilet",
+							value: original.numarBilet + "" ?? "",
+						},
+					]}
+					data={original.numarBilet}
+				/>
+			);
 		},
 	},
 	{
 		accessorKey: "codPlata",
 		header: ({ column }) => {
-			return <ColumnHeader column={column} title="Cod Plata" />;
-		},
-		cell: ({ row }) => {
-			const user = row.original;
-			return <ColumnCell data={user.codPlata} />;
-		},
-	},
-	{
-		accessorKey: "pretVanzare",
-		header: ({ column }) => {
-			return <ColumnHeader column={column} title="Pret Vanzare (RON)" />;
+			return <ColumnHeader column={column} title="Cod Plata & Preț Bilet" />;
 		},
 		cell: ({ row: { original } }) => {
-			return <ColumnCell data={original.pretVanzare} />;
+			const cur = original.plata?.rataDeSchimbValutar?.moneda;
+			let priceConverted = original.pretVanzare;
+			if (cur ?? "RON" != "RON") {
+				priceConverted /= original.plata?.rataDeSchimbValutar?.valuare ?? 1;
+			}
+			return (
+				<ColumnCell
+					data={
+						<>
+							<PushFilter
+								filters={[
+									{
+										column: "codPlata",
+										label: "Cod Plata",
+										page: "bilete",
+										value: original.codPlata + "" ?? "",
+									},
+								]}
+							>
+								{original.codPlata}
+							</PushFilter>
+							-
+							<PushFilter
+								filters={[
+									{
+										column: "moneda",
+										page: "bilete",
+										label: "Moneda",
+										value: cur ?? "",
+									},
+								]}
+							>
+								{priceConverted.toFixed(2) + " (plătit in " + cur + ")"}
+							</PushFilter>
+						</>
+					}
+				/>
+			);
 		},
 	},
 	{
@@ -125,7 +185,35 @@ export const columnsTicketsSold: ColumnDef<BiletSpectacol>[] = [
 		cell: ({ row: { original } }) => {
 			return (
 				<ColumnCell
-					data={original.codClient + " - " + original.client?.numeClient}
+					data={
+						<>
+							<PushFilter
+								filters={[
+									{
+										column: "codClient",
+										label: "Cod Client",
+										page: "bilete",
+										value: original.codClient + "" ?? "",
+									},
+								]}
+							>
+								{original.codClient}
+							</PushFilter>
+							-
+							<PushFilter
+								filters={[
+									{
+										column: "numeClient",
+										page: "bilete",
+										label: "Nume Client",
+										value: original.client?.numeClient ?? "",
+									},
+								]}
+							>
+								{original.client?.numeClient}
+							</PushFilter>
+						</>
+					}
 				/>
 			);
 		},
@@ -138,7 +226,35 @@ export const columnsTicketsSold: ColumnDef<BiletSpectacol>[] = [
 		cell: ({ row: { original } }) => {
 			return (
 				<ColumnCell
-					data={original.codSpectacol + " - " + original.spectacol?.titlu}
+					data={
+						<>
+							<PushFilter
+								filters={[
+									{
+										column: "codSpectacol",
+										label: "Cod Spectacol",
+										page: "bilete",
+										value: original.codSpectacol + "" ?? "",
+									},
+								]}
+							>
+								{original.codSpectacol}
+							</PushFilter>
+							-
+							<PushFilter
+								filters={[
+									{
+										column: "titlu",
+										page: "bilete",
+										label: "Titlu Spectacol",
+										value: original.spectacol?.titlu ?? "",
+									},
+								]}
+							>
+								{original.spectacol?.titlu}
+							</PushFilter>
+						</>
+					}
 				/>
 			);
 		},
@@ -154,13 +270,59 @@ export const columnsTicketsSold: ColumnDef<BiletSpectacol>[] = [
 			return (
 				<ColumnCell
 					data={
-						original.salaSpectacol?.numarSala +
-						", " +
-						original.locSalaSpectacol?.numarLoc +
-						", " +
-						original.locSalaSpectacol?.rand +
-						", " +
-						original.locSalaSpectacol?.tipLoc
+						<>
+							<PushFilter
+								filters={[
+									{
+										column: "numarSala",
+										label: "Numar Sala",
+										page: "bilete",
+										value: original.salaSpectacol?.numarSala + "" ?? "",
+									},
+								]}
+							>
+								{original.salaSpectacol?.numarSala}
+							</PushFilter>
+							,
+							<PushFilter
+								filters={[
+									{
+										column: "numarLoc",
+										page: "bilete",
+										label: "Numar Loc",
+										value: original.locSalaSpectacol?.numarLoc ?? "",
+									},
+								]}
+							>
+								{original.locSalaSpectacol?.numarLoc}
+							</PushFilter>
+							,
+							<PushFilter
+								filters={[
+									{
+										column: "rand",
+										label: "Rand Sala",
+										page: "bilete",
+										value: original.locSalaSpectacol?.rand + "" ?? "",
+									},
+								]}
+							>
+								{original.locSalaSpectacol?.rand}
+							</PushFilter>
+							,
+							<PushFilter
+								filters={[
+									{
+										column: "tipLoc",
+										page: "bilete",
+										label: "Tip Loc",
+										value: original.locSalaSpectacol?.tipLoc ?? "",
+									},
+								]}
+							>
+								{original.locSalaSpectacol?.tipLoc}
+							</PushFilter>
+						</>
 					}
 				/>
 			);
@@ -173,7 +335,19 @@ export const columnsTicketsSold: ColumnDef<BiletSpectacol>[] = [
 		},
 		cell: ({ row }) => {
 			const show = row.original;
-			return <ColumnCell data={formatDateFull(show.creatPe)} />;
+			return (
+				<ColumnCell
+					filters={[
+						{
+							page: "bilete",
+							label: "Cumparat Pe",
+							column: "creatPe",
+							value: formatDate(show.creatPe),
+						},
+					]}
+					data={capitalizeFirstLetter(formatDateFull(show.creatPe))}
+				/>
+			);
 		},
 	},
 ];

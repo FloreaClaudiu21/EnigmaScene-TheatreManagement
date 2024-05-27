@@ -7,6 +7,13 @@ export enum ChartTip {
 	LINE = "LINE",
 }
 
+export type FilterParams = {
+	column: string;
+	label: string;
+	value: string;
+	page: string;
+};
+
 export const ChartComponentMap = (tip: ChartTip) => {};
 
 export enum ChartDataTip {

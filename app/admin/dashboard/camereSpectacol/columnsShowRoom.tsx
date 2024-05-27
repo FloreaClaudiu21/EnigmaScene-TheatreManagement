@@ -42,7 +42,19 @@ export const columnsShowRoom: ColumnDef<SalaSpectacol>[] = [
 		},
 		cell: ({ row }) => {
 			const user = row.original;
-			return <ColumnCell data={user.codSalaSpectacol} />;
+			return (
+				<ColumnCell
+					filters={[
+						{
+							page: "camereSpectacol",
+							label: "Cod Sala Spectacol",
+							column: "codSalaSpectacol",
+							value: user.codSalaSpectacol + "" ?? "",
+						},
+					]}
+					data={user.codSalaSpectacol}
+				/>
+			);
 		},
 	},
 	{
@@ -51,7 +63,19 @@ export const columnsShowRoom: ColumnDef<SalaSpectacol>[] = [
 			return <ColumnHeader column={column} title="Numar Sala" />;
 		},
 		cell: ({ row: { original } }) => {
-			return <ColumnCell data={original.numarSala} />;
+			return (
+				<ColumnCell
+					filters={[
+						{
+							page: "camereSpectacol",
+							label: "Numar Sala",
+							column: "numarSala",
+							value: original.numarSala ?? "",
+						},
+					]}
+					data={original.numarSala}
+				/>
+			);
 		},
 	},
 	{
@@ -60,7 +84,31 @@ export const columnsShowRoom: ColumnDef<SalaSpectacol>[] = [
 			return <ColumnHeader column={column} title="Locuri In Sala" />;
 		},
 		cell: ({ row: { original } }) => {
-			return <ColumnCell data={original.locuriSala?.length} />;
+			return (
+				<ColumnCell
+					filters={[
+						{
+							page: "camereSpectacol",
+							label: "Locuri Sala",
+							column: "numarSala",
+							value: original.numarSala ?? "",
+						},
+						{
+							page: "camereSpectacol",
+							label: "Cod Sala",
+							column: "codSalaSpectacol",
+							value: original.codSalaSpectacol + "",
+						},
+						{
+							page: "camereSpectacol",
+							label: "TAB",
+							column: "tab",
+							value: "showsRoomSeats",
+						},
+					]}
+					data={original.locuriSala?.length}
+				/>
+			);
 		},
 	},
 	{

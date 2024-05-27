@@ -25,6 +25,7 @@ import RaportModal from "@/components/page/raports/RaportModal";
 import TicketModal from "@/components/page/ticket/TicketModal";
 import InvoiceModal from "@/components/page/invoices/InvoiceModal";
 import FiscalReceiptModal from "@/components/page/fiscalReceipts/FiscalReceiptModal";
+import ShowImageModal from "@/components/admin/modals/ShowImgPreviewModal";
 
 export const AuthContext = createContext<SessionAuth>({
 	firstTime: false,
@@ -107,10 +108,11 @@ export default function AuthProvider({
 									<DeleteAddressModal />
 									<DeleteModalGeneral />
 									<GeneralChartModal />
-									{/* <RaportModal /> */}
+									<RaportModal />
 									<TicketModal />
 									<InvoiceModal />
 									<FiscalReceiptModal />
+									<ShowImageModal />
 								</ThemeProvider>
 							</NextUIProvider>
 						</SessionProvider>

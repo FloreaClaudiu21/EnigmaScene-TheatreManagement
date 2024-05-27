@@ -9,6 +9,7 @@ import {
 import ColumnCellActions from "@/components/admin/table/ColumnCellActions";
 import { MaterialDecorSpectacolFolosit, TipuriTabel } from "@/lib/types";
 import { formatDate, formatDateFull } from "@/lib/rangeOptions";
+import { capitalizeFirstLetter } from "@/lib/utils";
 
 export const columnsMaterialsUsed: ColumnDef<
 	MaterialDecorSpectacolFolosit
@@ -132,7 +133,11 @@ export const columnsMaterialsUsed: ColumnDef<
 		},
 		cell: ({ row: { original } }) => {
 			return (
-				<ColumnCell data={formatDateFull(new Date(original.dataFolosirii))} />
+				<ColumnCell
+					data={capitalizeFirstLetter(
+						formatDateFull(new Date(original.dataFolosirii))
+					)}
+				/>
 			);
 		},
 	},
@@ -143,7 +148,11 @@ export const columnsMaterialsUsed: ColumnDef<
 		},
 		cell: ({ row }) => {
 			const show = row.original;
-			return <ColumnCell data={formatDateFull(show.creatPe)} />;
+			return (
+				<ColumnCell
+					data={capitalizeFirstLetter(formatDateFull(show.creatPe))}
+				/>
+			);
 		},
 	},
 ];

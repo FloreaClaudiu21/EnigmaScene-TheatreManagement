@@ -1,11 +1,12 @@
+import { BodyContents } from "@/components/admin/dashboard/stats/GeneralStatCard";
 import {
 	BiletSpectacol,
 	BonFiscal,
 	FacturaFiscala,
+	Spectacol,
 	TipuriTabel,
 } from "@/lib/types";
 import { Table } from "@tanstack/react-table";
-import { User } from "next-auth";
 import { create } from "zustand";
 
 type LoadingScreen = {
@@ -43,6 +44,12 @@ type TicketModal = {
 	setVisible: (val: boolean) => void;
 	setTicket: (val: BiletSpectacol | null) => void;
 };
+type ShowImgModal = {
+	visible: boolean;
+	show: Spectacol | null;
+	setVisible: (val: boolean) => void;
+	setShow: (val: Spectacol | null) => void;
+};
 type ReceiptModal = {
 	visible: boolean;
 	receipt: BonFiscal | null;
@@ -56,8 +63,8 @@ export type RaportModal = {
 	setRaport: (val: Table<any> | null) => void;
 };
 type GeneralChartModal = {
-	body: any;
-	setBody: (body: any) => void;
+	body: BodyContents[];
+	setBody: (body: BodyContents[]) => void;
 	title: string;
 	setTitle: (title: string) => void;
 } & generalModal;
@@ -73,10 +80,10 @@ export const useLoginModal = create<generalModal>((set) => ({
 }));
 export const useGeneralChartModal = create<GeneralChartModal>((set) => ({
 	visible: false,
-	body: null,
+	body: [],
 	title: "",
 	setTitle: (val: string) => set({ title: val }),
-	setBody: (body: any) => set({ body: body }),
+	setBody: (body: BodyContents[]) => set({ body: body }),
 	onToggle: () =>
 		set((state: { visible: boolean }) => ({ visible: !state.visible })),
 	setVisible: (val: boolean) => set({ visible: val }),
@@ -149,4 +156,12 @@ export const useFiscalReceiptModal = create<ReceiptModal>((set) => ({
 	setVisible: (val: boolean) => set({ visible: val }),
 	receipt: null,
 	setReceipt: (val: BonFiscal | null) => set({ receipt: val }),
+}));
+export const useImageShowModal = create<ShowImgModal>((set) => ({
+	visible: false,
+	onToggle: () =>
+		set((state: { visible: boolean }) => ({ visible: !state.visible })),
+	setVisible: (val: boolean) => set({ visible: val }),
+	show: null,
+	setShow: (val: Spectacol | null) => set({ show: val }),
 }));

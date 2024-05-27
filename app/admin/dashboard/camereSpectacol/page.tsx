@@ -8,12 +8,18 @@ import { columnsShowRoomSeat } from "./columnsShowRoomSeat";
 export default async function AdminShowRooms() {
 	const showRoomsSeats: LocSalaSpectacol[] = await prisma.locSalaSpectacol.findMany(
 		{
+			orderBy: {
+				creatPe: "desc",
+			},
 			include: {
 				salaSpectacol: true,
 			},
 		}
 	);
 	const showRooms: SalaSpectacol[] = await prisma.salaSpectacol.findMany({
+		orderBy: {
+			creatPe: "desc",
+		},
 		include: {
 			locuriSala: true,
 			bileteVandute: true,
@@ -37,6 +43,7 @@ export default async function AdminShowRooms() {
 							subtitle="Administrați sălile de spectacol și vizualizați locurile alocate acestora."
 							filters={[
 								{ column: "codSalaSpectacol", label: "Cod Sala Spectacol" },
+								{ column: "numarSala", label: "Numar Sala" },
 							]}
 						/>
 					),
@@ -56,6 +63,7 @@ export default async function AdminShowRooms() {
 							filters={[
 								{ column: "codLocSala", label: "Cod Loc Sala" },
 								{ column: "codSalaSpectacol", label: "Cod Sala Spectacol" },
+								{ column: "numarSala", label: "Numar Sala Spectacol" },
 								{ column: "numarLoc", label: "Numar Loc" },
 								{ column: "rand", label: "Rand Loc" },
 								{ column: "pretLoc", label: "Pret Loc" },

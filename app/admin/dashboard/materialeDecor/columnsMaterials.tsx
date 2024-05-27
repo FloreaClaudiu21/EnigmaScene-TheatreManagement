@@ -9,6 +9,7 @@ import {
 import ColumnCellActions from "@/components/admin/table/ColumnCellActions";
 import { MaterialDecorSpectacol, TipuriTabel } from "@/lib/types";
 import { formatDate, formatDateFull } from "@/lib/rangeOptions";
+import { capitalizeFirstLetter } from "@/lib/utils";
 
 export const columnsMaterials: ColumnDef<MaterialDecorSpectacol>[] = [
 	{
@@ -116,7 +117,11 @@ export const columnsMaterials: ColumnDef<MaterialDecorSpectacol>[] = [
 		},
 		cell: ({ row }) => {
 			const show = row.original;
-			return <ColumnCell data={formatDateFull(show.creatPe)} />;
+			return (
+				<ColumnCell
+					data={capitalizeFirstLetter(formatDateFull(show.creatPe))}
+				/>
+			);
 		},
 	},
 ];

@@ -9,7 +9,6 @@ import {
 	ModalFooter,
 	ModalHeader,
 } from "@nextui-org/react";
-import { useState } from "react";
 import { useRouter } from "next-nprogress-bar";
 import { remove } from "@/services/admin/ControlProvider";
 
@@ -18,10 +17,9 @@ export default function DeleteModalGeneral() {
 	const { toast } = useToast();
 	const deleteModal = useDeleteModal();
 	const loadingScreen = useLoadingScreen();
-	const [loading, setLoading] = useState(false);
 	//////////////////////////////////////////////
 	const deleteAction = async (onClose: any) => {
-		setLoading(true);
+		loadingScreen.setLoading(true);
 		let response = await remove(deleteModal.type, deleteModal.deleteId);
 		if (!response) return;
 		if (response.ok) {
@@ -37,7 +35,7 @@ export default function DeleteModalGeneral() {
 				variant: "destructive",
 			});
 		}
-		setLoading(false);
+		loadingScreen.setLoading(false);
 		onClose();
 	};
 	return (

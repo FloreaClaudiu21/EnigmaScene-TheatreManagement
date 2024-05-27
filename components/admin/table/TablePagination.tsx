@@ -36,31 +36,6 @@ export function DataTablePagination<TData>({ table }: { table: Table<TData> }) {
 						))}
 					</SelectContent>
 				</Select>
-				<Button
-					variant="outline"
-					size="sm"
-					onClick={() => table.previousPage()}
-					disabled={!table.getCanPreviousPage()}
-				>
-					Inapoi
-				</Button>
-				<Button
-					variant="outline"
-					size="sm"
-					onClick={() => table.nextPage()}
-					disabled={!table.getCanNextPage()}
-				>
-					Inainte
-				</Button>
-				<div className="text-xs text-muted-foreground">
-					Pagina <strong>{table.getState().pagination.pageIndex + 1}</strong>{" "}
-					din{" "}
-					<strong>
-						{table.getPageCount() <= 0
-							? table.getPageCount() + 1
-							: table.getPageCount()}
-					</strong>
-				</div>
 			</div>
 		</div>
 	);

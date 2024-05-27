@@ -1,15 +1,45 @@
 "use client";
 import { ColumnDef } from "@tanstack/react-table";
 import ColumnHeader from "@/components/admin/table/ColumnHeader";
-import ColumnCell from "@/components/admin/table/ColumnCell";
+import ColumnCell, { PushFilter } from "@/components/admin/table/ColumnCell";
 import {
 	ColumnSelectCell,
 	ColumnSelectHeader,
 } from "@/components/admin/table/ColumnSelect";
 import ColumnCellActions from "@/components/admin/table/ColumnCellActions";
-import { Image, Tooltip } from "@nextui-org/react";
+import { Button, Tooltip } from "@nextui-org/react";
 import { Spectacol, TipuriTabel } from "@/lib/types";
 import { formatDateFull } from "@/lib/rangeOptions";
+import { capitalizeFirstLetter, formatDate } from "@/lib/utils";
+import { ImageIcon } from "lucide-react";
+import { useImageShowModal } from "@/services/StateProvider";
+
+function ActionsShow({ row }: { row: any }) {
+	const imgModal = useImageShowModal();
+	return (
+		<div className="flex flex-row gap-2">
+			<ColumnCellActions
+				type={TipuriTabel.SPECTACOL}
+				deleteId={row.original.codSpectacol}
+				link_edit={"spectacole/" + row.original.codSpectacol + "/editare"}
+			/>
+			<Button
+				size="sm"
+				radius="sm"
+				isIconOnly
+				variant="bordered"
+				onClick={() => {
+					imgModal.setShow(row.original);
+					imgModal.setVisible(true);
+				}}
+				title="Vizualizare imagine spectacol"
+				className="text-zinc-600 font-medium hover:text-red-600"
+			>
+				<ImageIcon size={18} />
+			</Button>
+		</div>
+	);
+}
 
 export const columnsShow: ColumnDef<Spectacol>[] = [
 	{
@@ -25,35 +55,7 @@ export const columnsShow: ColumnDef<Spectacol>[] = [
 	{
 		id: "actions",
 		cell: ({ row }) => {
-			return (
-				<ColumnCellActions
-					type={TipuriTabel.SPECTACOL}
-					deleteId={row.original.codSpectacol}
-					link_edit={"spectacole/" + row.original.codSpectacol + "/editare"}
-				/>
-			);
-		},
-		enableSorting: false,
-	},
-	{
-		id: "photo",
-		cell: ({ row: { original } }) => {
-			return (
-				<div className="w-full min-h-28 !pr-0">
-					<Tooltip
-						showArrow
-						content={original.descriereScurta}
-						className="max-w-40"
-					>
-						<Image
-							height={96}
-							alt="No Photo"
-							src={original.imagine}
-							className="w-full h-28 object-contain rounded-sm"
-						/>
-					</Tooltip>
-				</div>
-			);
+			return <ActionsShow row={row} />;
 		},
 		enableSorting: false,
 	},
@@ -64,7 +66,19 @@ export const columnsShow: ColumnDef<Spectacol>[] = [
 		},
 		cell: ({ row }) => {
 			const user = row.original;
-			return <ColumnCell data={user.codSpectacol} />;
+			return (
+				<ColumnCell
+					filters={[
+						{
+							page: "spectacole",
+							label: "Cod Spectacol",
+							column: "codSpectacol",
+							value: user.codSpectacol + "" ?? "",
+						},
+					]}
+					data={user.codSpectacol}
+				/>
+			);
 		},
 	},
 	{
@@ -73,34 +87,50 @@ export const columnsShow: ColumnDef<Spectacol>[] = [
 			return <ColumnHeader column={column} title="Titlu" />;
 		},
 		cell: ({ row: { original } }) => {
-			return <ColumnCell data={original.titlu} />;
+			return (
+				<ColumnCell
+					filters={[
+						{
+							label: "Titlu",
+							column: "titlu",
+							page: "spectacole",
+							value: original.titlu ?? "",
+						},
+					]}
+					data={
+						<div className="flex flex-row items-start justify-center text-center h-full break-words">
+							<Tooltip
+								content={original.descriereScurta}
+								className="max-w-32"
+								showArrow
+							>
+								<p>{original.titlu}</p>
+							</Tooltip>
+						</div>
+					}
+				/>
+			);
 		},
 	},
-	// {
-	// 	accessorKey: "continut",
-	// 	header: ({ column }) => {
-	// 		return <ColumnHeader column={column} title="Conținut" />;
-	// 	},
-	// 	cell: ({ row: { original } }) => {
-	// 		return <ColumnCell data={original.continut} />;
-	// 	},
-	// },
-	// {
-	// 	accessorKey: "actorii",
-	// 	header: ({ column }) => {
-	// 		return <ColumnHeader column={column} title="Actorii" />;
-	// 	},
-	// 	cell: ({ row: { original } }) => {
-	// 		return <ColumnCell data={original.actorii} />;
-	// 	},
-	// },
 	{
 		accessorKey: "director",
 		header: ({ column }) => {
 			return <ColumnHeader column={column} title="Regizor" />;
 		},
 		cell: ({ row: { original } }) => {
-			return <ColumnCell data={original.director} />;
+			return (
+				<ColumnCell
+					filters={[
+						{
+							label: "Regizor",
+							column: "director",
+							page: "spectacole",
+							value: original.director ?? "",
+						},
+					]}
+					data={original.director}
+				/>
+			);
 		},
 	},
 	{
@@ -110,8 +140,21 @@ export const columnsShow: ColumnDef<Spectacol>[] = [
 		},
 		cell: ({ row }) => {
 			const show = row.original;
-			const theDate = show.oraIncepere.replace("T", " ").split(".")[0];
-			return <ColumnCell data={theDate} />;
+			return (
+				<ColumnCell
+					filters={[
+						{
+							column: "oraIncepere",
+							page: "spectacole",
+							label: "Ora Incepere Spectacol",
+							value: formatDate(new Date(show.oraIncepere)) ?? "",
+						},
+					]}
+					data={capitalizeFirstLetter(
+						formatDateFull(new Date(show.oraIncepere))
+					)}
+				/>
+			);
 		},
 	},
 	{
@@ -121,8 +164,21 @@ export const columnsShow: ColumnDef<Spectacol>[] = [
 		},
 		cell: ({ row }) => {
 			const show = row.original;
-			const theDate = show.oraTerminare.replace("T", " ").split(".")[0];
-			return <ColumnCell data={theDate} />;
+			return (
+				<ColumnCell
+					filters={[
+						{
+							column: "oraTerminare",
+							page: "spectacole",
+							label: "Ora Terminare Spectacol",
+							value: formatDate(new Date(show.oraTerminare)) ?? "",
+						},
+					]}
+					data={capitalizeFirstLetter(
+						formatDateFull(new Date(show.oraTerminare))
+					)}
+				/>
+			);
 		},
 	},
 	{
@@ -134,7 +190,33 @@ export const columnsShow: ColumnDef<Spectacol>[] = [
 			return (
 				<ColumnCell
 					data={
-						original.sezon?.numeSezon + " - " + original.tipSpectacol?.numeTip
+						<>
+							<PushFilter
+								filters={[
+									{
+										column: "numeSezon",
+										label: "Numele sezonului",
+										page: "spectacole",
+										value: original.sezon?.numeSezon ?? "",
+									},
+								]}
+							>
+								{original.sezon?.numeSezon}
+							</PushFilter>
+							-
+							<PushFilter
+								filters={[
+									{
+										column: "numeTip",
+										page: "spectacole",
+										label: "Tipul Spectacolului",
+										value: original.tipSpectacol?.numeTip ?? "",
+									},
+								]}
+							>
+								{original.tipSpectacol?.numeTip}
+							</PushFilter>
+						</>
 					}
 				/>
 			);
@@ -143,15 +225,39 @@ export const columnsShow: ColumnDef<Spectacol>[] = [
 	{
 		accessorKey: "codSalaSpectacol",
 		header: ({ column }) => {
-			return <ColumnHeader column={column} title="Cod & Nume Sala Spectacol" />;
+			return <ColumnHeader column={column} title="Cod & Nume Sala" />;
 		},
 		cell: ({ row: { original } }) => {
 			return (
 				<ColumnCell
 					data={
-						original.codSalaSpectacol +
-						" - " +
-						original.salaSpectacol?.numarSala
+						<>
+							<PushFilter
+								filters={[
+									{
+										page: "spectacole",
+										column: "codSalaSpectacol",
+										label: "Cod Sala Spectacol",
+										value: original.codSalaSpectacol + "",
+									},
+								]}
+							>
+								{original.codSalaSpectacol}
+							</PushFilter>
+							-
+							<PushFilter
+								filters={[
+									{
+										column: "numarSala",
+										page: "spectacole",
+										label: "Numar Sala",
+										value: original.salaSpectacol?.numarSala ?? "",
+									},
+								]}
+							>
+								{original.salaSpectacol?.numarSala}
+							</PushFilter>
+						</>
 					}
 				/>
 			);
@@ -165,6 +271,20 @@ export const columnsShow: ColumnDef<Spectacol>[] = [
 		cell: ({ row: { original } }) => {
 			return (
 				<ColumnCell
+					filters={[
+						{
+							page: "bilete",
+							label: "Bilete Vandute",
+							column: "codSpectacol",
+							value: original.codSpectacol + "",
+						},
+						{
+							page: "bilete",
+							label: "Bilete Vandute",
+							column: "titlu",
+							value: original.titlu + "",
+						},
+					]}
 					data={
 						(original.bileteVandute?.length ?? 0) +
 						"/" +
@@ -181,8 +301,20 @@ export const columnsShow: ColumnDef<Spectacol>[] = [
 		},
 		cell: ({ row }) => {
 			const show = row.original;
-			const theDate = formatDateFull(show.creatPe);
-			return <ColumnCell data={theDate} />;
+			const theDate = capitalizeFirstLetter(formatDateFull(show.creatPe));
+			return (
+				<ColumnCell
+					filters={[
+						{
+							page: "spectacole",
+							label: "Adaugat Pe",
+							column: "creatPe",
+							value: formatDate(show.creatPe),
+						},
+					]}
+					data={theDate}
+				/>
+			);
 		},
 	},
 ];

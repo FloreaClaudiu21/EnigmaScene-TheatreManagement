@@ -9,6 +9,7 @@ import {
 import ColumnCellActions from "@/components/admin/table/ColumnCellActions";
 import { Sezon, TipuriTabel } from "@/lib/types";
 import { formatDateFull } from "@/lib/rangeOptions";
+import { capitalizeFirstLetter, formatDate } from "@/lib/utils";
 
 export const columnsSeason: ColumnDef<Sezon>[] = [
 	{
@@ -41,7 +42,19 @@ export const columnsSeason: ColumnDef<Sezon>[] = [
 		},
 		cell: ({ row }) => {
 			const user = row.original;
-			return <ColumnCell data={user.codSezon} />;
+			return (
+				<ColumnCell
+					filters={[
+						{
+							page: "spectacole",
+							label: "Cod Sezon",
+							column: "codSezon",
+							value: user.codSezon + "" ?? "",
+						},
+					]}
+					data={user.codSezon}
+				/>
+			);
 		},
 	},
 	{
@@ -50,7 +63,19 @@ export const columnsSeason: ColumnDef<Sezon>[] = [
 			return <ColumnHeader column={column} title="Nume Sezon" />;
 		},
 		cell: ({ row: { original } }) => {
-			return <ColumnCell data={original.numeSezon} />;
+			return (
+				<ColumnCell
+					filters={[
+						{
+							page: "spectacole",
+							label: "Nume Sezon",
+							column: "numeSezon",
+							value: original.numeSezon + "" ?? "",
+						},
+					]}
+					data={original.numeSezon}
+				/>
+			);
 		},
 	},
 	{
@@ -60,7 +85,19 @@ export const columnsSeason: ColumnDef<Sezon>[] = [
 		},
 		cell: ({ row }) => {
 			const show = row.original;
-			return <ColumnCell data={formatDateFull(show.creatPe)} />;
+			return (
+				<ColumnCell
+					filters={[
+						{
+							page: "spectacole",
+							label: "Adaugat Pe",
+							column: "creatPe",
+							value: formatDate(show.creatPe),
+						},
+					]}
+					data={capitalizeFirstLetter(formatDateFull(show.creatPe))}
+				/>
+			);
 		},
 	},
 ];

@@ -74,13 +74,28 @@ export default async function AdminTickets() {
 								{ column: "codBiletSpectacol", label: "Cod Bilet Spectacol" },
 								{ column: "numarBilet", label: "Numar Bilet" },
 								{ column: "codPlata", label: "Cod Plata" },
-								{ column: "pretVanzare", label: "Pret Vanzare (RON)" },
+								{ column: "pretVanzare", label: "Pret Bilet (RON)" },
 								{ column: "codClient", label: "Cod Client" },
+								{ column: "numeClient", label: "Nume Client" },
 								{ column: "codSpectacol", label: "Cod Spectacol" },
-								{ column: "codSalaSpectacol", label: "Cod Sala Spectacol" },
+								{ column: "titlu", label: "Nume Spectacol" },
+								{ column: "codSalaSpectacol", label: "Cod Sala" },
+								{ column: "numarSala", label: "Numar Sala" },
 								{
 									column: "codLocSalaSpectacol",
-									label: "Cod Loc Sala Spectacol",
+									label: "Cod Loc Sala",
+								},
+								{
+									column: "numarLoc",
+									label: "Numar Loc Sala",
+								},
+								{
+									column: "rand",
+									label: "Rand Loc Sala",
+								},
+								{
+									column: "tipLoc",
+									label: "Tip Loc Sala",
 								},
 								{ column: "creatPe", label: "Cumparat Pe" },
 							]}

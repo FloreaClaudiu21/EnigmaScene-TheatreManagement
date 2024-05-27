@@ -32,7 +32,7 @@ export function DatePickerWithRange({
 						size="sm"
 						variant="outline"
 						className={cn(
-							"w-[270px] justify-start text-left font-normal rounded-md h-8",
+							"min-w-[270px] w-full justify-start text-left font-normal rounded-lg h-10 border-2",
 							!date && "text-muted-foreground",
 							className
 						)}
@@ -44,14 +44,14 @@ export function DatePickerWithRange({
 									{formatDate(date.from)} - {formatDate(date.to)}
 								</span>
 							) : (
-								format(date.from, "LLL dd, y")
+								<span className="text-sm">{formatDate(date.from)}</span>
 							)
 						) : (
 							<span className="text-sm">Alege o data</span>
 						)}
 					</Button>
 				</PopoverTrigger>
-				<PopoverContent className="w-auto p-0 z-10" align="start">
+				<PopoverContent className="w-auto p-0 z-[99999]" align="start">
 					<Calendar
 						initialFocus
 						mode="range"

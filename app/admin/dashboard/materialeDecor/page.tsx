@@ -15,6 +15,9 @@ export default async function AdminDecorationMaterials() {
 	const materialsCategory: CategorieMaterialDecor[] = await prisma.categorieMaterialDecor.findMany();
 	const materials: MaterialDecorSpectacol[] = await prisma.materialDecorSpectacol.findMany(
 		{
+			orderBy: {
+				creatPe: "desc",
+			},
 			include: {
 				categorieMaterialDecor: true,
 			},
@@ -22,6 +25,9 @@ export default async function AdminDecorationMaterials() {
 	);
 	const materialsUsed: MaterialDecorSpectacolFolosit[] = await prisma.materialDecorSpectacolFolosit.findMany(
 		{
+			orderBy: {
+				dataFolosirii: "desc",
+			},
 			include: {
 				materialDecorSpectacol: {
 					include: {

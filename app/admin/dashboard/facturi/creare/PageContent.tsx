@@ -32,13 +32,20 @@ import { z } from "zod";
 import { generateRandomString } from "@/lib/utils";
 import {
 	AdresaFacturare,
+	FacturaFiscala,
 	Plata,
 	TipuriTabel,
 	coduriTariRomanesti,
 } from "@/lib/types";
 import { schemaCreareFacturaFiscala } from "@/lib/schemas";
 
-export default function AdminInvoiceNew({ payments }: { payments: Plata[] }) {
+export default function AdminInvoiceNew({
+	payments,
+	lastInvoice,
+}: {
+	payments: Plata[];
+	lastInvoice: FacturaFiscala | null;
+}) {
 	const router = useRouter();
 	const { toast } = useToast();
 	const addAddress = useAddAddressModal();
@@ -53,12 +60,13 @@ export default function AdminInvoiceNew({ payments }: { payments: Plata[] }) {
 	const billingAddreses = useCallback(() => client?.adreseFacturare ?? [], [
 		client,
 	]);
+	const invId = lastInvoice ? lastInvoice.codFactura + 1 : 1;
 	const defAddress: AdresaFacturare | undefined =
 		billingAddreses().length > 0 ? billingAddreses()[0] : undefined;
 	const form = useForm<z.infer<typeof schemaCreareFacturaFiscala>>({
 		resolver: zodResolver(schemaCreareFacturaFiscala),
 		defaultValues: {
-			numarFactura: generateRandomString(6),
+			numarFactura: invId.toString().padStart(6, "0"),
 			codClient: selectedPayment?.codClient,
 			codPlata: selectedPayment?.codPlata,
 			codBonFiscal: selectedPayment?.bonFiscal?.codBonFiscal,

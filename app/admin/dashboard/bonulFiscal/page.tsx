@@ -6,6 +6,9 @@ import { columnsReceipts } from "./columns";
 
 export default async function AdminFiscalReceipts() {
 	const receipts: BonFiscal[] = await prisma.bonFiscal.findMany({
+		orderBy: {
+			creatPe: "desc",
+		},
 		include: {
 			client: true,
 			plata: {
@@ -16,7 +19,11 @@ export default async function AdminFiscalReceipts() {
 			spectacol: {
 				include: {
 					bileteVandute: true,
-					salaSpectacol: true,
+					salaSpectacol: {
+						include: {
+							locuriSala: true,
+						},
+					},
 					tipSpectacol: true,
 					sezon: true,
 				},
@@ -65,8 +72,11 @@ export default async function AdminFiscalReceipts() {
 								{ column: "numarBonFiscal", label: "Numar Bon" },
 								{ column: "serieBonFiscal", label: "Serie Bon" },
 								{ column: "codClient", label: "Cod Client" },
+								{ column: "numeClient", label: "Nume Client" },
 								{ column: "codPlata", label: "Cod Plata" },
+								{ column: "sumaPlatita", label: "Suma Platită" },
 								{ column: "codSpectacol", label: "Cod Spectacol" },
+								{ column: "titlu", label: "Nume Spectacol" },
 								{ column: "creatPe", label: "Emis Pe" },
 							]}
 						/>

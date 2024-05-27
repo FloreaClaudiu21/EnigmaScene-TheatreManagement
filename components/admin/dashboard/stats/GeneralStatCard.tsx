@@ -10,6 +10,56 @@ import ChartDateSelector from "../ChartDateSelector";
 import { useGeneralChartModal } from "@/services/StateProvider";
 import { capitalizeFirst } from "@/lib/utils";
 
+type BodyLine = {
+	titlu: string;
+	content: string;
+};
+
+export type BodyContents = {
+	titlu: string;
+	leftContent?: string;
+	content: BodyLine[];
+};
+
+export function GeneralStatLine(content: BodyLine) {
+	return (
+		<div>
+			<span className="font-semibold text-sm">{content.titlu}</span>
+			<span className="text-sm text-muted-foreground">{content.content}</span>
+		</div>
+	);
+}
+
+export function GeneralStatBody({ body }: { body: BodyContents[] }) {
+	if (body.length <= 0) return <>Nu au fost găsite înregistrări.</>;
+	return body.map((v) => {
+		return (
+			<div
+				key={v.titlu + v.content}
+				className="flex items-start gap-4 border-b-1 pb-2"
+			>
+				<div className="grid gap-1 overflow-hidden break-all">
+					<p className="text-lg font-semibold leading-none text-red-500">
+						{v.titlu}
+					</p>
+					<div className="flex flex-col">
+						{v.content.map((v) => {
+							return (
+								<GeneralStatLine
+									key={v.titlu + v.content}
+									content={v.content}
+									titlu={v.titlu}
+								/>
+							);
+						})}
+					</div>
+				</div>
+				<div className="ml-auto font-medium text-right">{v.leftContent}</div>
+			</div>
+		);
+	});
+}
+
 export default function GeneralStatCard({
 	icon,
 	title,
@@ -26,8 +76,8 @@ export default function GeneralStatCard({
 	body: string;
 	queryKey: string;
 	searchParams: any;
-	bodyGeneralChart: any;
 	selectedRangeLabel: any;
+	bodyGeneralChart: BodyContents[];
 }) {
 	const chartModel = useGeneralChartModal();
 	return (

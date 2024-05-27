@@ -9,7 +9,6 @@ import {
 } from "@/lib/rangeOptions";
 import { Spectacol } from "@/lib/types";
 import { capitalizeFirstLetter } from "@/lib/utils";
-import Image from "next/image";
 
 export default async function ShowsStatCard({
 	searchParams,
@@ -19,6 +18,9 @@ export default async function ShowsStatCard({
 	const queryKey = "showsStat";
 	const selectedRangeLabel = getRangeOption(searchParams, queryKey);
 	const shows: Spectacol[] = await prisma.spectacol.findMany({
+		orderBy: {
+			creatPe: "desc",
+		},
 		include: {
 			salaSpectacol: {
 				include: {
@@ -30,14 +32,17 @@ export default async function ShowsStatCard({
 			bileteVandute: true,
 		},
 	});
-	const availableShows = shows.filter((show) => {
-		const dateNow = new Date();
-		const dataCrearii = show.creatPe;
-		return (
-			dataCrearii >= (selectedRangeLabel.startDate ?? dateNow) &&
-			dataCrearii < (selectedRangeLabel.endDate ?? dateNow)
-		);
-	});
+	let availableShows = shows;
+	if (selectedRangeLabel.label != "Toate zilele") {
+		availableShows = shows.filter((show) => {
+			const dateNow = new Date();
+			const dataCrearii = show.creatPe;
+			return (
+				dataCrearii >= (selectedRangeLabel.startDate ?? dateNow) &&
+				dataCrearii < (selectedRangeLabel.endDate ?? dateNow)
+			);
+		});
+	}
 	const avS = availableShows.length;
 	return (
 		<GeneralStatCard
@@ -56,68 +61,51 @@ export default async function ShowsStatCard({
 					  " spectacole adăugate " +
 					  selectedRangeLabel.label1
 			}
-			bodyGeneralChart={
-				<div className="flex flex-col gap-2">
-					{availableShows.length > 0 ? (
-						availableShows.map((show) => {
-							return (
-								<div
-									key={show.titlu}
-									className="flex items-start gap-4 overflow-hidden border-b-1 pb-2"
-								>
-									<div className="grid gap-1 overflow-hidden break-all">
-										<div className="w-full place-self-start justify-self-start mb-2 min-w-28 min-h-24">
-											<Image
-												height={100}
-												width={210}
-												alt="No Photo"
-												src={show.imagine}
-												className="h-24 object-fill rounded-sm"
-											/>
-										</div>
-										<p className="text-lg font-semibold leading-none text-red-500">
-											{show.titlu}
-										</p>
-										<div>
-											<p className="text-sm text-muted-foreground">
-												{"Descriere scurta: " + show.descriereScurta}
-											</p>
-											<p className="text-sm text-muted-foreground">
-												{"Tip & Sezon spectacol: " +
-													show.sezon?.numeSezon +
-													" - " +
-													show.tipSpectacol?.numeTip}
-											</p>
-											<p className="text-sm text-muted-foreground">
-												{"Sală spectacol: " + show.salaSpectacol?.numarSala}
-											</p>
-											<p className="text-sm text-muted-foreground">
-												{"Locuri ramase: " +
-													(show.bileteVandute?.length ?? 0) +
-													"/" +
-													show.salaSpectacol?.locuriSala?.length ?? 0}
-											</p>
-											<p className="text-sm text-muted-foreground">
-												{"Spectacolul incepe pe: " +
-													capitalizeFirstLetter(
-														formatDateFull(new Date(show.oraIncepere ?? ""))
-													)}
-											</p>
-											<p className="text-sm text-muted-foreground">
-												{"Adaugat pe: " +
-													capitalizeFirstLetter(formatDateFull(show.creatPe))}
-											</p>
-										</div>
-									</div>
-									<div className="ml-auto font-medium text-right"></div>
-								</div>
-							);
-						})
-					) : (
-						<>Nu au fost găsite înregistrări.</>
-					)}
-				</div>
-			}
+			bodyGeneralChart={availableShows.map((show) => {
+				return {
+					titlu: show.titlu ?? "",
+					content: [
+						{
+							titlu: "Descriere scurtă: ",
+							content: show.descriereScurta,
+						},
+						{
+							titlu: "Regizat de: ",
+							content: show.director,
+						},
+						{
+							titlu: "Actorii: ",
+							content: show.actorii,
+						},
+						{
+							titlu: "Tip & Sezon Spectacol: ",
+							content:
+								show.sezon?.numeSezon + " - " + show.tipSpectacol?.numeTip,
+						},
+						{
+							titlu: "Sală spectacol: ",
+							content: show.salaSpectacol?.numarSala ?? "",
+						},
+						{
+							titlu: "Locuri rămase: ",
+							content:
+								(show.bileteVandute?.length ?? 0) +
+									"/" +
+									show.salaSpectacol?.locuriSala?.length ?? 0,
+						},
+						{
+							titlu: "Spectacolul incepe pe: ",
+							content: capitalizeFirstLetter(
+								formatDateFull(new Date(show.oraIncepere ?? ""))
+							),
+						},
+						{
+							titlu: "Adăugat pe: ",
+							content: capitalizeFirstLetter(formatDateFull(show.creatPe)),
+						},
+					],
+				};
+			})}
 		/>
 	);
 }

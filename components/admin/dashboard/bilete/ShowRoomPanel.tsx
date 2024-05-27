@@ -46,18 +46,18 @@ export default function ShowRoomPanel({
 			});
 			return;
 		}
-		if (locuriAlese.length >= 6) {
-			toast({
-				variant: "destructive",
-				title: "Selectare loc spectacol",
-				description: "Nu poti selecta mai mult de 6 locuri la spectacol.",
-			});
-			return;
-		}
 		const index = locuriAlese.findIndex(
 			(item) => item.codLocSala === loc.codLocSala
 		);
 		if (index === -1) {
+			if (locuriAlese.length >= 6) {
+				toast({
+					variant: "destructive",
+					title: "Selectare loc spectacol",
+					description: "Nu poti selecta mai mult de 6 locuri la spectacol.",
+				});
+				return;
+			}
 			const newList = [...locuriAlese, loc];
 			setLocuriAlese(newList);
 		} else {

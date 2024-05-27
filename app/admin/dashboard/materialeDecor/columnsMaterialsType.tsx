@@ -9,6 +9,7 @@ import {
 import { CategorieMaterialDecor, TipuriTabel } from "@/lib/types";
 import ColumnCellActions from "@/components/admin/table/ColumnCellActions";
 import { formatDate, formatDateFull } from "@/lib/rangeOptions";
+import { capitalizeFirstLetter } from "@/lib/utils";
 
 export const columnsMaterialsCategory: ColumnDef<CategorieMaterialDecor>[] = [
 	{
@@ -64,7 +65,11 @@ export const columnsMaterialsCategory: ColumnDef<CategorieMaterialDecor>[] = [
 		},
 		cell: ({ row }) => {
 			const show = row.original;
-			return <ColumnCell data={formatDateFull(show.creatPe)} />;
+			return (
+				<ColumnCell
+					data={capitalizeFirstLetter(formatDateFull(show.creatPe))}
+				/>
+			);
 		},
 	},
 ];

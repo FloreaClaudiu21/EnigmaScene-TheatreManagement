@@ -4,7 +4,7 @@ import AdminInvoiceNew from "./PageContent";
 import { Plata } from "@/lib/types";
 
 export default async function AdminInvoiceCreate() {
-	const [payments] = await Promise.all([
+	const [payments, lastInvoice] = await Promise.all([
 		prisma.plata.findMany({
 			include: {
 				factura: true,
@@ -16,10 +16,19 @@ export default async function AdminInvoiceCreate() {
 				bonFiscal: true,
 			},
 		}),
+		prisma.facturaFiscala.findFirst({
+			include: {
+				bonFiscal: true,
+			},
+			orderBy: {
+				codFactura: "desc",
+			},
+			take: 1,
+		}),
 	]);
 	const foundPayments: Plata[] = payments.filter(
 		(t) =>
 			(t.factura == null || t.factura == undefined) && t.bonFiscal != undefined
 	);
-	return <AdminInvoiceNew payments={foundPayments} />;
+	return <AdminInvoiceNew payments={foundPayments} lastInvoice={lastInvoice} />;
 }
