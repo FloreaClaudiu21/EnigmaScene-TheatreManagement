@@ -21,11 +21,7 @@ export default async function RecentClientsTable() {
 					locSalaSpectacol: true,
 				},
 			},
-			platiiEfectuate: {
-				include: {
-					rataDeSchimbValutar: true,
-				},
-			},
+			platiiEfectuate: true,
 		},
 	});
 	return (

@@ -12,7 +12,6 @@ export default async function RecentPaymentsTable() {
 		include: {
 			client: true,
 			factura: true,
-			rataDeSchimbValutar: true,
 		},
 	});
 	return <PaymentsContainerTable payments={payments} />;

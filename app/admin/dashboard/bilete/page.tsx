@@ -19,11 +19,7 @@ export default async function AdminTickets() {
 							locSalaSpectacol: true,
 						},
 					},
-					plata: {
-						include: {
-							rataDeSchimbValutar: true,
-						},
-					},
+
 					spectacol: true,
 				},
 			},
@@ -36,19 +32,10 @@ export default async function AdminTickets() {
 							spectacol: true,
 						},
 					},
-					plata: {
-						include: {
-							rataDeSchimbValutar: true,
-						},
-					},
 				},
 			},
 			client: true,
-			plata: {
-				include: {
-					rataDeSchimbValutar: true,
-				},
-			},
+			plata: true,
 			locSalaSpectacol: true,
 			salaSpectacol: true,
 			spectacol: true,

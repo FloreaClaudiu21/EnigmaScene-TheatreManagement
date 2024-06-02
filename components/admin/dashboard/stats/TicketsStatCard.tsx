@@ -26,11 +26,7 @@ export default async function TicketsStatCard({
 			salaSpectacol: true,
 			locSalaSpectacol: true,
 			spectacol: true,
-			plata: {
-				include: {
-					rataDeSchimbValutar: true,
-				},
-			},
+			plata: true,
 		},
 	});
 	let soldTicketsToday = bileteVandute;
@@ -63,11 +59,7 @@ export default async function TicketsStatCard({
 					  selectedRangeLabel.label1
 			}
 			bodyGeneralChart={soldTicketsToday.map((ticket) => {
-				const cur = ticket.plata?.rataDeSchimbValutar;
 				let priceConverted = ticket.pretVanzare ?? 0;
-				if (cur ?? "RON" != "RON") {
-					priceConverted /= ticket.plata?.rataDeSchimbValutar?.valuare ?? 1;
-				}
 				return {
 					titlu: `1 x ${ticket.spectacol?.titlu}`,
 					content: [
@@ -90,7 +82,7 @@ export default async function TicketsStatCard({
 						},
 						{
 							titlu: "Preț bilet: ",
-							content: priceConverted.toFixed(2) + " " + cur?.moneda,
+							content: priceConverted.toFixed(2) + " RON",
 						},
 						{
 							titlu: "Preț achiziție: ",

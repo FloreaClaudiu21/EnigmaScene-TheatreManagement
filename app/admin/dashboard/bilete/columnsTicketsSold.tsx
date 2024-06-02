@@ -137,11 +137,7 @@ export const columnsTicketsSold: ColumnDef<BiletSpectacol>[] = [
 			return <ColumnHeader column={column} title="Cod Plata & Preț Bilet" />;
 		},
 		cell: ({ row: { original } }) => {
-			const cur = original.plata?.rataDeSchimbValutar?.moneda;
 			let priceConverted = original.pretVanzare;
-			if (cur ?? "RON" != "RON") {
-				priceConverted /= original.plata?.rataDeSchimbValutar?.valuare ?? 1;
-			}
 			return (
 				<ColumnCell
 					data={
@@ -165,11 +161,11 @@ export const columnsTicketsSold: ColumnDef<BiletSpectacol>[] = [
 										column: "moneda",
 										page: "bilete",
 										label: "Moneda",
-										value: cur ?? "",
+										value: priceConverted.toFixed(2) ?? "",
 									},
 								]}
 							>
-								{priceConverted.toFixed(2) + " (plătit in " + cur + ")"}
+								{priceConverted.toFixed(2) + " RON"}
 							</PushFilter>
 						</>
 					}

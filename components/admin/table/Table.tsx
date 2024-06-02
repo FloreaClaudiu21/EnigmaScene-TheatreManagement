@@ -192,7 +192,6 @@ export default function DataTable({
 			label: filter.label,
 			value: value,
 		};
-		console.log(newInputValues);
 		setInputValues({
 			date: inputValues.date,
 			filters: newInputValues,
@@ -471,7 +470,7 @@ export default function DataTable({
 							<Button
 								size="sm"
 								variant="outline"
-								disabled={loading}
+								disabled={loading || table.getCoreRowModel().rows.length <= 0}
 								onClick={() => {
 									raportModal.setRaport(table);
 									raportModal.setVisible(true);
@@ -485,6 +484,7 @@ export default function DataTable({
 							</Button>
 							{showControlBtns && (
 								<>
+									<Divider orientation="vertical" />
 									<Button
 										size="sm"
 										disabled={loading}

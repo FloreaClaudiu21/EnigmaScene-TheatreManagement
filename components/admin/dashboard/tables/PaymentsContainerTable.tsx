@@ -71,11 +71,7 @@ export default function PaymentsContainerTable({
 								payment.starePlata == StarePlata.ACCEPTATA
 									? "success"
 									: "danger";
-							const cur = payment.rataDeSchimbValutar?.moneda;
 							let priceConverted = payment.sumaPlatita;
-							if (cur != "RON") {
-								priceConverted /= payment.rataDeSchimbValutar?.valuare ?? 1;
-							}
 							return (
 								<TableRow
 									key={payment.codPlata}
@@ -98,8 +94,8 @@ export default function PaymentsContainerTable({
 										</Chip>
 									</TableCell>
 									<TableCell className="text-center">
-										{priceConverted.toFixed(2)}{" "}
-										{payment.rataDeSchimbValutar?.moneda}
+										{priceConverted.toFixed(2)}
+										{" RON"}
 									</TableCell>
 									<TableCell className="table-cell text-center">
 										{capitalizeFirstLetter(formatDateFull(payment.platitPe))}

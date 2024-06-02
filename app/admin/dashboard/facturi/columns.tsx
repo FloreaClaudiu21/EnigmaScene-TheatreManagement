@@ -119,17 +119,12 @@ export const columnsInvoice: ColumnDef<FacturaFiscala>[] = [
 							page: "facturi",
 							label: "Moneda",
 							column: "moneda",
-							value: original.plata?.rataDeSchimbValutar?.moneda ?? "",
+							value:
+								(original.sumaPlatita + original.costuriExtra).toFixed(2) ?? "",
 						},
 					]}
 					data={
-						(original.plata?.rataDeSchimbValutar?.moneda != "RON"
-							? (original.sumaPlatita + original.costuriExtra) /
-							  (original.plata?.rataDeSchimbValutar?.valuare ?? 1)
-							: original.sumaPlatita + original.costuriExtra
-						).toFixed(2) +
-						" " +
-						original.plata?.rataDeSchimbValutar?.moneda
+						(original.sumaPlatita + original.costuriExtra).toFixed(2) + " RON"
 					}
 				/>
 			);

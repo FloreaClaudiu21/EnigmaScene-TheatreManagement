@@ -1,6 +1,5 @@
 import * as z from "zod";
 import { isNumeric } from "./utils";
-import { BileteAchizitionate } from "./types";
 
 const isStrongPassword = (password: string | undefined) => {
 	if (!password || password.length <= 0) {

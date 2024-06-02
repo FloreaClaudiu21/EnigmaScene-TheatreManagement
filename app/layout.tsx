@@ -6,6 +6,7 @@ import "primereact/resources/themes/lara-light-cyan/theme.css";
 import { getServerSession } from "next-auth";
 import { AuthOption } from "./api/auth/authOptions";
 import AuthProvider from "./AuthContext";
+import { RaportDocument } from "@/components/page/raports/RaportDocument";
 
 const roboto = Roboto({
 	weight: "400",

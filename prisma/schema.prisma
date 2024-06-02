@@ -54,37 +54,26 @@ model AdresaFacturare {
   codClient  Int
 }
 
-model RataDeSchimbValutar {
-  codRataValutar Int      @id @default(autoincrement())
-  moneda         String
-  valuare        Float
-  multiplicator  Int
-  data           DateTime
-  creatPe        DateTime @default(now())
-  plati          Plata[]
-}
-
 model Spectacol {
-  codSpectacol           Int                             @id @default(autoincrement())
-  imagine                String
-  titlu                  String
-  oraIncepere            String
-  oraTerminare           String
-  director               String
-  actorii                String                          @db.VarChar(255)
-  creatPe                DateTime                        @default(now())
-  actualizatPe           DateTime                        @updatedAt
-  descriereScurta        String                          @db.VarChar(150)
-  continut               String                          @db.VarChar(600)
-  sezon                  Sezon                           @relation(fields: [codSezon], references: [codSezon], onDelete: Cascade)
-  codSezon               Int
-  tipSpectacol           TipSpectacol                    @relation(fields: [codTipSpectacol], references: [codTipSpectacol], onDelete: Cascade)
-  codTipSpectacol        Int
-  salaSpectacol          SalaSpectacol                   @relation(fields: [codSalaSpectacol], references: [codSalaSpectacol], onDelete: Cascade)
-  codSalaSpectacol       Int
-  bileteVandute          BiletSpectacol[]
-  bonuriFiscale          BonFiscal[]
-  materialeDecorFolosite MaterialDecorSpectacolFolosit[]
+  codSpectacol     Int              @id @default(autoincrement())
+  imagine          String
+  titlu            String
+  oraIncepere      String
+  oraTerminare     String
+  director         String
+  actorii          String           @db.VarChar(255)
+  creatPe          DateTime         @default(now())
+  actualizatPe     DateTime         @updatedAt
+  descriereScurta  String           @db.VarChar(150)
+  continut         String           @db.VarChar(600)
+  sezon            Sezon            @relation(fields: [codSezon], references: [codSezon], onDelete: Cascade)
+  codSezon         Int
+  tipSpectacol     TipSpectacol     @relation(fields: [codTipSpectacol], references: [codTipSpectacol], onDelete: Cascade)
+  codTipSpectacol  Int
+  salaSpectacol    SalaSpectacol    @relation(fields: [codSalaSpectacol], references: [codSalaSpectacol], onDelete: Cascade)
+  codSalaSpectacol Int
+  bileteVandute    BiletSpectacol[]
+  bonuriFiscale    BonFiscal[]
 }
 
 model TipSpectacol {
@@ -151,20 +140,18 @@ model BiletSpectacol {
 }
 
 model Plata {
-  codPlata               Int                 @id @default(autoincrement())
-  sumaPlatita            Float
-  rataDeSchimbValutar    RataDeSchimbValutar @relation(fields: [codRataDeSchimbValutar], references: [codRataValutar], onDelete: NoAction)
-  codRataDeSchimbValutar Int
-  platitPe               DateTime            @default(now())
-  tipPlata               TipPlata            @default(CARD_CREDIT)
-  starePlata             StarePlata          @default(ACCEPTATA)
-  creatPe                DateTime            @default(now())
-  actualizatPe           DateTime            @updatedAt
-  client                 Client              @relation(fields: [codClient], references: [codClient], onDelete: Cascade)
-  codClient              Int
-  bileteAsociate         BiletSpectacol[]
-  bonFiscal              BonFiscal?
-  factura                FacturaFiscala?
+  codPlata       Int              @id @default(autoincrement())
+  sumaPlatita    Float
+  platitPe       DateTime         @default(now())
+  tipPlata       TipPlata         @default(CARD_CREDIT)
+  starePlata     StarePlata       @default(ACCEPTATA)
+  creatPe        DateTime         @default(now())
+  actualizatPe   DateTime         @updatedAt
+  client         Client           @relation(fields: [codClient], references: [codClient], onDelete: Cascade)
+  codClient      Int
+  bileteAsociate BiletSpectacol[]
+  bonFiscal      BonFiscal?
+  factura        FacturaFiscala?
 }
 
 enum StarePlata {
@@ -215,41 +202,4 @@ model FacturaFiscala {
   bonFiscal        BonFiscal        @relation(fields: [codBonFiscal], references: [codBonFiscal], onDelete: Cascade)
   codBonFiscal     Int              @unique
   bileteSpectacol  BiletSpectacol[]
-}
-
-model MaterialDecorSpectacol {
-  codMaterialDecor          Int                             @id @default(autoincrement())
-  numeMaterial              String
-  cantitateStoc             Int
-  unitateMastura            String
-  dataAchizitie             String
-  pretAchizitie             Float
-  producator                String
-  categorieMaterialDecor    CategorieMaterialDecor          @relation(fields: [codCategorieMaterialDecor], references: [codCategorieMaterialDecor], onDelete: NoAction)
-  codCategorieMaterialDecor Int
-  creatPe                   DateTime                        @default(now())
-  actualizatPe              DateTime                        @updatedAt
-  materialeDecorFolosite    MaterialDecorSpectacolFolosit[]
-}
-
-model CategorieMaterialDecor {
-  codCategorieMaterialDecor Int                      @id @default(autoincrement())
-  numeCategorie             String
-  creatPe                   DateTime                 @default(now())
-  actualizatPe              DateTime                 @updatedAt
-  materialeDecor            MaterialDecorSpectacol[]
-}
-
-model MaterialDecorSpectacolFolosit {
-  codMaterialDecorSpectacolFolosit Int                    @id @default(autoincrement())
-  materialDecorSpectacol           MaterialDecorSpectacol @relation(fields: [codMaterialDecorSpectacol], references: [codMaterialDecor], onDelete: Cascade)
-  codMaterialDecorSpectacol        Int
-  spectacol                        Spectacol              @relation(fields: [codSpectacol], references: [codSpectacol], onDelete: Cascade)
-  codSpectacol                     Int
-  dataFolosirii                    String
-  cantitateaFolosita               Int
-  cantitateaRamasaPeStoc           Int
-  observatii                       String?                @db.VarChar(255)
-  creatPe                          DateTime               @default(now())
-  actualizatPe                     DateTime               @updatedAt
 }

@@ -71,7 +71,7 @@ export default function AdminClientEdit({
 			variant: data.ok ? "default" : "destructive",
 		});
 		if (data.ok) {
-			router.push("../../clients");
+			router.push("../../clientii");
 			form.reset();
 			router.refresh();
 		}
@@ -81,7 +81,7 @@ export default function AdminClientEdit({
 		<NewOrEditContent
 			form={form}
 			onSubmit={onSubmit}
-			back_link="../../clients"
+			back_link="../../clientii"
 			title={`Editare client cu codul de identificare #${params.clientID}`}
 			loading={loadingScreen.loading}
 		>

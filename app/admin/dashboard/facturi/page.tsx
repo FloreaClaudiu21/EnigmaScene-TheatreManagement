@@ -15,11 +15,7 @@ export default async function AdminInvoices() {
 					adreseFacturare: true,
 				},
 			},
-			plata: {
-				include: {
-					rataDeSchimbValutar: true,
-				},
-			},
+			plata: true,
 			bileteSpectacol: {
 				include: {
 					locSalaSpectacol: true,
@@ -37,11 +33,7 @@ export default async function AdminInvoices() {
 						},
 					},
 					client: true,
-					plata: {
-						include: {
-							rataDeSchimbValutar: true,
-						},
-					},
+					plata: true,
 				},
 			},
 		},

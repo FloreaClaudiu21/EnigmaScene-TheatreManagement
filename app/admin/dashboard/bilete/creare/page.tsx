@@ -32,12 +32,5 @@ export default async function AdminTicketCreate() {
 			adreseFacturare: true,
 		},
 	});
-	const cursuriValutare = await prisma.rataDeSchimbValutar.findMany({});
-	return (
-		<AdminTicketNew
-			clienti={clienti}
-			spectacole={spectacoleFiltrate}
-			cursuriValutare={cursuriValutare}
-		/>
-	);
+	return <AdminTicketNew clienti={clienti} spectacole={spectacoleFiltrate} />;
 }

@@ -37,9 +37,6 @@ export enum TipuriTabel {
 	CAMERA_SPECTACOL = "Camera Spectacol",
 	SCAUN_CAMERA_SPECTACOL = "Scaun Camera Spectacol",
 	BILET = "Bilet Vandut",
-	MATERIAL_DECOR = "Material Decor",
-	MATERIAL_DECOR_FOLOSIT = "Material Decor Folosit",
-	MATERIAL_DECOR_CATEGORIE = "Material Decor Categorie",
 	PLATA = "Plata",
 	BON_FISCAL = "Bon Fiscal",
 	FACTURA_FISCALA = "Factura Fiscala",
@@ -320,16 +317,6 @@ export type AdresaFacturare = {
 	codClient: number;
 };
 
-export type RataDeSchimbValutar = {
-	codRataValutar: number;
-	moneda: string;
-	valuare: number;
-	multiplicator: number;
-	data: Date;
-	creatPe: Date;
-	plati?: Plata[] | null;
-};
-
 export type Spectacol = {
 	codSpectacol: number;
 	imagine: string;
@@ -350,7 +337,6 @@ export type Spectacol = {
 	codSalaSpectacol: number;
 	bileteVandute?: BiletSpectacol[] | null;
 	bonuriFiscale?: BonFiscal[] | null;
-	materialeDecorFolosite?: MaterialDecorSpectacolFolosit[] | null;
 };
 
 export type TipSpectacol = {
@@ -425,8 +411,6 @@ export type BileteAchizitionate = {
 export type Plata = {
 	codPlata: number;
 	sumaPlatita: number;
-	rataDeSchimbValutar?: RataDeSchimbValutar | null;
-	codRataDeSchimbValutar: number;
 	platitPe: Date;
 	tipPlata: TipPlata;
 	starePlata: StarePlata;
@@ -477,43 +461,6 @@ export type FacturaFiscala = {
 	bonFiscal?: BonFiscal | null;
 	codBonFiscal: number;
 	bileteSpectacol?: BiletSpectacol[] | null;
-};
-
-export type MaterialDecorSpectacol = {
-	codMaterialDecor: number;
-	numeMaterial: string;
-	cantitateStoc: number;
-	unitateMastura: string;
-	dataAchizitie: string;
-	pretAchizitie: number;
-	producator: string;
-	categorieMaterialDecor?: CategorieMaterialDecor | null;
-	codCategorieMaterialDecor: number;
-	creatPe: Date;
-	actualizatPe: Date;
-	materialeDecorFolosite?: MaterialDecorSpectacolFolosit[] | null;
-};
-
-export type CategorieMaterialDecor = {
-	codCategorieMaterialDecor: number;
-	numeCategorie: string;
-	creatPe: Date;
-	actualizatPe: Date;
-	materialeDecor?: MaterialDecorSpectacol[] | null;
-};
-
-export type MaterialDecorSpectacolFolosit = {
-	codMaterialDecorSpectacolFolosit: number;
-	materialDecorSpectacol?: MaterialDecorSpectacol | null;
-	codMaterialDecorSpectacol: number;
-	spectacol?: Spectacol | null;
-	codSpectacol: number;
-	dataFolosirii: string;
-	cantitateaFolosita: number;
-	cantitateaRamasaPeStoc: number;
-	observatii?: string | null;
-	creatPe: Date;
-	actualizatPe: Date;
 };
 
 export enum LocSalaSpectacolCategorie {

@@ -91,11 +91,7 @@ export const columnsReceipts: ColumnDef<BonFiscal>[] = [
 			return <ColumnHeader column={column} title="Cod Plata & Suma Platită" />;
 		},
 		cell: ({ row: { original } }) => {
-			const cur = original.plata?.rataDeSchimbValutar?.moneda;
 			let priceConverted = original.plata?.sumaPlatita ?? 0;
-			if (cur ?? "RON" != "RON") {
-				priceConverted /= original.plata?.rataDeSchimbValutar?.valuare ?? 1;
-			}
 			return (
 				<ColumnCell
 					data={
@@ -119,11 +115,11 @@ export const columnsReceipts: ColumnDef<BonFiscal>[] = [
 										column: "moneda",
 										page: "bonulFiscal",
 										label: "Moneda",
-										value: cur ?? "",
+										value: priceConverted.toFixed(2) ?? "",
 									},
 								]}
 							>
-								{priceConverted.toFixed(2) + " (plătit in " + cur + ")"}
+								{priceConverted.toFixed(2) + " RON"}
 							</PushFilter>
 						</>
 					}

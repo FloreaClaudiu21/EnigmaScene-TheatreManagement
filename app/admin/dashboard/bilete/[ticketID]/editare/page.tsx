@@ -18,11 +18,6 @@ export default async function AdminTicketEditPage({ params }: { params: any }) {
 			bonFiscal: true,
 			client: true,
 			factura: true,
-			plata: {
-				include: {
-					rataDeSchimbValutar: true,
-				},
-			},
 			salaSpectacol: {
 				include: {
 					locuriSala: {
@@ -32,25 +27,19 @@ export default async function AdminTicketEditPage({ params }: { params: any }) {
 					},
 				},
 			},
+			plata: true,
 			spectacol: true,
 		},
 	});
 	if (!found) {
 		return notFound();
 	}
-	const [clients, exchanges] = await Promise.all([
+	const [clients] = await Promise.all([
 		prisma.client.findMany({
 			include: {
 				adreseFacturare: true,
 			},
 		}),
-		prisma.rataDeSchimbValutar.findMany({}),
 	]);
-	return (
-		<AdminTicketSoldEdit
-			clients={clients}
-			exchanges={exchanges}
-			ticket={found}
-		/>
-	);
+	return <AdminTicketSoldEdit clients={clients} ticket={found} />;
 }

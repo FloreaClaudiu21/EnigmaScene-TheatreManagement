@@ -19,7 +19,6 @@ import { Client } from "next-auth";
 import {
 	AdresaFacturare,
 	LocSalaSpectacol,
-	RataDeSchimbValutar,
 	Spectacol,
 	coduriTariRomanesti,
 } from "@/lib/types";
@@ -37,23 +36,17 @@ export default function TicketsCreateForm({
 	onSubmit,
 	clienti,
 	spectacole,
-	cursuriValutare,
 	clientSelectat,
 	setClientSelectat,
 	locuriAlese,
 	setLocuriAlese,
 	spectacolSelectat,
 	setSpectacolSelectat,
-	cursValutarSelectat,
-	setCursValutarSelectat,
 	generareFactura,
 	setGenerareFactura,
 }: {
 	form: any;
 	onSubmit: any;
-	cursuriValutare: RataDeSchimbValutar[];
-	cursValutarSelectat: RataDeSchimbValutar | null;
-	setCursValutarSelectat: any;
 	generareFactura: boolean;
 	setGenerareFactura: any;
 	spectacolSelectat: Spectacol | null;
@@ -84,12 +77,8 @@ export default function TicketsCreateForm({
 	}, [locuriAlese]);
 	const costTotalLocuriCur = useMemo(() => {
 		let costTotalRON = locuriAlese.reduce((prev, cur) => prev + cur.pretLoc, 0);
-		const cur = cursValutarSelectat;
-		if (cur ?? "RON" != "RON") {
-			costTotalRON /= cursValutarSelectat?.valuare ?? 1;
-		}
 		return costTotalRON;
-	}, [locuriAlese, cursValutarSelectat]);
+	}, [locuriAlese]);
 	return (
 		<div className="flex flex-col gap-2 w-full md:w-1/2 h-full border-1 p-4 !mb-2 justify-center bg-gray-100 rounded-md">
 			<NewOrEditContent
@@ -223,9 +212,7 @@ export default function TicketsCreateForm({
 						name="pretVanzare"
 						render={({ field }) => (
 							<FormItem className="w-full md:w-1/2">
-								<FormLabel>
-									Valoare Bilete ({cursValutarSelectat?.moneda})*
-								</FormLabel>
+								<FormLabel>Valoare Bilete (RON)*</FormLabel>
 								<FormControl>
 									<Input
 										radius="md"
@@ -244,80 +231,28 @@ export default function TicketsCreateForm({
 						)}
 					/>
 				</div>
-				<div className="flex flex-col md:flex-row gap-2">
-					<FormField
-						control={form.control}
-						name="tipPlata"
-						render={({ field }) => (
-							<FormItem className="w-full md:w-1/2">
-								<FormLabel>Tip Plata*</FormLabel>
-								<FormControl>
-									<Input
-										radius="md"
-										variant="bordered"
-										required
-										endContent={
-											<PenIcon className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
-										}
-										{...field}
-									/>
-								</FormControl>
-								<FormMessage />
-							</FormItem>
-						)}
-					/>
-					<FormField
-						control={form.control}
-						name="codRataDeSchimbValutar"
-						render={({ field }) => (
-							<FormItem className="w-full md:w-1/2">
-								<FormLabel>Moneda*</FormLabel>
-								<FormControl>
-									<Autocomplete
-										radius="md"
-										label="Moneda"
-										variant="bordered"
-										onSelectionChange={(key) => {
-											if (!key) return;
-											const curs = JSON.parse(
-												key.toString()
-											) as RataDeSchimbValutar;
-											field.onChange(curs.codRataValutar);
-											setCursValutarSelectat(curs);
-											form.setValue(
-												"codRataDeSchimbValutar",
-												curs.codRataValutar
-											);
-										}}
-										defaultSelectedKey={
-											cursValutarSelectat != null
-												? JSON.stringify(cursValutarSelectat)
-												: undefined
-										}
-										{...field}
-									>
-										{cursuriValutare.map((val, index) => {
-											return (
-												<AutocompleteItem
-													key={JSON.stringify(val)}
-													value={JSON.stringify(val)}
-												>
-													{index +
-														1 +
-														". " +
-														val.moneda +
-														" - " +
-														val.valuare.toFixed(2)}
-												</AutocompleteItem>
-											);
-										})}
-									</Autocomplete>
-								</FormControl>
-								<FormMessage />
-							</FormItem>
-						)}
-					/>
-				</div>
+
+				<FormField
+					control={form.control}
+					name="tipPlata"
+					render={({ field }) => (
+						<FormItem className="w-full md:w-1/2">
+							<FormLabel>Tip Plata*</FormLabel>
+							<FormControl>
+								<Input
+									radius="md"
+									variant="bordered"
+									required
+									endContent={
+										<PenIcon className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
+									}
+									{...field}
+								/>
+							</FormControl>
+							<FormMessage />
+						</FormItem>
+					)}
+				/>
 				<FormField
 					control={form.control}
 					name="genereazaFacturaFiscala"

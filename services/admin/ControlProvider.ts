@@ -5,8 +5,6 @@ import { prisma } from "@/lib/prismaClient";
 import {
 	schemaCreareBiletSpectacol,
 	schemaCreareFacturaFiscala,
-	schemaCreareMaterialDecorSpectacol,
-	schemaCreareMaterialDecorSpectacolFolosit,
 	schemaCreareSpectacol,
 } from "@/lib/schemas";
 import {
@@ -31,7 +29,6 @@ export const getShowById = async (id: number) => {
 		include: {
 			bileteVandute: true,
 			bonuriFiscale: true,
-			materialeDecorFolosite: true,
 			salaSpectacol: true,
 			sezon: true,
 			tipSpectacol: true,
@@ -82,37 +79,6 @@ export const getShowRoomSeatById = async (id: number) => {
 		},
 		include: {
 			salaSpectacol: true,
-		},
-	});
-};
-
-export const getShowMaterialById = async (id: number) => {
-	return await prisma.materialDecorSpectacol.findFirst({
-		where: {
-			codMaterialDecor: id,
-		},
-		include: {
-			categorieMaterialDecor: true,
-		},
-	});
-};
-
-export const getShowMaterialUsedById = async (id: number) => {
-	return await prisma.materialDecorSpectacolFolosit.findFirst({
-		where: {
-			codMaterialDecorSpectacolFolosit: id,
-		},
-		include: {
-			materialDecorSpectacol: true,
-			spectacol: true,
-		},
-	});
-};
-
-export const getShowMaterialCategoryById = async (id: number) => {
-	return await prisma.categorieMaterialDecor.findFirst({
-		where: {
-			codCategorieMaterialDecor: id,
 		},
 	});
 };
@@ -225,7 +191,6 @@ export const insert = async (type: TipuriTabel, data: any) => {
 					data: {
 						tipPlata: values.tipPlata,
 						codClient: values.codClient,
-						codRataDeSchimbValutar: values.codRataDeSchimbValutar,
 						sumaPlatita: parseFloat(values.bileteDetalii?.pretTotal + ""),
 					},
 				});
@@ -309,43 +274,6 @@ export const insert = async (type: TipuriTabel, data: any) => {
 						codBonFiscal: values.codBonFiscal,
 						codFacturaFiscala: factura.codFactura,
 					},
-				});
-				break;
-			}
-			case TipuriTabel.MATERIAL_DECOR: {
-				const values = data as z.infer<
-					typeof schemaCreareMaterialDecorSpectacol
-				>;
-				await prisma.materialDecorSpectacol.create({
-					data: {
-						...values,
-						pretAchizitie: parseFloat(values.pretAchizitie),
-					},
-				});
-				break;
-			}
-			case TipuriTabel.MATERIAL_DECOR_FOLOSIT: {
-				const values = data as z.infer<
-					typeof schemaCreareMaterialDecorSpectacolFolosit
-				>;
-				await prisma.materialDecorSpectacolFolosit.create({
-					data: {
-						...values,
-					},
-				});
-				await prisma.materialDecorSpectacol.update({
-					where: {
-						codMaterialDecor: values.codMaterialDecorSpectacol,
-					},
-					data: {
-						cantitateStoc: values.cantitateaRamasaPeStoc,
-					},
-				});
-				break;
-			}
-			case TipuriTabel.MATERIAL_DECOR_CATEGORIE: {
-				await prisma.categorieMaterialDecor.create({
-					data,
 				});
 				break;
 			}
@@ -509,7 +437,6 @@ export const update = async (type: TipuriTabel, data: any, id: number) => {
 					data: {
 						codClient: values.codClient,
 						sumaPlatita: parseFloat(values.pretVanzare),
-						codRataDeSchimbValutar: values.codRataDeSchimbValutar,
 					},
 				});
 				await prisma.biletSpectacol.update({
@@ -607,76 +534,6 @@ export const update = async (type: TipuriTabel, data: any, id: number) => {
 						sumaPlatita: parseFloat(values.sumaPlatita),
 						totalSumaPlatita: parseFloat(values.sumaPlatita) + 0,
 					},
-				});
-				break;
-			}
-			case TipuriTabel.MATERIAL_DECOR: {
-				const found = await getShowMaterialById(id);
-				if (!found) {
-					return {
-						message: `${what} cu ID-ul '${id}' nu există.`,
-						ok: false,
-						status: 404,
-					} as MailSendResponse;
-				}
-				const values = data as z.infer<
-					typeof schemaCreareMaterialDecorSpectacol
-				>;
-				await prisma.materialDecorSpectacol.update({
-					where: {
-						codMaterialDecor: id,
-					},
-					data: {
-						...values,
-						pretAchizitie: parseFloat(values.pretAchizitie),
-					},
-				});
-				break;
-			}
-			case TipuriTabel.MATERIAL_DECOR_FOLOSIT: {
-				const found = await getShowMaterialUsedById(id);
-				if (!found) {
-					return {
-						message: `${what} cu ID-ul '${id}' nu există.`,
-						ok: false,
-						status: 404,
-					} as MailSendResponse;
-				}
-				const values = data as z.infer<
-					typeof schemaCreareMaterialDecorSpectacolFolosit
-				>;
-				await prisma.materialDecorSpectacolFolosit.update({
-					where: {
-						codMaterialDecorSpectacolFolosit: id,
-					},
-					data: {
-						...values,
-					},
-				});
-				await prisma.materialDecorSpectacol.update({
-					where: {
-						codMaterialDecor: values.codMaterialDecorSpectacol,
-					},
-					data: {
-						cantitateStoc: values.cantitateaRamasaPeStoc,
-					},
-				});
-				break;
-			}
-			case TipuriTabel.MATERIAL_DECOR_CATEGORIE: {
-				const found = await getShowMaterialCategoryById(id);
-				if (!found) {
-					return {
-						message: `${what} cu ID-ul '${id}' nu există.`,
-						ok: false,
-						status: 404,
-					} as MailSendResponse;
-				}
-				await prisma.categorieMaterialDecor.update({
-					where: {
-						codCategorieMaterialDecor: id,
-					},
-					data,
 				});
 				break;
 			}
@@ -786,41 +643,6 @@ export const remove = async (type: TipuriTabel, id: number) => {
 				deletedResponse = await prisma.facturaFiscala.delete({
 					where: {
 						codFactura: id,
-					},
-				});
-				break;
-			case TipuriTabel.MATERIAL_DECOR:
-				deletedResponse = await prisma.materialDecorSpectacol.delete({
-					where: {
-						codMaterialDecor: id,
-					},
-				});
-				break;
-			case TipuriTabel.MATERIAL_DECOR_FOLOSIT:
-				const mat = await prisma.materialDecorSpectacolFolosit.findFirst({
-					where: {
-						codMaterialDecorSpectacolFolosit: id,
-					},
-				});
-				if (!mat) break;
-				deletedResponse = await prisma.materialDecorSpectacolFolosit.delete({
-					where: {
-						codMaterialDecorSpectacolFolosit: id,
-					},
-				});
-				await prisma.materialDecorSpectacol.update({
-					where: {
-						codMaterialDecor: mat.codMaterialDecorSpectacol,
-					},
-					data: {
-						cantitateStoc: { increment: mat?.cantitateaFolosita },
-					},
-				});
-				break;
-			case TipuriTabel.MATERIAL_DECOR_CATEGORIE:
-				deletedResponse = await prisma.categorieMaterialDecor.delete({
-					where: {
-						codCategorieMaterialDecor: id,
 					},
 				});
 				break;

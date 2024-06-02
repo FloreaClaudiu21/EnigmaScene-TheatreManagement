@@ -104,12 +104,12 @@ export function deleteQueryParam(key: string, searchParams: any) {
 export function setQueryParams(searchParams: any, filtersTable: TableFilterMap) {
 	const params = new URLSearchParams(searchParams);
 	filtersTable.filters.map((filter) => {
-		if (!filter || !filter.column ||  filter.value.length <= 0) return;
+		if (!filter || !filter.column ||  (filter.value?.length ?? 0) <= 0) return;
 		const currentValue = params.get(filter.column);
     if (currentValue === filter.value) {
       params.delete(filter.column);
     } else {
-      params.set(filter.column, filter.value || '');
+      params.set(filter.column, filter.value ?? '');
     }
 	});
 	params.set("from", formatDate(filtersTable.date?.from ?? new Date()));
@@ -273,6 +273,13 @@ export function validRowsAndCols(raportModal: RaportModal) {
 		});
 	});
 	return {cols: validColums, rows: dataRows ?? []}
+}
+
+export function removeDiacritics(str: string) {
+	if (typeof str != 'string') {
+		return str;
+	}
+	return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 }
 
 export function generateRandomString(length: number) {

@@ -3,7 +3,8 @@ import { mkConfig, generateCsv, download, ColumnHeader } from "export-to-csv";
 import { Button } from "@nextui-org/react";
 import { FileType2 } from "lucide-react";
 import { RaportModal } from "@/services/StateProvider";
-import { validRowsAndCols } from "@/lib/utils";
+import { isDateValue, validRowsAndCols } from "@/lib/utils";
+import { formatDateFull } from "@/lib/rangeOptions";
 
 export default function CSVRaport({
 	title,
@@ -17,6 +18,20 @@ export default function CSVRaport({
 	const data: any[] = [];
 	const headers: ColumnHeader[] = [];
 	const { rows, cols } = validRowsAndCols(raportModal);
+	if (cols.length <= 0) {
+		return (
+			<Button
+				size="sm"
+				radius="md"
+				color="primary"
+				isDisabled={true}
+				title="Nu au fost gasite date in tabel"
+			>
+				<FileType2 size={18} />
+				Salvare CSV
+			</Button>
+		);
+	}
 	cols.map((col) => {
 		headers.push({
 			key: col.id,
@@ -28,9 +43,14 @@ export default function CSVRaport({
 		cols.map((column) => {
 			const value = row.original[column.id];
 			const type = typeof value;
+			const isDate = isDateValue(value);
 			map = {
 				...map,
-				[column.id]: type == "string" ? value.replace("\n", "") : value,
+				[column.id]: isDate
+					? formatDateFull(new Date(value))
+					: type == "string"
+					? value.replace("\n", " ")
+					: value,
 			};
 		});
 		if (Object.keys(map).length > 0) {
@@ -39,18 +59,22 @@ export default function CSVRaport({
 	});
 	const csvConfig = mkConfig({
 		columnHeaders: headers,
-		filename: `${title}"-${new Date().toISOString().replace("T", "-")}`,
+		fieldSeparator: ";",
+		filename: `${title}"-${new Date()
+			.toISOString()
+			.replace("T", "-")
+			.replace("Z", "")}`,
 	});
 	const csv = generateCsv(csvConfig)(data);
 	return (
 		<Button
-			size="md"
+			size="sm"
 			radius="md"
 			color="primary"
 			isDisabled={loadingRaport}
 			onClick={() => download(csvConfig)(csv)}
 		>
-			<FileType2 className="h-10 w-10" />
+			<FileType2 size={18} />
 			Salvare CSV
 		</Button>
 	);

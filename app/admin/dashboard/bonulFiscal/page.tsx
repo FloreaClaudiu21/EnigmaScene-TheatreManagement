@@ -11,11 +11,7 @@ export default async function AdminFiscalReceipts() {
 		},
 		include: {
 			client: true,
-			plata: {
-				include: {
-					rataDeSchimbValutar: true,
-				},
-			},
+			plata: true,
 			spectacol: {
 				include: {
 					bileteVandute: true,

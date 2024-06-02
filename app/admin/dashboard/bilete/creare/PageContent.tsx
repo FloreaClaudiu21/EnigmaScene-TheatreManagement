@@ -14,7 +14,6 @@ import {
 	AdresaFacturare,
 	BileteAchizitionate,
 	LocSalaSpectacol,
-	RataDeSchimbValutar,
 	Spectacol,
 	TipuriTabel,
 } from "@/lib/types";
@@ -23,11 +22,9 @@ import { schemaCreareBiletSpectacol } from "@/lib/schemas";
 export default function AdminTicketNew({
 	spectacole,
 	clienti,
-	cursuriValutare,
 }: {
 	clienti: Client[];
 	spectacole: Spectacol[];
-	cursuriValutare: RataDeSchimbValutar[];
 }) {
 	const router = useRouter();
 	const { toast } = useToast();
@@ -36,14 +33,6 @@ export default function AdminTicketNew({
 	const [locuriAlese, setLocuriAlese] = useState<LocSalaSpectacol[]>([]);
 	const [clientSelectat, setClientSelectat] = useState<Client | null>(
 		clienti.length > 0 ? clienti[0] : null
-	);
-	const [
-		cursValutarSelectat,
-		setCursValutarSelectat,
-	] = useState<RataDeSchimbValutar | null>(
-		cursuriValutare.length > 0
-			? cursuriValutare.filter((curs) => curs.moneda == "RON")[0]
-			: null
 	);
 	const adreseFacturare = useCallback(
 		() => clientSelectat?.adreseFacturare ?? [],
@@ -74,10 +63,6 @@ export default function AdminTicketNew({
 			codSalaSpectacol:
 				spectacolSelectat != null
 					? spectacolSelectat.codSalaSpectacol
-					: undefined,
-			codRataDeSchimbValutar:
-				cursValutarSelectat != null
-					? cursValutarSelectat.codRataValutar
 					: undefined,
 			genereazaFacturaFiscala: "false",
 			adresaFacturare: generareFactura ? adresaDefaultString ?? "" : "null",
@@ -134,9 +119,6 @@ export default function AdminTicketNew({
 				clientSelectat={clientSelectat}
 				clienti={clienti}
 				setClientSelectat={setClientSelectat}
-				cursValutarSelectat={cursValutarSelectat}
-				cursuriValutare={cursuriValutare}
-				setCursValutarSelectat={setCursValutarSelectat}
 				generareFactura={generareFactura}
 				setGenerareFactura={setGenerareFactura}
 				locuriAlese={locuriAlese}

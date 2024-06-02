@@ -4,9 +4,9 @@ import RecentPaymentsTable from "@/components/admin/dashboard/tables/RecentPayme
 import { ChartCard } from "@/components/admin/dashboard/ChartCard";
 import { ChartDataTip, ChartTip } from "@/lib/types";
 import ShowsStatCard from "@/components/admin/dashboard/stats/ShowsStatCard";
-import DecoMaterialsStatCard from "@/components/admin/dashboard/stats/DecorationMaterialsStatCard";
 import TicketsStatCard from "@/components/admin/dashboard/stats/TicketsStatCard";
 import RecentClientsTable from "@/components/admin/dashboard/tables/RecentClientsTable";
+import BonuriFiscaleStatCard from "@/components/admin/dashboard/stats/BonFiscalStatCard";
 
 export default async function DashboardPage({
 	searchParams,
@@ -18,7 +18,7 @@ export default async function DashboardPage({
 			<div className="flex flex-col w-full gap-2 md:flex-row md:gap-8 justify-between">
 				<ShowsStatCard searchParams={searchParams} />
 				<TicketsStatCard searchParams={searchParams} />
-				<DecoMaterialsStatCard searchParams={searchParams} />
+				<BonuriFiscaleStatCard searchParams={searchParams} />
 			</div>
 			<div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-4">
 				<ChartCard

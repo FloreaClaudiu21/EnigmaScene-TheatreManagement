@@ -12,7 +12,6 @@ import { schemaCreareBiletSpectacol } from "@/lib/schemas";
 import {
 	AdresaFacturare,
 	BiletSpectacol,
-	RataDeSchimbValutar,
 	TipuriTabel,
 	coduriTariRomanesti,
 } from "@/lib/types";
@@ -42,12 +41,10 @@ import { z } from "zod";
 
 export default function AdminTicketSoldEdit({
 	clients,
-	exchanges,
 	ticket,
 }: {
 	clients: Client[];
 	ticket: BiletSpectacol;
-	exchanges: RataDeSchimbValutar[];
 }) {
 	const router = useRouter();
 	const { toast } = useToast();
@@ -69,7 +66,6 @@ export default function AdminTicketSoldEdit({
 		defaultValues: {
 			genereazaFacturaFiscala: generateInvoice + "",
 			tipPlata: ticket.plata?.tipPlata,
-			codRataDeSchimbValutar: ticket.plata?.codRataDeSchimbValutar,
 			codClient: ticket.codClient,
 			codSalaSpectacol: ticket.codSalaSpectacol,
 			codSpectacol: ticket.codSpectacol,
@@ -195,62 +191,29 @@ export default function AdminTicketSoldEdit({
 					)}
 				/>
 			</div>
-			<div className="flex flex-col md:flex-row gap-2">
-				<FormField
-					control={form.control}
-					name="codRataDeSchimbValutar"
-					render={({ field }) => (
-						<FormItem className="w-full md:w-1/2">
-							<FormLabel>Moneda*</FormLabel>
-							<FormControl>
-								<Autocomplete
-									radius="md"
-									variant="bordered"
-									defaultSelectedKey={ticket.plata?.codRataDeSchimbValutar + ""}
-									onSelectionChange={(key) => {
-										field.onChange(key.toString());
-									}}
-									{...field}
-								>
-									{exchanges.map((ex, index) => {
-										return (
-											<AutocompleteItem
-												key={ex.codRataValutar}
-												value={ex.codRataValutar}
-											>
-												{index + 1 + ". " + ex.moneda}
-											</AutocompleteItem>
-										);
-									})}
-								</Autocomplete>
-							</FormControl>
-							<FormMessage />
-						</FormItem>
-					)}
-				/>
-				<FormField
-					control={form.control}
-					name="pretVanzare"
-					render={({ field }) => (
-						<FormItem className="w-full md:w-1/2">
-							<FormLabel>Pret Vanzare Bilet (RON)*</FormLabel>
-							<FormControl>
-								<Input
-									radius="md"
-									variant="bordered"
-									isDisabled
-									required
-									endContent={
-										<PenIcon className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
-									}
-									{...field}
-								/>
-							</FormControl>
-							<FormMessage />
-						</FormItem>
-					)}
-				/>
-			</div>
+
+			<FormField
+				control={form.control}
+				name="pretVanzare"
+				render={({ field }) => (
+					<FormItem className="w-full md:w-1/2">
+						<FormLabel>Pret Vanzare Bilet (RON)*</FormLabel>
+						<FormControl>
+							<Input
+								radius="md"
+								variant="bordered"
+								isDisabled
+								required
+								endContent={
+									<PenIcon className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
+								}
+								{...field}
+							/>
+						</FormControl>
+						<FormMessage />
+					</FormItem>
+				)}
+			/>
 			<FormField
 				control={form.control}
 				name="genereazaFacturaFiscala"
