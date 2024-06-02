@@ -2,11 +2,7 @@
 import { FacturaFiscala } from "@/lib/types";
 
 function InvoiceMiddle({ invoice }: { invoice: FacturaFiscala }) {
-	const cur = invoice.plata?.rataDeSchimbValutar;
 	let priceConvertedTotal = invoice.sumaPlatita;
-	if (cur ?? "RON" != "RON") {
-		priceConvertedTotal /= invoice.plata?.rataDeSchimbValutar?.valuare ?? 1;
-	}
 	const priceTotalWithoutVAT = priceConvertedTotal / 1.19;
 	const vatAmountTotal = priceConvertedTotal - priceTotalWithoutVAT;
 	const bilete = invoice.bileteSpectacol ?? [];
@@ -29,22 +25,22 @@ function InvoiceMiddle({ invoice }: { invoice: FacturaFiscala }) {
 						</th>
 						<th>
 							<span>
-								Preț Unitar (Fără TVA) <br /> --{cur?.moneda}--
+								Preț Unitar (Fără TVA) <br /> --RON--
 							</span>
 						</th>
 						<th>
 							<span>
-								Valoare <br /> --{cur?.moneda}--
+								Valoare <br /> --RON--
 							</span>
 						</th>
 						<th>
 							<span>
-								Valoare TVA <br /> --{cur?.moneda}--
+								Valoare TVA <br /> --RON--
 							</span>
 						</th>
 						<th>
 							<span>
-								Preț Unitar (Incl. TVA) <br /> --{cur?.moneda}--
+								Preț Unitar (Incl. TVA) <br /> --RON--
 							</span>
 						</th>
 					</tr>
@@ -77,10 +73,6 @@ function InvoiceMiddle({ invoice }: { invoice: FacturaFiscala }) {
 						</tr>
 						{bilete.map((bilet, index) => {
 							let priceConverted = bilet.locSalaSpectacol?.pretLoc ?? 0;
-							if (cur ?? "RON" != "RON") {
-								priceConverted /=
-									invoice.plata?.rataDeSchimbValutar?.valuare ?? 1;
-							}
 							const priceWithoutVAT = priceConverted / 1.19;
 							const vatAmount = priceConverted - priceWithoutVAT;
 							return (

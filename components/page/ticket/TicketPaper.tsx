@@ -17,7 +17,7 @@ const TicketFooter = ({
 				<span className="font-semibold">{data.bonFiscal?.numarBonFiscal}</span>{" "}
 			</div>
 			<p className="text-white font-semibold">
-				{priceConverted.toFixed(0)} {data.plata?.rataDeSchimbValutar?.moneda}
+				{priceConverted.toFixed(0)} RON
 			</p>
 		</div>
 	);
@@ -26,11 +26,7 @@ const TicketFooter = ({
 const TicketPrintPaper: React.FC<{
 	data: BiletSpectacol;
 }> = ({ data }) => {
-	const cur = data.plata?.rataDeSchimbValutar;
 	let priceConverted = data.plata?.sumaPlatita ?? 0;
-	if (cur ?? "RON" != "RON") {
-		priceConverted /= data.plata?.rataDeSchimbValutar?.valuare ?? 1;
-	}
 	return (
 		<>
 			<style type="text/css" media="print">

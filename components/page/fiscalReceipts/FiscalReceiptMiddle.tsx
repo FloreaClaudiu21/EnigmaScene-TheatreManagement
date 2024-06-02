@@ -12,7 +12,6 @@ export default function FiscalReceiptMiddle({
 	priceTotalWithoutVat: number;
 	priceConvertedTotal: number;
 }) {
-	const cur = data.plata?.rataDeSchimbValutar;
 	const bilete: BiletSpectacol[] = data.bileteSpectacol ?? [];
 	return (
 		<div className="flex flex-col text-sm">
@@ -24,9 +23,6 @@ export default function FiscalReceiptMiddle({
 			<div className="flex flex-col gap-1 mb-4">
 				{bilete.map((bilet) => {
 					let priceConverted = bilet.locSalaSpectacol?.pretLoc ?? 0;
-					if (cur ?? "RON" != "RON") {
-						priceConverted /= data.plata?.rataDeSchimbValutar?.valuare ?? 1;
-					}
 					return (
 						<div
 							key={bilet.codBiletSpectacol}
@@ -52,8 +48,7 @@ export default function FiscalReceiptMiddle({
 				<div className="flex flex-col justify-between py-2">
 					<p>TOTAL: {priceConvertedTotal.toFixed(2)}</p>
 					<p>
-						{data.plata?.tipPlata} {priceConvertedTotal.toFixed(2)}{" "}
-						{data.plata?.rataDeSchimbValutar?.moneda}
+						{data.plata?.tipPlata} {priceConvertedTotal.toFixed(2)} RON
 					</p>
 				</div>
 				<hr />

@@ -6,11 +6,7 @@ import { BonFiscal } from "@/lib/types";
 const FiscalReceiptPaper: React.FC<{
 	data: BonFiscal;
 }> = ({ data }) => {
-	const cur = data.plata?.rataDeSchimbValutar;
 	let priceConvertedTotal = data.plata?.sumaPlatita ?? 0;
-	if (cur ?? "RON" != "RON") {
-		priceConvertedTotal /= data.plata?.rataDeSchimbValutar?.valuare ?? 1;
-	}
 	const priceTotalWithoutVAT = priceConvertedTotal / 1.19;
 	const vatAmountTotal = priceConvertedTotal - priceTotalWithoutVAT;
 	return (
