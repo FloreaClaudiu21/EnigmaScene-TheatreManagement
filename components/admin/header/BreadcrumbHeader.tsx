@@ -25,20 +25,18 @@ export default function BreadcrumbHeader() {
 					if (val != "dashboard") {
 						link += val + "/";
 					}
+					console.log(val);
 					return (
-						<BreadcrumbItem key={uuidv4()}>
+						<BreadcrumbItem key={val}>
 							{!isLast ? (
 								<>
-									<BreadcrumbLink key={uuidv4()} asChild>
+									<BreadcrumbLink asChild>
 										<Link href={link}>{capitalizeazaPrimaLitera(val)}</Link>
 									</BreadcrumbLink>
 									<BreadcrumbSeparator />
 								</>
 							) : (
-								<BreadcrumbPage
-									key={uuidv4()}
-									className="text-red-500 cursor-pointer"
-								>
+								<BreadcrumbPage className="text-red-500 cursor-pointer">
 									{capitalizeazaPrimaLitera(val)}
 								</BreadcrumbPage>
 							)}

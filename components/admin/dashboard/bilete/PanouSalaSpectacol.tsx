@@ -110,7 +110,7 @@ export default function PanouSalaSpectacol({
 				return (
 					<div key={rand} className={`flex flex-row gap-2`}>
 						<div className="w-10 place-self-start">
-							<p className="text-red-500">R{rand}</p>
+							<p className="text-red-500">{rand}</p>
 						</div>
 						<div className="flex flex-row gap-4 md:gap-8 justify-center place-items-center flex-1">
 							{locuriRand(rand).map((loc) => {

@@ -238,6 +238,7 @@ export default function GeneralTabel({
 				description: "Toate înregistrările au fost șterse!",
 			});
 		}
+		table.toggleAllPageRowsSelected(false);
 		router.refresh();
 		setIncarcare(false);
 	};

@@ -21,7 +21,7 @@ export const actualizareSalaSpectacol = async (date: any, id: number) => {
 	});
 	revalidatePath("/");
 	return {
-		mesaj: `Bilet creata cu succes.`,
+		mesaj: `Bilet creat cu succes.`,
 		ok: true,
 		status: 200,
 	};

@@ -32,7 +32,7 @@ export const creareClient = async (data: any) => {
 	});
 	revalidatePath("/");
 	return {
-		mesaj: `Clientul creata cu succes.`,
+		mesaj: `Clientul creat cu succes.`,
 		ok: true,
 		status: 200,
 		client: client,

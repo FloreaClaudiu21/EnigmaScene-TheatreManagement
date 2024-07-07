@@ -5,7 +5,7 @@ import "@smastrom/react-rating/style.css";
 import "primereact/resources/themes/lara-light-cyan/theme.css";
 import { getServerSession } from "next-auth";
 import { AuthOption } from "./api/auth/authOptions";
-import AutentificareProvider from "./AuthContext";
+import AutentificareProvider from "./AutentificareProvider";
 
 const roboto = Roboto({
 	weight: "400",

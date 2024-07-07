@@ -178,20 +178,40 @@ export const columnsInvoice: ColumnDef<FacturaFiscala>[] = [
 	{
 		accessorKey: "numeClient",
 		header: ({ column }) => {
-			return <AntetColoana coloana={column} titlu="Cod Client" />;
+			return <AntetColoana coloana={column} titlu="Cod & Nume Client" />;
 		},
 		cell: ({ row: { original } }) => {
 			return (
 				<CelulaColoana
-					filtre={[
-						{
-							coloana: "codClient",
-							eticheta: "Cod Client",
-							pagina: "facturi",
-							valoare: original.codClient + "" ?? "",
-						},
-					]}
-					date={original.codClient}
+					date={
+						<>
+							<AplicaFiltru
+								filtre={[
+									{
+										coloana: "codClient",
+										eticheta: "Cod Client",
+										pagina: "facturi",
+										valoare: original.codClient + "" ?? "",
+									},
+								]}
+							>
+								{original.codClient}
+							</AplicaFiltru>
+							-
+							<AplicaFiltru
+								filtre={[
+									{
+										pagina: "facturi",
+										coloana: "numeClient",
+										eticheta: "Nume Client",
+										valoare: original.client?.numeClient ?? "",
+									},
+								]}
+							>
+								{original.client?.numeClient}
+							</AplicaFiltru>
+						</>
+					}
 				/>
 			);
 		},

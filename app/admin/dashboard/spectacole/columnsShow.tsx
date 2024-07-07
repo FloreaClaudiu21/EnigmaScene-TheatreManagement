@@ -184,6 +184,32 @@ export const columnsShow: ColumnDef<Spectacol>[] = [
 		},
 	},
 	{
+		accessorKey: "numeSezon",
+		header: ({ column }) => {
+			return <AntetColoana coloana={column} titlu="Sezon" />;
+		},
+		cell: ({ row: { original } }) => {
+			return (
+				<CelulaColoana
+					date={
+						<AplicaFiltru
+							filtre={[
+								{
+									coloana: "numeSezon",
+									eticheta: "Numele sezonului",
+									pagina: "spectacole",
+									valoare: original.sezon?.numeSezon ?? "",
+								},
+							]}
+						>
+							{original.sezon?.numeSezon}
+						</AplicaFiltru>
+					}
+				/>
+			);
+		},
+	},
+	{
 		accessorKey: "numeTip",
 		header: ({ column }) => {
 			return <AntetColoana coloana={column} titlu="Sezon & Categorie" />;
@@ -192,33 +218,18 @@ export const columnsShow: ColumnDef<Spectacol>[] = [
 			return (
 				<CelulaColoana
 					date={
-						<>
-							<AplicaFiltru
-								filtre={[
-									{
-										coloana: "numeSezon",
-										eticheta: "Numele sezonului",
-										pagina: "spectacole",
-										valoare: original.sezon?.numeSezon ?? "",
-									},
-								]}
-							>
-								{original.sezon?.numeSezon}
-							</AplicaFiltru>
-							-
-							<AplicaFiltru
-								filtre={[
-									{
-										coloana: "numeTip",
-										pagina: "spectacole",
-										eticheta: "Tipul Spectacolului",
-										valoare: original.tipSpectacol?.numeTip ?? "",
-									},
-								]}
-							>
-								{original.tipSpectacol?.numeTip}
-							</AplicaFiltru>
-						</>
+						<AplicaFiltru
+							filtre={[
+								{
+									coloana: "numeTip",
+									pagina: "spectacole",
+									eticheta: "Tipul Spectacolului",
+									valoare: original.tipSpectacol?.numeTip ?? "",
+								},
+							]}
+						>
+							{original.tipSpectacol?.numeTip}
+						</AplicaFiltru>
 					}
 				/>
 			);

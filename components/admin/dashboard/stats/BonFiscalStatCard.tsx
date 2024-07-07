@@ -23,6 +23,7 @@ export default async function BonuriFiscaleStatCard({
 			plata: true,
 			client: true,
 			spectacol: true,
+			factura: true,
 		},
 	});
 	if (selectedRangeLabel.eticheta != "Toate zilele") {
@@ -70,10 +71,10 @@ export default async function BonuriFiscaleStatCard({
 							content: b.plata?.sumaPlatita + " RON",
 						},
 						{
-							titlu: "Factură fiscală asociată: ",
+							titlu: "Nr. Factură fiscală asociată: ",
 							content:
 								b.factura != undefined
-									? b.factura.numarFactura
+									? "#" + b.factura.numarFactura
 									: "Nu are factura asociată.",
 						},
 						{

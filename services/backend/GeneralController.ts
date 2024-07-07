@@ -25,6 +25,7 @@ import { actualizareSalaSpectacol } from "./spectacole/actualizareSalaSpectacol"
 import { actualizareScaunSalaSpectacol } from "./spectacole/actualizareScaunSalaSpectacol";
 import { actualizareBiletSpectacol } from "./bilete/actualizareBiletSpectacol";
 import { actualizareFacturaFiscala } from "./facturi/actualizareFacturaFiscala";
+import { cripteazaParola } from "../auth/autentificare";
 
 const typeByName = (type: TipuriTabel) => {
 	return capitalizeazaPrimaLitera(type.toString().toLowerCase());
@@ -87,6 +88,12 @@ export const inserare = async (type: TipuriTabel, data: any) => {
 
 export const actualizare = async (type: TipuriTabel, data: any, id: number) => {
 	const what = typeByName(type);
+	if (!data)
+		return {
+			mesaj: "no data",
+			status: 500,
+			ok: false,
+		} as RaspunsTrimitereEmail;
 	try {
 		switch (type) {
 			case TipuriTabel.CLIENT: {

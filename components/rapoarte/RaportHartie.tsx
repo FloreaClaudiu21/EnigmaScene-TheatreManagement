@@ -69,8 +69,14 @@ const styles = StyleSheet.create({
 	tableRow: {
 		flexDirection: "row",
 		borderBottom: 1,
+		borderLeft: 1,
+		borderRight: 1,
 		borderColor: "black",
+		borderBottomWidth: 2,
+		justifyContent: "center",
 		padding: 5,
+		paddingLeft: 10,
+		paddingRight: 10,
 	},
 	tableCell: {
 		flex: 1,

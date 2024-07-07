@@ -19,18 +19,6 @@ export default function CelulaColoanaActiuni({
 		<div className="flex flex-row items-center justify-start text-center gap-2">
 			<Button
 				size="sm"
-				as={Link}
-				radius="sm"
-				isIconOnly
-				variant="bordered"
-				aria-label="Edit"
-				className="text-zinc-600 font-medium hover:text-green-600"
-				href={link_edit}
-			>
-				<Edit2Icon size={18} />
-			</Button>
-			<Button
-				size="sm"
 				isIconOnly
 				radius="sm"
 				variant="bordered"
@@ -42,6 +30,18 @@ export default function CelulaColoanaActiuni({
 				}}
 			>
 				<Trash2Icon size={18} />
+			</Button>
+			<Button
+				size="sm"
+				as={Link}
+				radius="sm"
+				isIconOnly
+				variant="bordered"
+				aria-label="Edit"
+				className="text-zinc-600 font-medium hover:text-green-600"
+				href={link_edit}
+			>
+				<Edit2Icon size={18} />
 			</Button>
 		</div>
 	);

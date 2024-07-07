@@ -23,16 +23,6 @@ function ActionButtons({ user }: { user: User }) {
 		<div className="flex flex-row items-center justify-center text-center gap-2">
 			<Button
 				size="sm"
-				as={Link}
-				radius="sm"
-				variant="faded"
-				className="text-zinc-600 border-zinc-400 font-medium"
-				href={"clientii/" + user.codClient + "/editare"}
-			>
-				Editare
-			</Button>
-			<Button
-				size="sm"
 				isIconOnly
 				radius="sm"
 				variant="light"
@@ -44,6 +34,16 @@ function ActionButtons({ user }: { user: User }) {
 				}}
 			>
 				<Trash2Icon size={18} />
+			</Button>
+			<Button
+				size="sm"
+				as={Link}
+				radius="sm"
+				variant="faded"
+				className="text-zinc-600 border-zinc-400 font-medium"
+				href={"clientii/" + user.codClient + "/editare"}
+			>
+				Editare
 			</Button>
 		</div>
 	);

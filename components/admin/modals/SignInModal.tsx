@@ -27,7 +27,6 @@ import { EyeIcon, EyeOffIcon, MailIcon } from "lucide-react";
 import { useContext, useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { schemaLogareAdmin } from "@/lib/schemeFormulare";
-import { AuthContext } from "@/app/AuthContext";
 import { ecranIncarcare } from "@/services/general/FurnizorStare";
 import { linkURL } from "@/lib/metodeUtile";
 import { obtineClientDupaEmail } from "@/services/backend/client/obtineClientDupaEmail";
@@ -36,8 +35,7 @@ export default function AdminSignInFormular() {
 	const router = useRouter();
 	const { toast } = useToast();
 	const pathname = usePathname();
-	const { status } = useSession();
-	const auth = useContext(AuthContext);
+	const { data, status } = useSession();
 	const loadingScreen = ecranIncarcare();
 	const [showPassLogin, setShowPassLogin] = useState(false);
 	const loginForm = useForm<z.infer<typeof schemaLogareAdmin>>({
@@ -45,10 +43,10 @@ export default function AdminSignInFormular() {
 	});
 	useEffect(() => {
 		if (status === "loading") return;
-		if (!auth.esteLogat && !pathname.endsWith("/dashboard")) {
+		if (status != "authenticated" && !pathname.endsWith("/dashboard")) {
 			router.replace(linkURL(pathname));
 		}
-	}, [auth.esteLogat]);
+	}, [data, status]);
 	async function onLoginProvider(prov: string) {
 		deleteCookie("signInProviderLinkParams");
 		await signIn(prov, {
@@ -79,7 +77,7 @@ export default function AdminSignInFormular() {
 				title: "Autentificare Membru: Accesează-ți Contul",
 				description: `Ai fost autentificat cu succes cu contul asociat adresei de email: ${values.email}.`,
 			});
-			router.push("../../clientii");
+			router.push("/admin/dashboard");
 			router.refresh();
 		} else {
 			toast({
@@ -94,7 +92,7 @@ export default function AdminSignInFormular() {
 		<Modal
 			radius="md"
 			backdrop="opaque"
-			isOpen={!auth.esteLogat}
+			isOpen={status != "loading" && (!data || !data.user)}
 			placement={"bottom-center"}
 			onOpenChange={() => {
 				document.body.style.overflowY = "auto";

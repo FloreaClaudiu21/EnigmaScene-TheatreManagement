@@ -11,7 +11,7 @@ export const creareScaunCameraSpectacol = async (data: any) => {
 	});
 	revalidatePath("/");
 	return {
-		mesaj: `Scaun camera creata cu succes.`,
+		mesaj: `Scaun camera creat cu succes.`,
 		ok: true,
 		status: 200,
 	};

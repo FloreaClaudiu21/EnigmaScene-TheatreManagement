@@ -173,39 +173,50 @@ export const columnsReceipts: ColumnDef<BonFiscal>[] = [
 	{
 		accessorKey: "titlu",
 		header: ({ column }) => {
-			return <AntetColoana coloana={column} titlu="Cod & Nume Spectacol" />;
+			return <AntetColoana coloana={column} titlu="Nume Spectacol" />;
 		},
 		cell: ({ row: { original } }) => {
 			return (
 				<CelulaColoana
 					date={
-						<>
-							<AplicaFiltru
-								filtre={[
-									{
-										coloana: "codSpectacol",
-										eticheta: "Cod Spectacol",
-										pagina: "bonulFiscal",
-										valoare: original.codSpectacol + "" ?? "",
-									},
-								]}
-							>
-								{original.codSpectacol}
-							</AplicaFiltru>
-							-
-							<AplicaFiltru
-								filtre={[
-									{
-										coloana: "titlu",
-										pagina: "bonulFiscal",
-										eticheta: "Titlu Spectacol",
-										valoare: original.spectacol?.titlu ?? "",
-									},
-								]}
-							>
-								{original.spectacol?.titlu}
-							</AplicaFiltru>
-						</>
+						<AplicaFiltru
+							filtre={[
+								{
+									coloana: "titlu",
+									pagina: "bonulFiscal",
+									eticheta: "Titlu Spectacol",
+									valoare: original.spectacol?.titlu ?? "",
+								},
+							]}
+						>
+							{original.spectacol?.titlu}
+						</AplicaFiltru>
+					}
+				/>
+			);
+		},
+	},
+	{
+		accessorKey: "numarSala",
+		header: ({ column }) => {
+			return <AntetColoana coloana={column} titlu="Numar Sala Spectacol" />;
+		},
+		cell: ({ row: { original } }) => {
+			return (
+				<CelulaColoana
+					date={
+						<AplicaFiltru
+							filtre={[
+								{
+									coloana: "numarSala",
+									pagina: "bonulFiscal",
+									eticheta: "Numar Sala Spectacol",
+									valoare: original.spectacol?.salaSpectacol?.numarSala ?? "",
+								},
+							]}
+						>
+							{original.spectacol?.salaSpectacol?.numarSala}
+						</AplicaFiltru>
 					}
 				/>
 			);
@@ -214,7 +225,7 @@ export const columnsReceipts: ColumnDef<BonFiscal>[] = [
 	{
 		accessorKey: "bileteVandute",
 		header: ({ column }) => {
-			return <AntetColoana coloana={column} titlu="Bilete Vandute" />;
+			return <AntetColoana coloana={column} titlu="Bilete Vandute Spectacol" />;
 		},
 		cell: ({ row: { original } }) => {
 			return (

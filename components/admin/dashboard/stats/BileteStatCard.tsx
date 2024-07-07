@@ -24,6 +24,11 @@ export default async function BileteStatCard({
 		include: {
 			client: true,
 			salaSpectacol: true,
+			bonFiscal: {
+				include: {
+					plata: true,
+				},
+			},
 			locSalaSpectacol: true,
 			spectacol: true,
 			plata: true,
@@ -91,6 +96,16 @@ export default async function BileteStatCard({
 						{
 							titlu: "Preț achiziție: ",
 							content: ticket.locSalaSpectacol?.pretLoc.toFixed(2) + " RON",
+						},
+						{
+							titlu: "Nr. bon fiscal: ",
+							content:
+								ticket.bonFiscal?.numarBonFiscal ??
+								"Nu este asociat cu un bon fiscal.",
+						},
+						{
+							titlu: "Preț bon fiscal: ",
+							content: ticket.bonFiscal?.plata?.sumaPlatita.toFixed(2) + " RON",
 						},
 						{
 							titlu: "Cumpărat de: ",

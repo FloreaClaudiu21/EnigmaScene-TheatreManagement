@@ -218,7 +218,7 @@ export const columnsTicketsSold: ColumnDef<BiletSpectacol>[] = [
 		},
 	},
 	{
-		accessorKey: "numeSpectacol",
+		accessorKey: "titlu",
 		header: ({ column }) => {
 			return <AntetColoana coloana={column} titlu="Cod & Nume Spectacol" />;
 		},

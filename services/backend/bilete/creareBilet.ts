@@ -16,7 +16,6 @@ export const createBiletSpectacol = async (data: any) => {
 			sumaPlatita: parseFloat(valori.bileteDetalii?.pretTotal + ""),
 		},
 	});
-	console.log(valori);
 	const bonFiscal = await prisma.bonFiscal.create({
 		data: {
 			codPlata: plata.codPlata,

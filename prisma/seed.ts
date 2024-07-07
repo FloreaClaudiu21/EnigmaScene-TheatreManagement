@@ -3,47 +3,241 @@ import crypto from "crypto";
 import { addDays, differenceInDays } from "date-fns";
 import xml2js from "xml2js";
 const prisma = new PrismaClient();
-const algorithm = "aes-256-cbc";
-const secretKey = process.env.AUTH_SECRET ?? "";
 
 async function main() {
-	// const encryptPassword = (password: string) => {
-	// 	const cipher = crypto.createCipher(algorithm, secretKey);
-	// 	let encryptedPassword = cipher.update(password, "utf-8", "hex");
-	// 	encryptedPassword += cipher.final("hex");
-	// 	return encryptedPassword;
-	// };
+	const algorithm = "aes-256-cbc";
+	const secretKey = process.env.AUTH_SECRET ?? "";
 
-	// // const mainAdminUser = await prisma.client.create({
-	// // 	data: {
-	// // 		numeClient: "Admin User",
-	// // 		email: "adminuser@enigmatheatre.ro",
-	// // 		parola: encryptPassword(process.env.ADMIN_KEY ?? ""),
-	// // 		telefon: "+400729714106",
-	// // 		utlizatorAdmin: true,
-	// // 		dataNasterii: new Date("13-01-1998").toDateString(),
-	// // 	},
-	// // });
-	// const seatsData = [];
-	// let currentRow = "C";
-	// let curRowNumber = 3;
-	// for (let i = 1; i <= 90; i++) {
-	// 	seatsData.push({
-	// 		codSalaSpectacol: 1,
-	// 		rand: curRowNumber + "",
-	// 		numarLoc: currentRow + i,
-	// 		pretLoc: 30,
-	// 		tipLoc: "STANDARD",
-	// 	});
-	// 	if (i % 9 === 0) {
-	// 		curRowNumber += 1;
-	// 		currentRow = String.fromCharCode(currentRow.charCodeAt(0) + 1); // Increment row letter
-	// 	}
-	// }
-	// const seats = await prisma.locSalaSpectacol.createMany({
-	// 	data: seatsData,
-	// });
-	// console.log(seats.count);
+	const encryptPassword = (parola: string) => {
+		const cifru = crypto.createCipheriv(
+			algorithm,
+			secretKey,
+			Buffer.alloc(16, 0)
+		);
+		let parolaCriptata = cifru.update(parola, "utf-8", "hex");
+		parolaCriptata += cifru.final("hex");
+		return parolaCriptata;
+	};
+
+	const generateRandomBoolean = () => Math.random() < 0.5;
+
+	async function getRandomAvailableSeats(
+		codSalaSpectacol: number
+	): Promise<any[]> {
+		const availableSeats = await prisma.locSalaSpectacol.findMany({
+			where: {
+				codSalaSpectacol,
+				NOT: {
+					bileteVandute: {
+						some: {
+							biletVerificat: true,
+						},
+					},
+				},
+			},
+			select: {
+				codLocSala: true,
+				pretLoc: true,
+				tipLoc: true,
+			},
+		});
+		return availableSeats;
+	}
+
+	function generateRandomDate(start: Date, end: Date): Date {
+		return new Date(
+			start.getTime() + Math.random() * (end.getTime() - start.getTime())
+		);
+	}
+
+	function generateRandomName() {
+		const names = [
+			"Maria",
+			"Ion",
+			"Elena",
+			"Mihai",
+			"Ana",
+			"Alexandru",
+			"Andreea",
+			"Dragos",
+			"Diana",
+			"Cristian",
+			"Laura",
+			"Adrian",
+			"Andreea",
+			"George",
+			"Raluca",
+			"Cosmin",
+			"Iulia",
+			"Valentin",
+			"Gabriela",
+			"Sorin",
+			"Simona",
+			"Catalin",
+			"Mihaela",
+			"Bogdan",
+			"Alina",
+			"Daniel",
+			"Monica",
+			"Razvan",
+			"Carmen",
+		];
+		const surnames = [
+			"Popescu",
+			"Ionescu",
+			"Pop",
+			"Stan",
+			"Dumitru",
+			"Stoica",
+			"Gheorghe",
+			"Florea",
+			"Toma",
+			"Dobre",
+			"Dragomir",
+			"Mocanu",
+			"Oprea",
+			"Constantin",
+			"Voicu",
+			"Munteanu",
+			"Nistor",
+			"Serban",
+			"Georgescu",
+			"Balan",
+			"Stanciu",
+			"Marin",
+			"Dinu",
+			"Stefan",
+			"Costache",
+		];
+		const randomName = names[Math.floor(Math.random() * names.length)];
+		const randomSurname = surnames[Math.floor(Math.random() * surnames.length)];
+		return `${randomName} ${randomSurname}`;
+	}
+
+	function generateRandomPaymentType(): "CASH" | "CARD_CREDIT" {
+		const paymentTypes = ["CASH", "CARD_CREDIT"];
+		const randomIndex = Math.floor(Math.random() * paymentTypes.length);
+		return paymentTypes[randomIndex] as "CASH" | "CARD_CREDIT";
+	}
+
+	function generateRandomAddress(city: City) {
+		if (!addressesByCity.hasOwnProperty(city)) {
+			throw new Error(`Orașul ${city} nu este suportat.`);
+		}
+		const streets = addressesByCity[city];
+		const street = streets[Math.floor(Math.random() * streets.length)];
+		const blockNumber = Math.floor(Math.random() * 100) + 1;
+		return `${street} nr. ${blockNumber}`;
+	}
+
+	function generateRandomDateOfBirth() {
+		const year = Math.floor(Math.random() * (2007 - 1950)) + 1950;
+		const month = Math.floor(Math.random() * 12) + 1;
+		const day = Math.floor(Math.random() * 30) + 1;
+		return `${year}-${month
+			.toString()
+			.padStart(2, "0")}-${day.toString().padStart(2, "0")}`;
+	}
+
+	function generateRandomCity() {
+		const cities = [
+			"București",
+			"Cluj-Napoca",
+			"Timișoara",
+			"Iași",
+			"Constanța",
+			"Craiova",
+			"Brașov",
+			"Galați",
+			"Ploiești",
+			"Oradea",
+			"Bacău",
+			"Arad",
+			"Pitești",
+			"Sibiu",
+			"Târgu Mureș",
+			"Baia Mare",
+			"Buzău",
+		];
+		return cities[Math.floor(Math.random() * cities.length)];
+	}
+
+	function generateRandomString(length: number) {
+		let result = "";
+		const characters =
+			"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+		const charactersLength = characters.length;
+		for (let i = 0; i < length; i++) {
+			result += characters.charAt(Math.floor(Math.random() * charactersLength));
+		}
+		return result;
+	}
+
+	function generateRandomPostalCode() {
+		const postalCodes = [
+			"010101",
+			"020202",
+			"030303",
+			"040404",
+			"050505",
+			"060606",
+			"070707",
+			"080808",
+			"090909",
+			"101010",
+			"202020",
+			"303030",
+			"404040",
+			"505050",
+			"606060",
+			"707070",
+			"808080",
+			"909090",
+			"111111",
+			"121212",
+		];
+		return postalCodes[Math.floor(Math.random() * postalCodes.length)];
+	}
+
+	async function generateEmail(name: string): Promise<string> {
+		const sanitizedName = name.toLowerCase().replace(/\s/g, "");
+		const domains = ["gmail.com", "yahoo.com", "hotmail.com", "outlook.com"];
+		const randomDomain = domains[Math.floor(Math.random() * domains.length)];
+		let email = `${sanitizedName}${Math.floor(
+			Math.random() * 100
+		)}@${randomDomain}`;
+		return (await emailExists(email)) ? generateEmail(name) : email;
+	}
+
+	async function emailExists(email: string) {
+		const existingClient = await prisma.client.findFirst({
+			where: {
+				email,
+			},
+		});
+		return existingClient !== null;
+	}
+
+	function generatePassword() {
+		const characters =
+			"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+		const length = 12;
+		let password = "";
+		for (let i = 0; i < length; i++) {
+			password += characters.charAt(
+				Math.floor(Math.random() * characters.length)
+			);
+		}
+		return password;
+	}
+
+	function generatePhoneNumber() {
+		const firstDigit = Math.floor(Math.random() * 8) + 2;
+		const restOfNumber = Math.floor(Math.random() * 1000000)
+			.toString()
+			.padStart(7, "0");
+		return `+4007${firstDigit}${restOfNumber}`;
+	}
 
 	const addressesByCity = {
 		București: [
@@ -333,82 +527,7 @@ async function main() {
 		],
 	};
 
-	class CursBNR {
-		date: string = "";
-		xmlDocument: string = "";
-		currency: { name: string; value: number; multiplier: number }[] = [];
-		async fetchAndParseXML(url: string) {
-			const response = await fetch(url);
-			const xmlString = await response.text();
-			const xmlParsed = await xml2js.parseStringPromise(xmlString, {
-				explicitArray: false,
-			});
-			const headerNode = xmlParsed["DataSet"]["Header"];
-			this.date = headerNode["PublishingDate"] || "";
-			const rates = xmlParsed["DataSet"]["Body"]["Cube"]["Rate"];
-			rates.forEach((rate: any) => {
-				const currencyName = rate["$"]["currency"];
-				const currencyValue = parseFloat(rate["_"] || "0");
-				const multiplier = rate["$"]["multiplier"] || "1";
-				this.currency.push({
-					name: currencyName,
-					value: currencyValue,
-					multiplier: parseFloat(multiplier),
-				});
-			});
-		}
-		// async saveToDatabase() {
-		// 	const { count } = await prisma.rataDeSchimbValutar.deleteMany();
-		// 	console.log("Deleted old exchange rates: " + count);
-		// 	await prisma.rataDeSchimbValutar.createMany({
-		// 		data: this.currency.map((line) => ({
-		// 			moneda: line.name,
-		// 			valuare: line.value,
-		// 			multiplicator: line.multiplier,
-		// 			data: new Date(this.date),
-		// 		})),
-		// 	});
-		// }
-	}
-
-	const algorithm = "aes-256-cbc";
-	const secretKey = process.env.AUTH_SECRET ?? "";
-
-	const encryptPassword = (parola: string) => {
-		const cifru = crypto.createCipheriv(
-			algorithm,
-			secretKey,
-			Buffer.alloc(16, 0)
-		);
-		let parolaCriptata = cifru.update(parola, "utf-8", "hex");
-		parolaCriptata += cifru.final("hex");
-		return parolaCriptata;
-	};
-
-	const generateRandomBoolean = () => Math.random() < 0.5;
-
-	async function getRandomAvailableSeats(
-		codSalaSpectacol: number
-	): Promise<any[]> {
-		const availableSeats = await prisma.locSalaSpectacol.findMany({
-			where: {
-				codSalaSpectacol,
-				NOT: {
-					bileteVandute: {
-						some: {
-							biletVerificat: true,
-						},
-					},
-				},
-			},
-			select: {
-				codLocSala: true,
-				pretLoc: true,
-				tipLoc: true,
-			},
-		});
-		return availableSeats;
-	}
+	///////////////////////////////////////////////////
 
 	const generateClients = async (count: number) => {
 		await prisma.client.deleteMany();
@@ -418,20 +537,9 @@ async function main() {
 		const daysDifference = differenceInDays(currentDate, startDate);
 		await prisma.client.create({
 			data: {
-				numeClient: "Admin User",
-				email: "adminuser@enigmatheatre.ro",
-				parola: encryptPassword(process.env.ADMIN_KEY ?? ""),
-				telefon: "+400729714106",
-				utlizatorAdmin: true,
-				emailVerificat: new Date(),
-				dataNasterii: new Date("13-01-1998").toDateString(),
-			},
-		});
-		await prisma.client.create({
-			data: {
 				numeClient: "Florea Claudiu",
 				email: "floreaclaudiu128@gmail.com",
-				parola: encryptPassword("licenta2024"),
+				parola: encryptPassword("Licenta2024@"),
 				telefon: "+400729714106",
 				utlizatorAdmin: true,
 				emailVerificat: new Date(),
@@ -482,7 +590,8 @@ async function main() {
 	}
 
 	async function createShowRooms() {
-		const saliDeSpectacol = ["A1", "B2", "C3", "D4", "E5"];
+		await prisma.salaSpectacol.deleteMany();
+		const saliDeSpectacol = ["A1", "B2", "C3", "D4", "E5", "F6", "G7"];
 		for (const numarSala of saliDeSpectacol) {
 			await prisma.salaSpectacol.create({
 				data: {
@@ -531,9 +640,14 @@ async function main() {
 				}
 			}
 		}
+		console.log("Seed Locuri sala terminat.");
 	}
 
 	async function createSeasonAndType() {
+		await prisma.spectacol.deleteMany();
+		await prisma.sezon.deleteMany();
+		await prisma.tipSpectacol.deleteMany();
+		///////////////////////////////////////
 		const sezoane = ["Primăvară", "Vară", "Toamnă", "Iarnă"];
 		const tipuriSpectacole = [
 			"Dramă",
@@ -643,30 +757,133 @@ async function main() {
 					"Andy, un tânăr absolvent al masteratului în limba engleză, împovărat de împrumuturile studențești, este plătit foarte mult pentru a-și tatua logo-ul unei corporații pe frunte. Iubita lui, Katelyn, pictoriță, este total dezamăgită, cel mai bun prieten al său, Damon, crede că este nebun, iar acum Andy trebuie să trăiască cu asta. Decizia are atât consecințe tragice, cât și comice, deoarece ajunge să afle că logo-ul este mai mult decât un pic de cerneală injectată sub piele. Deși Andy vede doar banii câștigați din acest tatuaj, Katelyn vede o oportunitate artistică foarte unică. Ea vede corpul lui ca un exemplu al invadării consumerismului în viețile noastre de zi cu zi. Când Andy decide să rupă cecul și să-și scoată tatuajul, descoperă că trebuie să se confrunte cu o decizie neașteptată, mai mare decât propria persoană.",
 				imagine:
 					"https://mystage-static.starter.ro/files/57aefbab3a115e4542126810dbc1663f3b4fc23b_b1.jpg",
-				oraIncepere: new Date("2024-06-20T12:00:00").toISOString(),
-				oraTerminare: new Date("2024-06-20T13:40:00").toISOString(),
+				oraIncepere: new Date("2024-07-20T12:00:00").toISOString(),
+				oraTerminare: new Date("2024-07-20T13:40:00").toISOString(),
 				titlu: "Billboard",
 				codSalaSpectacol: 5,
 				codSezon: 2,
 				codTipSpectacol: 2,
 			},
 		});
-	}
-
-	async function createExchange() {
-		const url = "https://www.bnr.ro/nbrfxrates.xml";
-		const cursInstance = new CursBNR();
-		await cursInstance.fetchAndParseXML(url);
-		// await cursInstance.saveToDatabase();
+		await prisma.spectacol.create({
+			data: {
+				director: "Bogdan Budeș",
+				descriereScurta:
+					"Don Dubrow, proprietarul unui magazin de vechituri, vrea să fure colecția de monede a unui client care, crede Don, l-a înșelat la cumpărarea unei monede cu cap de bizon. Complicele său e Bobby, băiatul de prăvălie bun la toate, dar la care renunță cînd Teach, un prieten manipulator, îl convinge că Bobby este incompetent.",
+				actorii: "Angel Popescu, George Constantinescu, Ștefan Iancu",
+				continut:
+					"Într-o cronică pentru The New York Times a punerii în scenă din 1983, de pe Broadway, criticul Frank Rich, a numit-o „una dintre cele mai bune piese americane din ultimul deceniu.” Tot el scrisese și despre producția din 1981, numind piesa „genială” și notând: „Textul, totuși, este elementul central. Lucrând cu cel mai mic vocabular imaginabil – cuvinte precum nimic, grozav și nu, precum și cele “din patru litere” – domnul Mamet creează o lume subterană cu propriile ei benzi desenate nealfabetizate: lupte pe viață și pe moarte, patos și chiar afecțiune. În American Buffalo, el a creat o înșelătoare tragedie la scară mică, care are puterea de a face să explodeze cel mai mare dintre miturile americane.”",
+				imagine:
+					"https://mystage-static.starter.ro/files/342b6175715678661e0e619ca2112b388efd3edd_b4.jpg",
+				oraIncepere: new Date("2024-07-15T10:00:00").toISOString(),
+				oraTerminare: new Date("2024-07-15T13:50:00").toISOString(),
+				titlu: "American Buffalo",
+				codSalaSpectacol: 3,
+				codSezon: 2,
+				codTipSpectacol: 1,
+			},
+		});
+		await prisma.spectacol.create({
+			data: {
+				director: "Laura Ducu",
+				descriereScurta:
+					"Un spectacol pasional și surprinzător despre căsătorie și parenting în epoca modernă, plin de note comice și emoții pe care le vei (re)trăi intens.",
+				actorii: "Teodora Daiana, Păcurar Tamara Roman",
+				continut:
+					"Are 10 ani, deranjează la ore, intră neinvitată în curțile oamenilor, citește cărți nepotrivite pentru vârsta ei și apoi le împrumută colegilor. Dar comportamentul și deciziile CUI sunt judecate cu adevărat? O mamă și un tată se pregătesc de ședința cu părinții de la școala fiicei lor, prilej cu care relația le este testată în moduri neașteptate. Intens, pasional și surprinzător, „Ședință cu părinții” este un spectacol despre căsătorie și parenting în epoca modernă, în care listele nesfârșite de to-do, așteptările societății, teoriile specialiștilor și nevoile proprii se împletesc furtunos până în punctul în care nu mai știm când și ce pierdem. Din vedere sau chiar din propria viață.",
+				imagine:
+					"https://mystage-static.starter.ro/files/de3a4486d06fbf7ba9a891733e5b267256cbce6e_b4.jpg",
+				oraIncepere: new Date("2024-07-12T15:00:00").toISOString(),
+				oraTerminare: new Date("2024-07-12T17:00:00").toISOString(),
+				titlu: "ȘEDINȚĂ CU PĂRINȚII",
+				codSalaSpectacol: 1,
+				codSezon: 2,
+				codTipSpectacol: 2,
+			},
+		});
+		await prisma.spectacol.create({
+			data: {
+				director: "Vladimir Turturica",
+				descriereScurta:
+					"Bubu este simbolul educației culturale timpurii și cel mai bun prieten al celor mici. Experiența dobândită alături de cei peste 22 000 de spectatori care au luat parte activ la spectacolele „Bubu și anotimpurile”, „Bubu la Zoo” și “Bubu si fulgii de nea” ne ajută în realizarea premierei de anul acesta, „Bubu la mare”.",
+				actorii: "Andreea Soare, Irina Furdui",
+				continut:
+					"Vom păstra același tip de spectacol care i-a cucerit pe cei mici: o călătorie muzicală multi-senzorială, într-un spațiu sigur pentru copii, cu un decor conceput special pentru a le oferi libertate de mișcare, un scenariu ce le dezvoltă inteligența emotională și pune la dispoziția părinților un set de jocuri cu care pot continua educația acasă. Toate acestea sunt realizate prin contribuția unei echipe de specialiști în artele spectacolului, mișcare, psihologie și pedagogie.",
+				imagine:
+					"https://mystage-static.starter.ro/files/acf058fa5aa31ba289a01c2e9a88a8b4f18d3811_b4.jpg",
+				oraIncepere: new Date("2024-07-12T11:00:00").toISOString(),
+				oraTerminare: new Date("2024-07-12T12:00:00").toISOString(),
+				titlu: "Bubu la mare",
+				codSalaSpectacol: 2,
+				codSezon: 2,
+				codTipSpectacol: 5,
+			},
+		});
+		await prisma.spectacol.create({
+			data: {
+				director: "Vladimir Turturica",
+				descriereScurta:
+					"Bubu este simbolul educației culturale timpurii și cel mai bun prieten al celor mici. Experiența dobândită alături de cei peste 22 000 de spectatori care au luat parte activ la spectacolele „Bubu și anotimpurile”, „Bubu la Zoo” și “Bubu si fulgii de nea” ne ajută în realizarea premierei de anul acesta, „Bubu la mare”.",
+				actorii: "Andreea Soare, Irina Furdui",
+				continut:
+					"Vom păstra același tip de spectacol care i-a cucerit pe cei mici: o călătorie muzicală multi-senzorială, într-un spațiu sigur pentru copii, cu un decor conceput special pentru a le oferi libertate de mișcare, un scenariu ce le dezvoltă inteligența emotională și pune la dispoziția părinților un set de jocuri cu care pot continua educația acasă. Toate acestea sunt realizate prin contribuția unei echipe de specialiști în artele spectacolului, mișcare, psihologie și pedagogie.",
+				imagine:
+					"https://mystage-static.starter.ro/files/acf058fa5aa31ba289a01c2e9a88a8b4f18d3811_b4.jpg",
+				oraIncepere: new Date("2024-07-12T11:00:00").toISOString(),
+				oraTerminare: new Date("2024-07-12T12:00:00").toISOString(),
+				titlu: "Bubu la mare",
+				codSalaSpectacol: 2,
+				codSezon: 2,
+				codTipSpectacol: 5,
+			},
+		});
+		await prisma.spectacol.create({
+			data: {
+				director: "Cristian Mihăilescu",
+				descriereScurta:
+					"„Directorul de teatru” este o adaptare a operei comice cu același nume, care a fost compusă de faimosul W. A. Mozart. Inițial, opera a fost scrisă la comanda împăratului Joseph al II-lea, pentru a fi pusă în scenă la un prânz privat, în fața a 80 de invitați. Lucrarea este considerată o parodie a vanității cântăreților de operă, care se luptă pentru a avea un statut cât mai înalt și o plată pe măsură. Opera originală este destul scurtă, având aproximativ 35 de minute, însă regizorul Cristian Mihăilescu a venit cu o serie de completări ingenioase, care vor prelungi bucuria spectatorilor.",
+				actorii: "Andreea Soare, Irina Furdui",
+				continut:
+					"Personajul central este un director de teatru, care, asistat de Buffo, cântărețul comic, organizează audiții pentru alcătuirea unei trupe de operă. Primele două pretendente la angajare sunt doamnele Hertz (Doamna Inimă) și Silberklang (Doamna Sunet de Argint), care își dispută întâietatea pentru obținerea rolului principal și, implicit, a salariului mai mare. Opera Comică pentru Copii a avut cu ceva timp în urmă o inițiativă strălucită: turul ghidat în spatele cortinei. Cu acest prilej, copiii au descoperit culisele, studioul de balet, sălile de repetiție, și, în fine, locul sacru: scena. Spectacolul „Directorul de teatru” este o prelungire a acestui demers. Cu ajutorul muzicii lui Mozart, neasemuit de frumoasă, dar și al textului savuros și plin de viață, aflăm meandrele ce duc la realizarea unui spectacol. Vă invit să faceți parte din distribuția acestuia. Regizorul vă așteaptă.",
+				imagine:
+					"https://mystage-static.starter.ro/files/acf058fa5aa31ba289a01c2e9a88a8b4f18d3811_b4.jpg",
+				oraIncepere: new Date("2024-09-17T12:00:00").toISOString(),
+				oraTerminare: new Date("2024-09-17T13:30:00").toISOString(),
+				titlu: "Directorul de teatru - Opera Comică pentru Copii",
+				codSalaSpectacol: 4,
+				codSezon: 3,
+				codTipSpectacol: 2,
+			},
+		});
+		await prisma.spectacol.create({
+			data: {
+				director: "Cristian Mihăilescu",
+				descriereScurta:
+					"„Directorul de teatru” este o adaptare a operei comice cu același nume, care a fost compusă de faimosul W. A. Mozart. Inițial, opera a fost scrisă la comanda împăratului Joseph al II-lea, pentru a fi pusă în scenă la un prânz privat, în fața a 80 de invitați. Lucrarea este considerată o parodie a vanității cântăreților de operă, care se luptă pentru a avea un statut cât mai înalt și o plată pe măsură. Opera originală este destul scurtă, având aproximativ 35 de minute, însă regizorul Cristian Mihăilescu a venit cu o serie de completări ingenioase, care vor prelungi bucuria spectatorilor.",
+				actorii: "Andreea Soare, Irina Furdui",
+				continut:
+					"Personajul central este un director de teatru, care, asistat de Buffo, cântărețul comic, organizează audiții pentru alcătuirea unei trupe de operă. Primele două pretendente la angajare sunt doamnele Hertz (Doamna Inimă) și Silberklang (Doamna Sunet de Argint), care își dispută întâietatea pentru obținerea rolului principal și, implicit, a salariului mai mare. Opera Comică pentru Copii a avut cu ceva timp în urmă o inițiativă strălucită: turul ghidat în spatele cortinei. Cu acest prilej, copiii au descoperit culisele, studioul de balet, sălile de repetiție, și, în fine, locul sacru: scena. Spectacolul „Directorul de teatru” este o prelungire a acestui demers. Cu ajutorul muzicii lui Mozart, neasemuit de frumoasă, dar și al textului savuros și plin de viață, aflăm meandrele ce duc la realizarea unui spectacol. Vă invit să faceți parte din distribuția acestuia. Regizorul vă așteaptă.",
+				imagine:
+					"https://mystage-static.starter.ro/files/acf058fa5aa31ba289a01c2e9a88a8b4f18d3811_b4.jpg",
+				oraIncepere: new Date("2024-09-17T12:00:00").toISOString(),
+				oraTerminare: new Date("2024-09-17T13:30:00").toISOString(),
+				titlu: "Directorul de teatru - Opera Comică pentru Copii",
+				codSalaSpectacol: 4,
+				codSezon: 3,
+				codTipSpectacol: 2,
+			},
+		});
+		console.log("Seed Spectacole terminat.");
 	}
 
 	async function createRandomTickets() {
+		let createdTickets = 0;
+		const numberOfTickets = 100;
 		const clienti = await prisma.client.findMany({
 			include: {
 				adreseFacturare: true,
 			},
 		});
-		const numberOfTickets = 50;
 		const spectacole = await prisma.spectacol.findMany({
 			include: {
 				salaSpectacol: true,
@@ -674,18 +891,22 @@ async function main() {
 				sezon: true,
 			},
 		});
+		const endDate = new Date("2024-07-11");
+		const startDate = new Date("2024-01-01");
 		for (let i = 0; i < numberOfTickets; i++) {
 			const spectacolAleatoriu =
 				spectacole[Math.floor(Math.random() * spectacole.length)];
 			const clientAleatoriu =
 				clienti[Math.floor(Math.random() * clienti.length)];
+			const adresa = clientAleatoriu.adreseFacturare[0];
+			if (!adresa) continue;
 			const locuriDisponibile = await getRandomAvailableSeats(
 				spectacolAleatoriu.codSalaSpectacol
 			);
-			const creatPe = generateRandomDate();
+			const creatPe = generateRandomDate(startDate, endDate);
 			const numarLocuriAleatorii = Math.floor(Math.random() * 6) + 1;
-			const locuriAleatorii = [];
-			for (let i = 0; i < numarLocuriAleatorii; i++) {
+			const locuriAleatorii: any[] = [];
+			for (let j = 0; j < numarLocuriAleatorii; j++) {
 				const locAleatoriu =
 					locuriDisponibile[
 						Math.floor(Math.random() * locuriDisponibile.length)
@@ -715,10 +936,9 @@ async function main() {
 					creatPe,
 				},
 			});
-			let codFactura = undefined;
-			const adresa = clientAleatoriu.adreseFacturare[0];
-			const name = adresa.adresa + ", " + adresa.oras + ", " + adresa.tara;
-			if (generateRandomBoolean() == true) {
+			let codFactura: number | undefined = undefined;
+			const name = `${adresa.adresa}, ${adresa.oras}, ${adresa.tara}`;
+			if (generateRandomBoolean()) {
 				const factura = await prisma.facturaFiscala.create({
 					data: {
 						adresaFacturare: name,
@@ -739,232 +959,33 @@ async function main() {
 				codFactura = factura.codFactura;
 			}
 			for (const loc of locuriAleatorii) {
-				await prisma.biletSpectacol.create({
+				await prisma.biletSpectacol.createMany({
 					data: {
 						biletVerificat: false,
 						pretVanzare: loc.pretLoc,
 						numarBilet: generateRandomString(5),
-						codSpectacol: spectacolAleatoriu.codSpectacol,
 						codClient: clientAleatoriu.codClient,
 						codSalaSpectacol: spectacolAleatoriu.codSalaSpectacol,
-						codLocSalaSpectacol: loc.codLocSalaSpectacol,
+						codLocSalaSpectacol: loc.codLocSala,
+						codSpectacol: spectacolAleatoriu.codSpectacol,
 						codPlata: payment.codPlata,
 						codFacturaFiscala: codFactura,
 						codBonFiscal: fiscal.codBonFiscal,
 						creatPe,
 					},
 				});
+				createdTickets += 1;
 			}
 		}
+		console.log("Seed TICKETS terminat." + createdTickets);
 	}
 
-	//await createExchange();
-	await generateClients(50);
+	//await generateClients(50);
 	//await createShowRooms();
 	//await createShowRoomSeats();
 	//await createSeasonAndType();
 	//await createShows();
-	//await createRandomTickets();
-
-	///////////////////////////////////////////
-
-	function generateRandomName() {
-		const names = [
-			"Maria",
-			"Ion",
-			"Elena",
-			"Mihai",
-			"Ana",
-			"Alexandru",
-			"Andreea",
-			"Dragos",
-			"Diana",
-			"Cristian",
-			"Laura",
-			"Adrian",
-			"Andreea",
-			"George",
-			"Raluca",
-			"Cosmin",
-			"Iulia",
-			"Valentin",
-			"Gabriela",
-			"Sorin",
-			"Simona",
-			"Catalin",
-			"Mihaela",
-			"Bogdan",
-			"Alina",
-			"Daniel",
-			"Monica",
-			"Razvan",
-			"Carmen",
-		];
-		const surnames = [
-			"Popescu",
-			"Ionescu",
-			"Pop",
-			"Stan",
-			"Dumitru",
-			"Stoica",
-			"Gheorghe",
-			"Florea",
-			"Toma",
-			"Dobre",
-			"Dragomir",
-			"Mocanu",
-			"Oprea",
-			"Constantin",
-			"Voicu",
-			"Munteanu",
-			"Nistor",
-			"Serban",
-			"Georgescu",
-			"Balan",
-			"Stanciu",
-			"Marin",
-			"Dinu",
-			"Stefan",
-			"Costache",
-		];
-		const randomName = names[Math.floor(Math.random() * names.length)];
-		const randomSurname = surnames[Math.floor(Math.random() * surnames.length)];
-		return `${randomName} ${randomSurname}`;
-	}
-
-	function generateRandomPaymentType(): "CASH" | "CARD_CREDIT" {
-		const paymentTypes = ["CASH", "CARD_CREDIT"];
-		const randomIndex = Math.floor(Math.random() * paymentTypes.length);
-		return paymentTypes[randomIndex] as "CASH" | "CARD_CREDIT";
-	}
-
-	function generateRandomDate() {
-		const startDate = new Date("2024-01-01");
-		const endDate = new Date();
-		const start = new Date(startDate).getTime();
-		const end = new Date(endDate).getTime();
-		const randomTime = start + Math.random() * (end - start);
-		return new Date(randomTime).toISOString();
-	}
-
-	function generateRandomAddress(city: City) {
-		if (!addressesByCity.hasOwnProperty(city)) {
-			throw new Error(`Orașul ${city} nu este suportat.`);
-		}
-		const streets = addressesByCity[city];
-		const street = streets[Math.floor(Math.random() * streets.length)];
-		const blockNumber = Math.floor(Math.random() * 100) + 1;
-		return `${street} nr. ${blockNumber}`;
-	}
-
-	function generateRandomDateOfBirth() {
-		const year = Math.floor(Math.random() * (2007 - 1950)) + 1950;
-		const month = Math.floor(Math.random() * 12) + 1;
-		const day = Math.floor(Math.random() * 30) + 1;
-		return `${year}-${month
-			.toString()
-			.padStart(2, "0")}-${day.toString().padStart(2, "0")}`;
-	}
-
-	function generateRandomCity() {
-		const cities = [
-			"București",
-			"Cluj-Napoca",
-			"Timișoara",
-			"Iași",
-			"Constanța",
-			"Craiova",
-			"Brașov",
-			"Galați",
-			"Ploiești",
-			"Oradea",
-			"Bacău",
-			"Arad",
-			"Pitești",
-			"Sibiu",
-			"Târgu Mureș",
-			"Baia Mare",
-			"Buzău",
-		];
-		return cities[Math.floor(Math.random() * cities.length)];
-	}
-
-	function generateRandomString(length: number) {
-		let result = "";
-		const characters =
-			"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-		const charactersLength = characters.length;
-		for (let i = 0; i < length; i++) {
-			result += characters.charAt(Math.floor(Math.random() * charactersLength));
-		}
-		return result;
-	}
-
-	function generateRandomPostalCode() {
-		const postalCodes = [
-			"010101",
-			"020202",
-			"030303",
-			"040404",
-			"050505",
-			"060606",
-			"070707",
-			"080808",
-			"090909",
-			"101010",
-			"202020",
-			"303030",
-			"404040",
-			"505050",
-			"606060",
-			"707070",
-			"808080",
-			"909090",
-			"111111",
-			"121212",
-		];
-		return postalCodes[Math.floor(Math.random() * postalCodes.length)];
-	}
-
-	async function generateEmail(name: string): Promise<string> {
-		const sanitizedName = name.toLowerCase().replace(/\s/g, "");
-		const domains = ["gmail.com", "yahoo.com", "hotmail.com", "outlook.com"];
-		const randomDomain = domains[Math.floor(Math.random() * domains.length)];
-		let email = `${sanitizedName}${Math.floor(
-			Math.random() * 100
-		)}@${randomDomain}`;
-		return (await emailExists(email)) ? generateEmail(name) : email;
-	}
-
-	async function emailExists(email: string) {
-		const existingClient = await prisma.client.findFirst({
-			where: {
-				email,
-			},
-		});
-		return existingClient !== null;
-	}
-
-	function generatePassword() {
-		const characters =
-			"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-		const length = 12;
-		let password = "";
-		for (let i = 0; i < length; i++) {
-			password += characters.charAt(
-				Math.floor(Math.random() * characters.length)
-			);
-		}
-		return password;
-	}
-
-	function generatePhoneNumber() {
-		const firstDigit = Math.floor(Math.random() * 8) + 2; // Primul digit trebuie să fie între 2 și 9 pentru a respecta formatele de numere de telefon din România
-		const restOfNumber = Math.floor(Math.random() * 1000000000)
-			.toString()
-			.padStart(9, "0");
-		return `07${firstDigit}${restOfNumber}`;
-	}
+	await createRandomTickets();
 }
 main()
 	.then(async () => {

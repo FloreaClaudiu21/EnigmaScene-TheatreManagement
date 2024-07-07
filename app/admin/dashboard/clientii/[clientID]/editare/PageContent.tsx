@@ -1,5 +1,4 @@
 "use client";
-
 import NouEditareContinut from "@/components/admin/NouEditareContinut";
 import {
 	FormControl,
@@ -16,18 +15,19 @@ import { ecranIncarcare } from "@/services/general/FurnizorStare";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Autocomplete, AutocompleteItem, Input } from "@nextui-org/react";
-import {
-	EyeIcon,
-	EyeOffIcon,
-	MailIcon,
-	PhoneIcon,
-	SquareUserIcon,
-} from "lucide-react";
+import { MailIcon, PhoneIcon, SquareUserIcon } from "lucide-react";
 import { Client } from "next-auth";
 import { useRouter } from "next-nprogress-bar";
-import React, { useState } from "react";
+import React from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+
+export type ClientEditData = {
+	email: string;
+	numeClient: string;
+	telefon: string;
+	dataNasterii: string;
+};
 
 export default function AdminClientEdit({
 	params,
@@ -54,12 +54,7 @@ export default function AdminClientEdit({
 		loadingScreen.setIncarcare(true);
 		const data = await actualizare(
 			TipuriTabel.CLIENT,
-			{
-				email: values.email,
-				numeClient: values.numeClient,
-				telefon: values.prefix + values.telefon,
-				dataNasterii: values.dataNasterii,
-			},
+			values,
 			client.codClient
 		);
 		toast({
