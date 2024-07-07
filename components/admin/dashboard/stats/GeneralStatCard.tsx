@@ -7,8 +7,8 @@ import {
 	CardTitle,
 } from "@/components/ui/card";
 import ChartDateSelector from "../ChartDateSelector";
-import { useGeneralChartModal } from "@/services/StateProvider";
-import { capitalizeFirst } from "@/lib/utils";
+import { formularGrafic } from "@/services/general/FurnizorStare";
+import { capitalizeazaPrima } from "@/lib/metodeUtile";
 
 type BodyLine = {
 	titlu: string;
@@ -79,7 +79,7 @@ export default function GeneralStatCard({
 	selectedRangeLabel: any;
 	bodyGeneralChart: BodyContents[];
 }) {
-	const chartModel = useGeneralChartModal();
+	const chartModel = formularGrafic();
 	return (
 		<Card className="w-full shadow-md">
 			<CardHeader className="gap-2">
@@ -99,11 +99,13 @@ export default function GeneralStatCard({
 					title="Arata continutul"
 					className="hover:cursor-pointer"
 					onClick={() => {
-						chartModel.setTitle(
-							title + " - " + capitalizeFirst(selectedRangeLabel.label1.trim())
+						chartModel.setTitlu(
+							title +
+								" - " +
+								capitalizeazaPrima(selectedRangeLabel.eticheta1.trim())
 						);
-						chartModel.setBody(bodyGeneralChart);
-						chartModel.setVisible(true);
+						chartModel.setContinut(bodyGeneralChart);
+						chartModel.setVizibil(true);
 					}}
 				>
 					{body}

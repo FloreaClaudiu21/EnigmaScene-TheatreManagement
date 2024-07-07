@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prismaClient";
 import React from "react";
 import AdminInvoiceNew from "./PageContent";
-import { Plata } from "@/lib/types";
+import { Plata } from "@/lib/tipuri";
 
 export default async function AdminInvoiceCreate() {
 	const [payments, lastInvoice] = await Promise.all([

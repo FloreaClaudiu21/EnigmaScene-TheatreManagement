@@ -8,7 +8,7 @@ import {
 	Invoice,
 	Payment,
 	Provider,
-} from "./lib/types";
+} from "./lib/tipuri";
 
 declare module "next-auth" {
 	type User = {

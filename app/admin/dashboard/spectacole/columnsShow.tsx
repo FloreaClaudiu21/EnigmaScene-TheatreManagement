@@ -1,24 +1,26 @@
 "use client";
 import { ColumnDef } from "@tanstack/react-table";
-import ColumnHeader from "@/components/admin/table/ColumnHeader";
-import ColumnCell, { PushFilter } from "@/components/admin/table/ColumnCell";
-import {
-	ColumnSelectCell,
-	ColumnSelectHeader,
-} from "@/components/admin/table/ColumnSelect";
-import ColumnCellActions from "@/components/admin/table/ColumnCellActions";
 import { Button, Tooltip } from "@nextui-org/react";
-import { Spectacol, TipuriTabel } from "@/lib/types";
-import { formatDateFull } from "@/lib/rangeOptions";
-import { capitalizeFirstLetter, formatDate } from "@/lib/utils";
+import { formularImagineSpectacol } from "@/services/general/FurnizorStare";
+import CelulaColoanaActiuni from "@/components/admin/table/CelulaColoanaActiuni";
+import { Spectacol, TipuriTabel } from "@/lib/tipuri";
 import { ImageIcon } from "lucide-react";
-import { useImageShowModal } from "@/services/StateProvider";
+import {
+	ColoanaSelecteazaCapTabel,
+	ColoanaSelecteazaRand,
+} from "@/components/admin/table/SelectareColoane";
+import AntetColoana from "@/components/admin/table/AntetColoana";
+import CelulaColoana, {
+	AplicaFiltru,
+} from "@/components/admin/table/CelulaColoana";
+import { capitalizeazaPrimaLitera, formateazaData } from "@/lib/metodeUtile";
+import { formateazaDataComplet } from "@/lib/intervaleOptiuni";
 
 function ActionsShow({ row }: { row: any }) {
-	const imgModal = useImageShowModal();
+	const imgModal = formularImagineSpectacol();
 	return (
 		<div className="flex flex-row gap-2">
-			<ColumnCellActions
+			<CelulaColoanaActiuni
 				type={TipuriTabel.SPECTACOL}
 				deleteId={row.original.codSpectacol}
 				link_edit={"spectacole/" + row.original.codSpectacol + "/editare"}
@@ -29,8 +31,8 @@ function ActionsShow({ row }: { row: any }) {
 				isIconOnly
 				variant="bordered"
 				onClick={() => {
-					imgModal.setShow(row.original);
-					imgModal.setVisible(true);
+					imgModal.setSpectacol(row.original);
+					imgModal.setVizibil(true);
 				}}
 				title="Vizualizare imagine spectacol"
 				className="text-zinc-600 font-medium hover:text-red-600"
@@ -45,10 +47,10 @@ export const columnsShow: ColumnDef<Spectacol>[] = [
 	{
 		id: "select",
 		header: ({ table }) => {
-			return <ColumnSelectHeader table={table} />;
+			return <ColoanaSelecteazaCapTabel table={table} />;
 		},
 		cell: ({ row }) => {
-			return <ColumnSelectCell row={row} />;
+			return <ColoanaSelecteazaRand row={row} />;
 		},
 		enableSorting: false,
 	},
@@ -62,21 +64,21 @@ export const columnsShow: ColumnDef<Spectacol>[] = [
 	{
 		accessorKey: "codSpectacol",
 		header: ({ column }) => {
-			return <ColumnHeader column={column} title="Cod Spectacol" />;
+			return <AntetColoana coloana={column} titlu="Cod Spectacol" />;
 		},
 		cell: ({ row }) => {
 			const user = row.original;
 			return (
-				<ColumnCell
-					filters={[
+				<CelulaColoana
+					filtre={[
 						{
-							page: "spectacole",
-							label: "Cod Spectacol",
-							column: "codSpectacol",
-							value: user.codSpectacol + "" ?? "",
+							pagina: "spectacole",
+							eticheta: "Cod Spectacol",
+							coloana: "codSpectacol",
+							valoare: user.codSpectacol + "" ?? "",
 						},
 					]}
-					data={user.codSpectacol}
+					date={user.codSpectacol}
 				/>
 			);
 		},
@@ -84,20 +86,20 @@ export const columnsShow: ColumnDef<Spectacol>[] = [
 	{
 		accessorKey: "titlu",
 		header: ({ column }) => {
-			return <ColumnHeader column={column} title="Titlu" />;
+			return <AntetColoana coloana={column} titlu="Titlu" />;
 		},
 		cell: ({ row: { original } }) => {
 			return (
-				<ColumnCell
-					filters={[
+				<CelulaColoana
+					filtre={[
 						{
-							label: "Titlu",
-							column: "titlu",
-							page: "spectacole",
-							value: original.titlu ?? "",
+							eticheta: "Titlu",
+							coloana: "titlu",
+							pagina: "spectacole",
+							valoare: original.titlu ?? "",
 						},
 					]}
-					data={
+					date={
 						<div className="flex flex-row items-start justify-center text-center h-full break-words">
 							<Tooltip
 								content={original.descriereScurta}
@@ -115,20 +117,20 @@ export const columnsShow: ColumnDef<Spectacol>[] = [
 	{
 		accessorKey: "director",
 		header: ({ column }) => {
-			return <ColumnHeader column={column} title="Regizor" />;
+			return <AntetColoana coloana={column} titlu="Regizor" />;
 		},
 		cell: ({ row: { original } }) => {
 			return (
-				<ColumnCell
-					filters={[
+				<CelulaColoana
+					filtre={[
 						{
-							label: "Regizor",
-							column: "director",
-							page: "spectacole",
-							value: original.director ?? "",
+							eticheta: "Regizor",
+							coloana: "director",
+							pagina: "spectacole",
+							valoare: original.director ?? "",
 						},
 					]}
-					data={original.director}
+					date={original.director}
 				/>
 			);
 		},
@@ -136,22 +138,22 @@ export const columnsShow: ColumnDef<Spectacol>[] = [
 	{
 		accessorKey: "oraIncepere",
 		header: ({ column }) => {
-			return <ColumnHeader column={column} title="Ora & Data Inceperii" />;
+			return <AntetColoana coloana={column} titlu="Ora & Data Inceperii" />;
 		},
 		cell: ({ row }) => {
 			const show = row.original;
 			return (
-				<ColumnCell
-					filters={[
+				<CelulaColoana
+					filtre={[
 						{
-							column: "oraIncepere",
-							page: "spectacole",
-							label: "Ora Incepere Spectacol",
-							value: formatDate(new Date(show.oraIncepere)) ?? "",
+							coloana: "oraIncepere",
+							pagina: "spectacole",
+							eticheta: "Ora Incepere Spectacol",
+							valoare: formateazaData(new Date(show.oraIncepere)) ?? "",
 						},
 					]}
-					data={capitalizeFirstLetter(
-						formatDateFull(new Date(show.oraIncepere))
+					date={capitalizeazaPrimaLitera(
+						formateazaDataComplet(new Date(show.oraIncepere))
 					)}
 				/>
 			);
@@ -160,62 +162,62 @@ export const columnsShow: ColumnDef<Spectacol>[] = [
 	{
 		accessorKey: "oraTerminare",
 		header: ({ column }) => {
-			return <ColumnHeader column={column} title="Ora & Data Terminării" />;
+			return <AntetColoana coloana={column} titlu="Ora & Data Terminării" />;
 		},
 		cell: ({ row }) => {
 			const show = row.original;
 			return (
-				<ColumnCell
-					filters={[
+				<CelulaColoana
+					filtre={[
 						{
-							column: "oraTerminare",
-							page: "spectacole",
-							label: "Ora Terminare Spectacol",
-							value: formatDate(new Date(show.oraTerminare)) ?? "",
+							coloana: "oraTerminare",
+							pagina: "spectacole",
+							eticheta: "Ora Terminare Spectacol",
+							valoare: formateazaData(new Date(show.oraTerminare)) ?? "",
 						},
 					]}
-					data={capitalizeFirstLetter(
-						formatDateFull(new Date(show.oraTerminare))
+					date={capitalizeazaPrimaLitera(
+						formateazaDataComplet(new Date(show.oraTerminare))
 					)}
 				/>
 			);
 		},
 	},
 	{
-		accessorKey: "codSezon",
+		accessorKey: "numeTip",
 		header: ({ column }) => {
-			return <ColumnHeader column={column} title="Sezon & Categorie" />;
+			return <AntetColoana coloana={column} titlu="Sezon & Categorie" />;
 		},
 		cell: ({ row: { original } }) => {
 			return (
-				<ColumnCell
-					data={
+				<CelulaColoana
+					date={
 						<>
-							<PushFilter
-								filters={[
+							<AplicaFiltru
+								filtre={[
 									{
-										column: "numeSezon",
-										label: "Numele sezonului",
-										page: "spectacole",
-										value: original.sezon?.numeSezon ?? "",
+										coloana: "numeSezon",
+										eticheta: "Numele sezonului",
+										pagina: "spectacole",
+										valoare: original.sezon?.numeSezon ?? "",
 									},
 								]}
 							>
 								{original.sezon?.numeSezon}
-							</PushFilter>
+							</AplicaFiltru>
 							-
-							<PushFilter
-								filters={[
+							<AplicaFiltru
+								filtre={[
 									{
-										column: "numeTip",
-										page: "spectacole",
-										label: "Tipul Spectacolului",
-										value: original.tipSpectacol?.numeTip ?? "",
+										coloana: "numeTip",
+										pagina: "spectacole",
+										eticheta: "Tipul Spectacolului",
+										valoare: original.tipSpectacol?.numeTip ?? "",
 									},
 								]}
 							>
 								{original.tipSpectacol?.numeTip}
-							</PushFilter>
+							</AplicaFiltru>
 						</>
 					}
 				/>
@@ -223,40 +225,40 @@ export const columnsShow: ColumnDef<Spectacol>[] = [
 		},
 	},
 	{
-		accessorKey: "codSalaSpectacol",
+		accessorKey: "numarSala",
 		header: ({ column }) => {
-			return <ColumnHeader column={column} title="Cod & Nume Sala" />;
+			return <AntetColoana coloana={column} titlu="Cod & Nume Sala" />;
 		},
 		cell: ({ row: { original } }) => {
 			return (
-				<ColumnCell
-					data={
+				<CelulaColoana
+					date={
 						<>
-							<PushFilter
-								filters={[
+							<AplicaFiltru
+								filtre={[
 									{
-										page: "spectacole",
-										column: "codSalaSpectacol",
-										label: "Cod Sala Spectacol",
-										value: original.codSalaSpectacol + "",
+										pagina: "spectacole",
+										coloana: "codSalaSpectacol",
+										eticheta: "Cod Sala Spectacol",
+										valoare: original.codSalaSpectacol + "",
 									},
 								]}
 							>
 								{original.codSalaSpectacol}
-							</PushFilter>
+							</AplicaFiltru>
 							-
-							<PushFilter
-								filters={[
+							<AplicaFiltru
+								filtre={[
 									{
-										column: "numarSala",
-										page: "spectacole",
-										label: "Numar Sala",
-										value: original.salaSpectacol?.numarSala ?? "",
+										coloana: "numarSala",
+										pagina: "spectacole",
+										eticheta: "Numar Sala",
+										valoare: original.salaSpectacol?.numarSala ?? "",
 									},
 								]}
 							>
 								{original.salaSpectacol?.numarSala}
-							</PushFilter>
+							</AplicaFiltru>
 						</>
 					}
 				/>
@@ -266,26 +268,26 @@ export const columnsShow: ColumnDef<Spectacol>[] = [
 	{
 		accessorKey: "bileteVandute",
 		header: ({ column }) => {
-			return <ColumnHeader column={column} title="Bilete Vandute" />;
+			return <AntetColoana coloana={column} titlu="Bilete Vandute" />;
 		},
 		cell: ({ row: { original } }) => {
 			return (
-				<ColumnCell
-					filters={[
+				<CelulaColoana
+					filtre={[
 						{
-							page: "bilete",
-							label: "Bilete Vandute",
-							column: "codSpectacol",
-							value: original.codSpectacol + "",
+							pagina: "bilete",
+							eticheta: "Bilete Vandute",
+							coloana: "codSpectacol",
+							valoare: original.codSpectacol + "",
 						},
 						{
-							page: "bilete",
-							label: "Bilete Vandute",
-							column: "titlu",
-							value: original.titlu + "",
+							pagina: "bilete",
+							eticheta: "Bilete Vandute",
+							coloana: "titlu",
+							valoare: original.titlu + "",
 						},
 					]}
-					data={
+					date={
 						(original.bileteVandute?.length ?? 0) +
 						"/" +
 						original.salaSpectacol?.locuriSala?.length
@@ -297,22 +299,24 @@ export const columnsShow: ColumnDef<Spectacol>[] = [
 	{
 		accessorKey: "creatPe",
 		header: ({ column }) => {
-			return <ColumnHeader column={column} title="Adăugat Pe" />;
+			return <AntetColoana coloana={column} titlu="Adăugat Pe" />;
 		},
 		cell: ({ row }) => {
 			const show = row.original;
-			const theDate = capitalizeFirstLetter(formatDateFull(show.creatPe));
+			const theDate = capitalizeazaPrimaLitera(
+				formateazaDataComplet(show.creatPe)
+			);
 			return (
-				<ColumnCell
-					filters={[
+				<CelulaColoana
+					filtre={[
 						{
-							page: "spectacole",
-							label: "Adaugat Pe",
-							column: "creatPe",
-							value: formatDate(show.creatPe),
+							pagina: "spectacole",
+							eticheta: "Adaugat Pe",
+							coloana: "creatPe",
+							valoare: formateazaData(show.creatPe),
 						},
 					]}
-					data={theDate}
+					date={theDate}
 				/>
 			);
 		},

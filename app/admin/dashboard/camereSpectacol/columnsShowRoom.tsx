@@ -1,22 +1,22 @@
 "use client";
-import { ColumnDef } from "@tanstack/react-table";
-import ColumnHeader from "@/components/admin/table/ColumnHeader";
-import ColumnCell from "@/components/admin/table/ColumnCell";
+import AntetColoana from "@/components/admin/table/AntetColoana";
+import CelulaColoana from "@/components/admin/table/CelulaColoana";
+import CelulaColoanaActiuni from "@/components/admin/table/CelulaColoanaActiuni";
 import {
-	ColumnSelectCell,
-	ColumnSelectHeader,
-} from "@/components/admin/table/ColumnSelect";
-import ColumnCellActions from "@/components/admin/table/ColumnCellActions";
-import { SalaSpectacol, TipuriTabel } from "@/lib/types";
+	ColoanaSelecteazaCapTabel,
+	ColoanaSelecteazaRand,
+} from "@/components/admin/table/SelectareColoane";
+import { SalaSpectacol, TipuriTabel } from "@/lib/tipuri";
+import { ColumnDef } from "@tanstack/react-table";
 
 export const columnsShowRoom: ColumnDef<SalaSpectacol>[] = [
 	{
 		id: "select",
 		header: ({ table }) => {
-			return <ColumnSelectHeader table={table} />;
+			return <ColoanaSelecteazaCapTabel table={table} />;
 		},
 		cell: ({ row }) => {
-			return <ColumnSelectCell row={row} />;
+			return <ColoanaSelecteazaRand row={row} />;
 		},
 		enableSorting: false,
 	},
@@ -24,7 +24,7 @@ export const columnsShowRoom: ColumnDef<SalaSpectacol>[] = [
 		id: "actions",
 		cell: ({ row }) => {
 			return (
-				<ColumnCellActions
+				<CelulaColoanaActiuni
 					type={TipuriTabel.CAMERA_SPECTACOL}
 					deleteId={row.original.codSalaSpectacol}
 					link_edit={
@@ -38,21 +38,21 @@ export const columnsShowRoom: ColumnDef<SalaSpectacol>[] = [
 	{
 		accessorKey: "codSalaSpectacol",
 		header: ({ column }) => {
-			return <ColumnHeader column={column} title="Cod Sala Spectacol" />;
+			return <AntetColoana coloana={column} titlu="Cod Sala Spectacol" />;
 		},
 		cell: ({ row }) => {
 			const user = row.original;
 			return (
-				<ColumnCell
-					filters={[
+				<CelulaColoana
+					filtre={[
 						{
-							page: "camereSpectacol",
-							label: "Cod Sala Spectacol",
-							column: "codSalaSpectacol",
-							value: user.codSalaSpectacol + "" ?? "",
+							pagina: "camereSpectacol",
+							eticheta: "Cod Sala Spectacol",
+							coloana: "codSalaSpectacol",
+							valoare: user.codSalaSpectacol + "" ?? "",
 						},
 					]}
-					data={user.codSalaSpectacol}
+					date={user.codSalaSpectacol}
 				/>
 			);
 		},
@@ -60,20 +60,20 @@ export const columnsShowRoom: ColumnDef<SalaSpectacol>[] = [
 	{
 		accessorKey: "numarSala",
 		header: ({ column }) => {
-			return <ColumnHeader column={column} title="Numar Sala" />;
+			return <AntetColoana coloana={column} titlu="Numar Sala" />;
 		},
 		cell: ({ row: { original } }) => {
 			return (
-				<ColumnCell
-					filters={[
+				<CelulaColoana
+					filtre={[
 						{
-							page: "camereSpectacol",
-							label: "Numar Sala",
-							column: "numarSala",
-							value: original.numarSala ?? "",
+							pagina: "camereSpectacol",
+							eticheta: "Numar Sala",
+							coloana: "numarSala",
+							valoare: original.numarSala ?? "",
 						},
 					]}
-					data={original.numarSala}
+					date={original.numarSala}
 				/>
 			);
 		},
@@ -81,32 +81,32 @@ export const columnsShowRoom: ColumnDef<SalaSpectacol>[] = [
 	{
 		accessorKey: "locuriSala",
 		header: ({ column }) => {
-			return <ColumnHeader column={column} title="Locuri In Sala" />;
+			return <AntetColoana coloana={column} titlu="Locuri In Sala" />;
 		},
 		cell: ({ row: { original } }) => {
 			return (
-				<ColumnCell
-					filters={[
+				<CelulaColoana
+					filtre={[
 						{
-							page: "camereSpectacol",
-							label: "Locuri Sala",
-							column: "numarSala",
-							value: original.numarSala ?? "",
+							pagina: "camereSpectacol",
+							eticheta: "Locuri Sala",
+							coloana: "numarSala",
+							valoare: original.numarSala ?? "",
 						},
 						{
-							page: "camereSpectacol",
-							label: "Cod Sala",
-							column: "codSalaSpectacol",
-							value: original.codSalaSpectacol + "",
+							pagina: "camereSpectacol",
+							eticheta: "Cod Sala",
+							coloana: "codSalaSpectacol",
+							valoare: original.codSalaSpectacol + "",
 						},
 						{
-							page: "camereSpectacol",
-							label: "TAB",
-							column: "tab",
-							value: "showsRoomSeats",
+							pagina: "camereSpectacol",
+							eticheta: "TAB",
+							coloana: "tab",
+							valoare: "showsRoomSeats",
 						},
 					]}
-					data={original.locuriSala?.length}
+					date={original.locuriSala?.length}
 				/>
 			);
 		},
@@ -114,10 +114,10 @@ export const columnsShowRoom: ColumnDef<SalaSpectacol>[] = [
 	{
 		accessorKey: "observatii",
 		header: ({ column }) => {
-			return <ColumnHeader column={column} title="Observatii" />;
+			return <AntetColoana coloana={column} titlu="Observatii" />;
 		},
 		cell: ({ row: { original } }) => {
-			return <ColumnCell data={original.observatii ?? "N/A"} />;
+			return <CelulaColoana date={original.observatii ?? "N/A"} />;
 		},
 	},
 ];

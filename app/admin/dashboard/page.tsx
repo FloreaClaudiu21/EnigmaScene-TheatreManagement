@@ -2,11 +2,11 @@ import React from "react";
 import { Divider } from "@nextui-org/react";
 import RecentPaymentsTable from "@/components/admin/dashboard/tables/RecentPaymentsTable";
 import { ChartCard } from "@/components/admin/dashboard/ChartCard";
-import { ChartDataTip, ChartTip } from "@/lib/types";
-import ShowsStatCard from "@/components/admin/dashboard/stats/ShowsStatCard";
-import TicketsStatCard from "@/components/admin/dashboard/stats/TicketsStatCard";
-import RecentClientsTable from "@/components/admin/dashboard/tables/RecentClientsTable";
+import ShowsStatCard from "@/components/admin/dashboard/stats/SpectacoleStatCard";
+import TicketsStatCard from "@/components/admin/dashboard/stats/BileteStatCard";
+import RecentClientsTable from "@/components/admin/dashboard/tables/ClientiRecentiiTabel";
 import BonuriFiscaleStatCard from "@/components/admin/dashboard/stats/BonFiscalStatCard";
+import { TipDiagrama, TipDiagramaT } from "@/lib/tipuri";
 
 export default async function DashboardPage({
 	searchParams,
@@ -23,17 +23,17 @@ export default async function DashboardPage({
 			<div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-4">
 				<ChartCard
 					title="Clienti Noi"
-					chartType={ChartTip.BAR}
+					chartType={TipDiagrama.BAR}
 					queryKey="newClientsChart"
 					searchParams={searchParams}
-					chartDataType={ChartDataTip.TOTAL_USERS}
+					chartDataType={TipDiagramaT.UTILIZATORI_TOTALE}
 				/>
 				<ChartCard
 					title="Vanzări Totale (RON)"
-					chartType={ChartTip.LINE}
+					chartType={TipDiagrama.LINE}
 					queryKey="totalSalesChart"
 					searchParams={searchParams}
-					chartDataType={ChartDataTip.TOTAL_SALES}
+					chartDataType={TipDiagramaT.VANZARI_TOTALE}
 				/>
 			</div>
 			<Divider className="block md:hidden" />

@@ -1,5 +1,4 @@
 "use client";
-import NewOrEditContent from "@/components/admin/newPage/NewEditContent";
 import {
 	FormControl,
 	FormField,
@@ -8,8 +7,7 @@ import {
 	FormMessage,
 } from "@/components/ui/form";
 import { useToast } from "@/components/ui/use-toast";
-import { useAddAddressModal, useLoadingScreen } from "@/services/StateProvider";
-import { insert } from "@/services/admin/ControlProvider";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
 	Autocomplete,
@@ -29,15 +27,21 @@ import { useRouter } from "next-nprogress-bar";
 import React, { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { generateRandomString } from "@/lib/utils";
+import { schemaCreareFacturaFiscala } from "@/lib/schemeFormulare";
 import {
 	AdresaFacturare,
+	coduriTariRomanesti,
 	FacturaFiscala,
 	Plata,
 	TipuriTabel,
-	coduriTariRomanesti,
-} from "@/lib/types";
-import { schemaCreareFacturaFiscala } from "@/lib/schemas";
+} from "@/lib/tipuri";
+import FormularAdaugaAdresaFacturare from "@/components/formulareGenerale/formularAdaugaAdresaFacturare";
+import {
+	ecranIncarcare,
+	formularCreareAdresa,
+} from "@/services/general/FurnizorStare";
+import { inserare } from "@/services/backend/GeneralController";
+import NouEditareContinut from "@/components/admin/NouEditareContinut";
 
 export default function AdminInvoiceNew({
 	payments,
@@ -48,8 +52,8 @@ export default function AdminInvoiceNew({
 }) {
 	const router = useRouter();
 	const { toast } = useToast();
-	const addAddress = useAddAddressModal();
-	const loadingScreen = useLoadingScreen();
+	const addAddress = formularCreareAdresa();
+	const loadingScreen = ecranIncarcare();
 	const [selectedPayment, setSelectedPayment] = useState<Plata | null>(
 		payments.length > 0 ? payments[0] : null
 	);
@@ -80,10 +84,10 @@ export default function AdminInvoiceNew({
 		},
 	});
 	async function onSubmit(values: z.infer<typeof schemaCreareFacturaFiscala>) {
-		loadingScreen.setLoading(true);
-		const data = await insert(TipuriTabel.FACTURA_FISCALA, values);
+		loadingScreen.setIncarcare(true);
+		const data = await inserare(TipuriTabel.FACTURA_FISCALA, values);
 		toast({
-			description: data.message,
+			description: data.mesaj,
 			title: "Înregistrare Factură Fiscala",
 			variant: data.ok ? "default" : "destructive",
 		});
@@ -92,15 +96,15 @@ export default function AdminInvoiceNew({
 			form.reset();
 			router.refresh();
 		}
-		loadingScreen.setLoading(false);
+		loadingScreen.setIncarcare(false);
 	}
 	return (
-		<NewOrEditContent
+		<NouEditareContinut
 			form={form}
 			onSubmit={onSubmit}
 			back_link="../facturi?tab=all"
-			title={"Adăugare factură nouă"}
-			loading={loadingScreen.loading}
+			titlu={"Adăugare factură nouă"}
+			loading={loadingScreen.incarcare}
 		>
 			<div className="flex flex-col md:flex-row gap-2">
 				<FormField
@@ -278,8 +282,8 @@ export default function AdminInvoiceNew({
 						variant="flat"
 						className="!mt-8"
 						onClick={() => {
-							addAddress.setVisible(true);
-							addAddress.setIsAdminPanel(client?.codClient ?? 0);
+							addAddress.setVizibil(true);
+							addAddress.setEstePanouAdmin(client?.codClient ?? 0);
 						}}
 					>
 						<PlusIcon size={20} />
@@ -386,6 +390,6 @@ export default function AdminInvoiceNew({
 					)}
 				/>
 			</div>
-		</NewOrEditContent>
+		</NouEditareContinut>
 	);
 }

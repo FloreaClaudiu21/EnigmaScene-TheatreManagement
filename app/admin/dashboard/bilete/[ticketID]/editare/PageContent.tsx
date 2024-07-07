@@ -1,5 +1,5 @@
 "use client";
-import NewOrEditContent from "@/components/admin/newPage/NewEditContent";
+import NouEditareContinut from "@/components/admin/NouEditareContinut";
 import {
 	FormControl,
 	FormField,
@@ -8,15 +8,18 @@ import {
 	FormMessage,
 } from "@/components/ui/form";
 import { useToast } from "@/components/ui/use-toast";
-import { schemaCreareBiletSpectacol } from "@/lib/schemas";
+import { schemaCreareBiletSpectacol } from "@/lib/schemeFormulare";
 import {
 	AdresaFacturare,
 	BiletSpectacol,
-	TipuriTabel,
 	coduriTariRomanesti,
-} from "@/lib/types";
-import { useAddAddressModal, useLoadingScreen } from "@/services/StateProvider";
-import { update } from "@/services/admin/ControlProvider";
+	TipuriTabel,
+} from "@/lib/tipuri";
+import { actualizare } from "@/services/backend/GeneralController";
+import {
+	ecranIncarcare,
+	formularCreareAdresa,
+} from "@/services/general/FurnizorStare";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
 	Autocomplete,
@@ -48,8 +51,8 @@ export default function AdminTicketSoldEdit({
 }) {
 	const router = useRouter();
 	const { toast } = useToast();
-	const addAddress = useAddAddressModal();
-	const loadingScreen = useLoadingScreen();
+	const addAddress = formularCreareAdresa();
+	const loadingScreen = ecranIncarcare();
 	const defClient = clients.filter((c) => c.codClient === ticket.codClient);
 	const [generateInvoice, setGenerateInvoice] = useState(
 		ticket.factura != null && ticket.factura != undefined
@@ -103,14 +106,14 @@ export default function AdminTicketSoldEdit({
 		},
 	});
 	async function onSubmit(values: z.infer<typeof schemaCreareBiletSpectacol>) {
-		loadingScreen.setLoading(true);
-		const data = await update(
+		loadingScreen.setIncarcare(true);
+		const data = await actualizare(
 			TipuriTabel.BILET,
 			values,
 			ticket.codBiletSpectacol
 		);
 		toast({
-			description: data.message,
+			description: data.mesaj,
 			title: "Editare Vânzare Bilet",
 			variant: data.ok ? "default" : "destructive",
 		});
@@ -119,22 +122,22 @@ export default function AdminTicketSoldEdit({
 			form.reset();
 			router.refresh();
 		}
-		loadingScreen.setLoading(false);
+		loadingScreen.setIncarcare(false);
 	}
 	return (
-		<NewOrEditContent
+		<NouEditareContinut
 			form={form}
 			onSubmit={onSubmit}
 			back_link="../../bilete?tab=ticketsAll"
-			title={`Editați biletul vândut cu codul de identificare #${ticket.codBiletSpectacol}`}
-			loading={loadingScreen.loading}
+			titlu={`Editați biletul vândut cu codul de identificare #${ticket.codBiletSpectacol}`}
+			loading={loadingScreen.incarcare}
 		>
 			<div className="flex flex-col md:flex-row gap-2">
 				<FormField
 					control={form.control}
 					name="codClient"
 					render={({ field }) => (
-						<FormItem className="w-full">
+						<FormItem className="w-full md:w-1/2">
 							<FormLabel>Client*</FormLabel>
 							<FormControl>
 								<Autocomplete
@@ -315,8 +318,8 @@ export default function AdminTicketSoldEdit({
 								variant="flat"
 								className="!mt-8"
 								onClick={() => {
-									addAddress.setVisible(true);
-									addAddress.setIsAdminPanel(selectedClient?.codClient ?? 0);
+									addAddress.setVizibil(true);
+									addAddress.setEstePanouAdmin(selectedClient?.codClient ?? 0);
 								}}
 							>
 								<PlusIcon size={20} />
@@ -428,6 +431,6 @@ export default function AdminTicketSoldEdit({
 					</div>
 				</>
 			)}
-		</NewOrEditContent>
+		</NouEditareContinut>
 	);
 }

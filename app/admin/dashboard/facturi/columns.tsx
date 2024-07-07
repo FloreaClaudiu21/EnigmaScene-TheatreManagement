@@ -1,26 +1,28 @@
 "use client";
-import { ColumnDef } from "@tanstack/react-table";
-import ColumnHeader from "@/components/admin/table/ColumnHeader";
-import ColumnCell, { PushFilter } from "@/components/admin/table/ColumnCell";
-import ModalViewInvoice from "@/components/page/invoices/ViewInvoiceBtn";
-import ModalViewFiscalReceipt from "@/components/page/fiscalReceipts/ViewFiscalReceiptBtn";
-import ColumnCellActions from "@/components/admin/table/ColumnCellActions";
+import AntetColoana from "@/components/admin/table/AntetColoana";
+import CelulaColoana, {
+	AplicaFiltru,
+} from "@/components/admin/table/CelulaColoana";
+import CelulaColoanaActiuni from "@/components/admin/table/CelulaColoanaActiuni";
 import {
-	ColumnSelectCell,
-	ColumnSelectHeader,
-} from "@/components/admin/table/ColumnSelect";
-import { FacturaFiscala, TipuriTabel } from "@/lib/types";
-import { formatDate, formatDateFull } from "@/lib/rangeOptions";
-import { capitalizeFirstLetter } from "@/lib/utils";
+	ColoanaSelecteazaCapTabel,
+	ColoanaSelecteazaRand,
+} from "@/components/admin/table/SelectareColoane";
+import ModalViewFiscalReceipt from "@/components/bonuriFiscale/ButonVizualizareBon";
+import ModalViewInvoice from "@/components/facturaFiscala/ButonVizualizareFacturaFiscala";
+import { formateazaDataComplet } from "@/lib/intervaleOptiuni";
+import { capitalizeazaPrimaLitera, formateazaData } from "@/lib/metodeUtile";
+import { FacturaFiscala, TipuriTabel } from "@/lib/tipuri";
+import { ColumnDef } from "@tanstack/react-table";
 
 export const columnsInvoice: ColumnDef<FacturaFiscala>[] = [
 	{
 		id: "select",
 		header: ({ table }) => {
-			return <ColumnSelectHeader table={table} />;
+			return <ColoanaSelecteazaCapTabel table={table} />;
 		},
 		cell: ({ row }) => {
-			return <ColumnSelectCell row={row} />;
+			return <ColoanaSelecteazaRand row={row} />;
 		},
 		enableSorting: false,
 	},
@@ -33,7 +35,7 @@ export const columnsInvoice: ColumnDef<FacturaFiscala>[] = [
 						<ModalViewInvoice invoice={original} />
 						<ModalViewFiscalReceipt receipt={original.bonFiscal} />
 					</div>
-					<ColumnCellActions
+					<CelulaColoanaActiuni
 						deleteId={original.codFactura}
 						type={TipuriTabel.FACTURA_FISCALA}
 						link_edit={"facturi/" + original.codFactura + "/editare"}
@@ -46,20 +48,20 @@ export const columnsInvoice: ColumnDef<FacturaFiscala>[] = [
 	{
 		accessorKey: "numarFactura",
 		header: ({ column }) => {
-			return <ColumnHeader column={column} title="Numar Factura" />;
+			return <AntetColoana coloana={column} titlu="Numar Factura" />;
 		},
 		cell: ({ row: { original } }) => {
 			return (
-				<ColumnCell
-					filters={[
+				<CelulaColoana
+					filtre={[
 						{
-							page: "facturi",
-							label: "Numar Factura",
-							column: "numarFactura",
-							value: original.numarFactura ?? "",
+							pagina: "facturi",
+							eticheta: "Numar Factura",
+							coloana: "numarFactura",
+							valoare: original.numarFactura ?? "",
 						},
 					]}
-					data={original.numarFactura}
+					date={original.numarFactura}
 				/>
 			);
 		},
@@ -67,20 +69,22 @@ export const columnsInvoice: ColumnDef<FacturaFiscala>[] = [
 	{
 		accessorKey: "dataIntocmiri",
 		header: ({ column }) => {
-			return <ColumnHeader column={column} title="Data Intocmirii" />;
+			return <AntetColoana coloana={column} titlu="Data Intocmirii" />;
 		},
 		cell: ({ row: { original } }) => {
 			return (
-				<ColumnCell
-					filters={[
+				<CelulaColoana
+					filtre={[
 						{
-							page: "facturi",
-							label: "Data Intocmirii",
-							column: "dataIntocmiri",
-							value: formatDate(original.dataIntocmiri) ?? "",
+							pagina: "facturi",
+							eticheta: "Data Intocmirii",
+							coloana: "dataIntocmiri",
+							valoare: formateazaData(original.dataIntocmiri) ?? "",
 						},
 					]}
-					data={capitalizeFirstLetter(formatDateFull(original.dataIntocmiri))}
+					date={capitalizeazaPrimaLitera(
+						formateazaDataComplet(original.dataIntocmiri)
+					)}
 				/>
 			);
 		},
@@ -88,20 +92,20 @@ export const columnsInvoice: ColumnDef<FacturaFiscala>[] = [
 	{
 		accessorKey: "codPlata",
 		header: ({ column }) => {
-			return <ColumnHeader column={column} title="Cod Plata" />;
+			return <AntetColoana coloana={column} titlu="Cod Plata" />;
 		},
 		cell: ({ row }) => {
 			return (
-				<ColumnCell
-					filters={[
+				<CelulaColoana
+					filtre={[
 						{
-							page: "facturi",
-							label: "Cod Plata",
-							column: "codPlata",
-							value: row.original.codPlata + "" ?? "",
+							pagina: "facturi",
+							eticheta: "Cod Plata",
+							coloana: "codPlata",
+							valoare: row.original.codPlata + "" ?? "",
 						},
 					]}
-					data={row.original.codPlata}
+					date={row.original.codPlata}
 				/>
 			);
 		},
@@ -109,21 +113,21 @@ export const columnsInvoice: ColumnDef<FacturaFiscala>[] = [
 	{
 		accessorKey: "sumaPlatita",
 		header: ({ column }) => {
-			return <ColumnHeader column={column} title="Suma Platita" />;
+			return <AntetColoana coloana={column} titlu="Suma Platita" />;
 		},
 		cell: ({ row: { original } }) => {
 			return (
-				<ColumnCell
-					filters={[
+				<CelulaColoana
+					filtre={[
 						{
-							page: "facturi",
-							label: "Moneda",
-							column: "moneda",
-							value:
+							pagina: "facturi",
+							eticheta: "Moneda",
+							coloana: "moneda",
+							valoare:
 								(original.sumaPlatita + original.costuriExtra).toFixed(2) ?? "",
 						},
 					]}
-					data={
+					date={
 						(original.sumaPlatita + original.costuriExtra).toFixed(2) + " RON"
 					}
 				/>
@@ -131,40 +135,40 @@ export const columnsInvoice: ColumnDef<FacturaFiscala>[] = [
 		},
 	},
 	{
-		accessorKey: "codBonFiscal",
+		accessorKey: "numarBonFiscal",
 		header: ({ column }) => {
-			return <ColumnHeader column={column} title="Cod & Nr. Bon Fiscal" />;
+			return <AntetColoana coloana={column} titlu="Cod & Nr. Bon Fiscal" />;
 		},
 		cell: ({ row }) => {
 			return (
-				<ColumnCell
-					data={
+				<CelulaColoana
+					date={
 						<>
-							<PushFilter
-								filters={[
+							<AplicaFiltru
+								filtre={[
 									{
-										page: "facturi",
-										column: "codBonFiscal",
-										label: "Cod Bon Fiscal",
-										value: row.original.codBonFiscal + "" ?? "",
+										pagina: "facturi",
+										coloana: "codBonFiscal",
+										eticheta: "Cod Bon Fiscal",
+										valoare: row.original.codBonFiscal + "" ?? "",
 									},
 								]}
 							>
 								{row.original.codBonFiscal}
-							</PushFilter>
+							</AplicaFiltru>
 							-
-							<PushFilter
-								filters={[
+							<AplicaFiltru
+								filtre={[
 									{
-										page: "facturi",
-										column: "numarBonFiscal",
-										label: "Numar Bon Fiscal",
-										value: row.original.bonFiscal?.numarBonFiscal ?? "",
+										pagina: "facturi",
+										coloana: "numarBonFiscal",
+										eticheta: "Numar Bon Fiscal",
+										valoare: row.original.bonFiscal?.numarBonFiscal ?? "",
 									},
 								]}
 							>
 								{row.original.bonFiscal?.numarBonFiscal}
-							</PushFilter>
+							</AplicaFiltru>
 						</>
 					}
 				/>
@@ -172,22 +176,22 @@ export const columnsInvoice: ColumnDef<FacturaFiscala>[] = [
 		},
 	},
 	{
-		accessorKey: "codClient",
+		accessorKey: "numeClient",
 		header: ({ column }) => {
-			return <ColumnHeader column={column} title="Cod Client" />;
+			return <AntetColoana coloana={column} titlu="Cod Client" />;
 		},
 		cell: ({ row: { original } }) => {
 			return (
-				<ColumnCell
-					filters={[
+				<CelulaColoana
+					filtre={[
 						{
-							column: "codClient",
-							label: "Cod Client",
-							page: "facturi",
-							value: original.codClient + "" ?? "",
+							coloana: "codClient",
+							eticheta: "Cod Client",
+							pagina: "facturi",
+							valoare: original.codClient + "" ?? "",
 						},
 					]}
-					data={original.codClient}
+					date={original.codClient}
 				/>
 			);
 		},
@@ -195,20 +199,20 @@ export const columnsInvoice: ColumnDef<FacturaFiscala>[] = [
 	{
 		accessorKey: "bileteVandute",
 		header: ({ column }) => {
-			return <ColumnHeader column={column} title="Bilete Asociate" />;
+			return <AntetColoana coloana={column} titlu="Bilete Asociate" />;
 		},
 		cell: ({ row: { original } }) => {
 			return (
-				<ColumnCell
-					filters={[
+				<CelulaColoana
+					filtre={[
 						{
-							page: "bilete",
-							label: "Bilete Asociate",
-							column: "codFactura",
-							value: original.codFactura + "",
+							pagina: "bilete",
+							eticheta: "Bilete Asociate",
+							coloana: "codFactura",
+							valoare: original.codFactura + "",
 						},
 					]}
-					data={original.bileteSpectacol?.length ?? 0}
+					date={original.bileteSpectacol?.length ?? 0}
 				/>
 			);
 		},
@@ -216,64 +220,64 @@ export const columnsInvoice: ColumnDef<FacturaFiscala>[] = [
 	{
 		accessorKey: "adresaFacturare",
 		header: ({ column }) => {
-			return <ColumnHeader column={column} title="Detalii Facturare" />;
+			return <AntetColoana coloana={column} titlu="Detalii Facturare" />;
 		},
 		cell: ({ row: { original } }) => {
 			return (
-				<ColumnCell
-					data={
+				<CelulaColoana
+					date={
 						<div className="flex flex-row flex-wrap justify-center">
-							<PushFilter
-								filters={[
+							<AplicaFiltru
+								filtre={[
 									{
-										column: "numeClient",
-										label: "Nume Client",
-										page: "facturi",
-										value: original.numeClient ?? "",
+										coloana: "numeClient",
+										eticheta: "Nume Client",
+										pagina: "facturi",
+										valoare: original.numeClient ?? "",
 									},
 								]}
 							>
 								{original.numeClient}
-							</PushFilter>
+							</AplicaFiltru>
 							,
-							<PushFilter
-								filters={[
+							<AplicaFiltru
+								filtre={[
 									{
-										column: "email",
-										page: "facturi",
-										label: "Email Client",
-										value: original.email ?? "",
+										coloana: "email",
+										pagina: "facturi",
+										eticheta: "Email Client",
+										valoare: original.email ?? "",
 									},
 								]}
 							>
 								{original.email}
-							</PushFilter>
+							</AplicaFiltru>
 							,
-							<PushFilter
-								filters={[
+							<AplicaFiltru
+								filtre={[
 									{
-										column: "telefon",
-										label: "Telefon",
-										page: "facturi",
-										value: original.telefon ?? "",
+										coloana: "telefon",
+										eticheta: "Telefon",
+										pagina: "facturi",
+										valoare: original.telefon ?? "",
 									},
 								]}
 							>
 								{original.telefon}
-							</PushFilter>
+							</AplicaFiltru>
 							,
-							<PushFilter
-								filters={[
+							<AplicaFiltru
+								filtre={[
 									{
-										page: "facturi",
-										column: "adresaFacturare",
-										label: "Adresa Facturare",
-										value: original.adresaFacturare ?? "",
+										pagina: "facturi",
+										coloana: "adresaFacturare",
+										eticheta: "Adresa Facturare",
+										valoare: original.adresaFacturare ?? "",
 									},
 								]}
 							>
 								{original.adresaFacturare}
-							</PushFilter>
+							</AplicaFiltru>
 						</div>
 					}
 				/>

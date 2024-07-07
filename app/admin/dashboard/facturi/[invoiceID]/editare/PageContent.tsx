@@ -8,14 +8,17 @@ import {
 	FormMessage,
 } from "@/components/ui/form";
 import { useToast } from "@/components/ui/use-toast";
-import { schemaCreareFacturaFiscala } from "@/lib/schemas";
+import { schemaCreareFacturaFiscala } from "@/lib/schemeFormulare";
 import {
 	AdresaFacturare,
 	FacturaFiscala,
 	TipuriTabel,
 	coduriTariRomanesti,
 } from "@/lib/types";
-import { useAddAddressModal, useLoadingScreen } from "@/services/StateProvider";
+import {
+	useAddAddressModal,
+	useLoadingScreen,
+} from "@/services/general/stareFurnizor";
 import { update } from "@/services/admin/ControlProvider";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {

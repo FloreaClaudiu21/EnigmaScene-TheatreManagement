@@ -1,14 +1,16 @@
 "use client";
 import { ColumnDef } from "@tanstack/react-table";
-import ColumnHeader from "@/components/admin/table/ColumnHeader";
-import ColumnCell, { PushFilter } from "@/components/admin/table/ColumnCell";
 import { Chip } from "@nextui-org/react";
-import ModalViewInvoice from "@/components/page/invoices/ViewInvoiceBtn";
-import ModalViewFiscalReceipt from "@/components/page/fiscalReceipts/ViewFiscalReceiptBtn";
-import { Plata } from "@/lib/types";
-import { formatDateFull } from "@/lib/rangeOptions";
 import { StarePlata } from "@prisma/client";
-import { capitalizeFirstLetter, formatDate } from "@/lib/utils";
+import { Plata } from "@/lib/tipuri";
+import ModalViewInvoice from "@/components/facturaFiscala/ButonVizualizareFacturaFiscala";
+import ModalViewFiscalReceipt from "@/components/bonuriFiscale/ButonVizualizareBon";
+import AntetColoana from "@/components/admin/table/AntetColoana";
+import CelulaColoana, {
+	AplicaFiltru,
+} from "@/components/admin/table/CelulaColoana";
+import { capitalizeazaPrimaLitera, formateazaData } from "@/lib/metodeUtile";
+import { formateazaDataComplet } from "@/lib/intervaleOptiuni";
 
 export const columnsPayments: ColumnDef<Plata>[] = [
 	{
@@ -26,60 +28,60 @@ export const columnsPayments: ColumnDef<Plata>[] = [
 	{
 		accessorKey: "codPlata",
 		header: ({ column }) => {
-			return <ColumnHeader column={column} title="Cod Plata" />;
+			return <AntetColoana coloana={column} titlu="Cod Plata" />;
 		},
 		cell: ({ row }) => {
 			const user = row.original;
 			return (
-				<ColumnCell
-					filters={[
+				<CelulaColoana
+					filtre={[
 						{
-							page: "platii",
-							label: "Cod Plata",
-							column: "codPlata",
-							value: user.codPlata + "" ?? "",
+							pagina: "platii",
+							eticheta: "Cod Plata",
+							coloana: "codPlata",
+							valoare: user.codPlata + "" ?? "",
 						},
 					]}
-					data={user.codPlata}
+					date={user.codPlata}
 				/>
 			);
 		},
 	},
 	{
-		accessorKey: "codClient",
+		accessorKey: "numeClient",
 		header: ({ column }) => {
-			return <ColumnHeader column={column} title="Cod & Nume Client" />;
+			return <AntetColoana coloana={column} titlu="Cod & Nume Client" />;
 		},
 		cell: ({ row: { original } }) => {
 			return (
-				<ColumnCell
-					data={
+				<CelulaColoana
+					date={
 						<>
-							<PushFilter
-								filters={[
+							<AplicaFiltru
+								filtre={[
 									{
-										column: "codClient",
-										label: "Cod Client",
-										page: "platii",
-										value: original.codClient + "" ?? "",
+										coloana: "codClient",
+										eticheta: "Cod Client",
+										pagina: "platii",
+										valoare: original.codClient + "" ?? "",
 									},
 								]}
 							>
 								{original.codClient}
-							</PushFilter>
+							</AplicaFiltru>
 							-
-							<PushFilter
-								filters={[
+							<AplicaFiltru
+								filtre={[
 									{
-										column: "numeClient",
-										page: "platii",
-										label: "Nume Client",
-										value: original.client?.numeClient ?? "",
+										coloana: "numeClient",
+										pagina: "platii",
+										eticheta: "Nume Client",
+										valoare: original.client?.numeClient ?? "",
 									},
 								]}
 							>
 								{original.client?.numeClient}
-							</PushFilter>
+							</AplicaFiltru>
 						</>
 					}
 				/>
@@ -89,49 +91,20 @@ export const columnsPayments: ColumnDef<Plata>[] = [
 	{
 		accessorKey: "sumaPlatita",
 		header: ({ column }) => {
-			return <ColumnHeader column={column} title="Suma Platita (RON)" />;
+			return <AntetColoana coloana={column} titlu="Suma Platita (RON)" />;
 		},
 		cell: ({ row: { original } }) => {
 			return (
-				<ColumnCell
-					filters={[
+				<CelulaColoana
+					filtre={[
 						{
-							page: "platii",
-							label: "Suma Platita",
-							column: "sumaPlatita",
-							value: original.sumaPlatita + "" ?? "",
+							pagina: "platii",
+							eticheta: "Suma Platita",
+							coloana: "sumaPlatita",
+							valoare: original.sumaPlatita + "" ?? "",
 						},
 					]}
-					data={original.sumaPlatita}
-				/>
-			);
-		},
-	},
-	{
-		accessorKey: "sumaPlatitaCur",
-		header: ({ column }) => {
-			return <ColumnHeader column={column} title={`Suma Platita in Moneda`} />;
-		},
-		cell: ({ row: { original } }) => {
-			return (
-				<ColumnCell
-					filters={[
-						{
-							page: "platii",
-							label: "Moneda",
-							column: "moneda",
-							value: original.rataDeSchimbValutar?.moneda ?? "",
-						},
-					]}
-					data={
-						(original.rataDeSchimbValutar?.moneda != "RON"
-							? original.sumaPlatita /
-							  (original.rataDeSchimbValutar?.valuare ?? 1)
-							: original.sumaPlatita
-						).toFixed(2) +
-						" " +
-						original.rataDeSchimbValutar?.moneda
-					}
+					date={original.sumaPlatita}
 				/>
 			);
 		},
@@ -139,20 +112,22 @@ export const columnsPayments: ColumnDef<Plata>[] = [
 	{
 		accessorKey: "platitPe",
 		header: ({ column }) => {
-			return <ColumnHeader column={column} title="Platit Pe" />;
+			return <AntetColoana coloana={column} titlu="Platit Pe" />;
 		},
 		cell: ({ row: { original } }) => {
 			return (
-				<ColumnCell
-					filters={[
+				<CelulaColoana
+					filtre={[
 						{
-							page: "platii",
-							label: "Platit Pe",
-							column: "platitPe",
-							value: formatDate(original.platitPe),
+							pagina: "platii",
+							eticheta: "Platit Pe",
+							coloana: "platitPe",
+							valoare: formateazaData(original.platitPe),
 						},
 					]}
-					data={capitalizeFirstLetter(formatDateFull(original.platitPe))}
+					date={capitalizeazaPrimaLitera(
+						formateazaDataComplet(original.platitPe)
+					)}
 				/>
 			);
 		},
@@ -160,20 +135,20 @@ export const columnsPayments: ColumnDef<Plata>[] = [
 	{
 		accessorKey: "tipPlata",
 		header: ({ column }) => {
-			return <ColumnHeader column={column} title="Tip Plata" />;
+			return <AntetColoana coloana={column} titlu="Tip Plata" />;
 		},
 		cell: ({ row: { original } }) => {
 			return (
-				<ColumnCell
-					filters={[
+				<CelulaColoana
+					filtre={[
 						{
-							page: "platii",
-							label: "Tip Plata",
-							column: "tipPlata",
-							value: original.tipPlata.toString(),
+							pagina: "platii",
+							eticheta: "Tip Plata",
+							coloana: "tipPlata",
+							valoare: original.tipPlata.toString(),
 						},
 					]}
-					data={original.tipPlata}
+					date={original.tipPlata}
 				/>
 			);
 		},
@@ -181,7 +156,7 @@ export const columnsPayments: ColumnDef<Plata>[] = [
 	{
 		accessorKey: "starePlata",
 		header: ({ column }) => {
-			return <ColumnHeader column={column} title="Stare Plata" />;
+			return <AntetColoana coloana={column} titlu="Stare Plata" />;
 		},
 		cell: ({ row }) => {
 			const color =

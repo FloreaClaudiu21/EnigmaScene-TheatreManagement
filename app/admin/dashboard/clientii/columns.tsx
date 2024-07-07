@@ -2,43 +2,23 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { Trash2Icon } from "lucide-react";
 import { Button, Chip, Link } from "@nextui-org/react";
-import { User } from "next-auth";
-import { useDeleteModal } from "@/services/StateProvider";
-import { useState } from "react";
-import ColumnHeader from "@/components/admin/table/ColumnHeader";
-import ColumnCell from "@/components/admin/table/ColumnCell";
 import {
-	ColumnSelectCell,
-	ColumnSelectHeader,
-} from "@/components/admin/table/ColumnSelect";
-import { TipuriTabel } from "@/lib/types";
-import { formatDateFull } from "@/lib/rangeOptions";
-import { capitalizeFirstLetter, formatDate } from "@/lib/utils";
-
-function PasswordField({ user }: { user: User }) {
-	const [visiblePass, setVisiblePass] = useState(false);
-	return (
-		<div className="flex flex-row items-center justify-center text-center break-all">
-			<Button
-				radius="none"
-				variant="light"
-				onClick={() => {
-					setVisiblePass((old) => !old);
-					navigator.clipboard.writeText(user.parola);
-				}}
-				style={{ whiteSpace: "normal", wordBreak: "break-all" }}
-				title={!visiblePass ? "*".repeat(user.parola.length) : user.parola}
-			>
-				<p className="break-all">
-					{!visiblePass ? "*".repeat(user.parola.length) : user.parola}
-				</p>
-			</Button>
-		</div>
-	);
-}
+	formularStergereAdresa,
+	formularStergereInregistrari,
+} from "@/services/general/FurnizorStare";
+import { User } from "next-auth";
+import { TipuriTabel } from "@/lib/tipuri";
+import {
+	ColoanaSelecteazaCapTabel,
+	ColoanaSelecteazaRand,
+} from "@/components/admin/table/SelectareColoane";
+import AntetColoana from "@/components/admin/table/AntetColoana";
+import CelulaColoana from "@/components/admin/table/CelulaColoana";
+import { capitalizeazaPrimaLitera } from "@/lib/metodeUtile";
+import { formateazaData, formateazaDataComplet } from "@/lib/intervaleOptiuni";
 
 function ActionButtons({ user }: { user: User }) {
-	const deleteModal = useDeleteModal();
+	const deleteModal = formularStergereInregistrari();
 	return (
 		<div className="flex flex-row items-center justify-center text-center gap-2">
 			<Button
@@ -58,9 +38,9 @@ function ActionButtons({ user }: { user: User }) {
 				variant="light"
 				className="text-zinc-600 hover:text-red-600"
 				onPress={() => {
-					deleteModal.setType(TipuriTabel.CLIENT);
-					deleteModal.setDeleteId(user.codClient);
-					deleteModal.setVisible(true);
+					deleteModal.setTip(TipuriTabel.CLIENT);
+					deleteModal.setCodStergere(user.codClient);
+					deleteModal.setVizibil(true);
 				}}
 			>
 				<Trash2Icon size={18} />
@@ -73,10 +53,10 @@ export const columns: ColumnDef<User>[] = [
 	{
 		id: "select",
 		header: ({ table }) => {
-			return <ColumnSelectHeader table={table} />;
+			return <ColoanaSelecteazaCapTabel table={table} />;
 		},
 		cell: ({ row }) => {
-			return <ColumnSelectCell row={row} />;
+			return <ColoanaSelecteazaRand row={row} />;
 		},
 		enableSorting: false,
 	},
@@ -91,21 +71,21 @@ export const columns: ColumnDef<User>[] = [
 	{
 		accessorKey: "codClient",
 		header: ({ column }) => {
-			return <ColumnHeader column={column} title="Cod Client" />;
+			return <AntetColoana coloana={column} titlu="Cod Client" />;
 		},
 		cell: ({ row }) => {
 			const user = row.original;
 			return (
-				<ColumnCell
-					filters={[
+				<CelulaColoana
+					filtre={[
 						{
-							page: "clientii",
-							label: "Cod Client",
-							column: "codClient",
-							value: user.codClient + "" ?? "",
+							pagina: "clientii",
+							eticheta: "Cod Client",
+							coloana: "codClient",
+							valoare: user.codClient + "" ?? "",
 						},
 					]}
-					data={user.codClient}
+					date={user.codClient}
 				/>
 			);
 		},
@@ -113,21 +93,21 @@ export const columns: ColumnDef<User>[] = [
 	{
 		accessorKey: "numeClient",
 		header: ({ column }) => {
-			return <ColumnHeader column={column} title="Nume Client" />;
+			return <AntetColoana coloana={column} titlu="Nume Client" />;
 		},
 		cell: ({ row }) => {
 			const user = row.original;
 			return (
-				<ColumnCell
-					filters={[
+				<CelulaColoana
+					filtre={[
 						{
-							page: "clientii",
-							label: "Nume Client",
-							column: "numeClient",
-							value: user.numeClient + "" ?? "",
+							pagina: "clientii",
+							eticheta: "Nume Client",
+							coloana: "numeClient",
+							valoare: user.numeClient + "" ?? "",
 						},
 					]}
-					data={user.numeClient}
+					date={user.numeClient}
 				/>
 			);
 		},
@@ -135,94 +115,69 @@ export const columns: ColumnDef<User>[] = [
 	{
 		accessorKey: "email",
 		header: ({ column }) => {
-			return <ColumnHeader column={column} title="Email" />;
+			return <AntetColoana coloana={column} titlu="Email" />;
 		},
 		cell: ({ row }) => {
 			const user = row.original;
 			return (
-				<ColumnCell
-					data={user.email}
-					filters={[
+				<CelulaColoana
+					date={user.email}
+					filtre={[
 						{
-							page: "clientii",
-							label: "Email",
-							column: "email",
-							value: user.email + "" ?? "",
+							pagina: "clientii",
+							eticheta: "Email",
+							coloana: "email",
+							valoare: user.email + "" ?? "",
 						},
 					]}
-					className={`${user.utlizatorAdmin && "text-red-500"}`}
+					clasa={`${user.utlizatorAdmin && "font-bold underline"}`}
 				/>
-			);
-		},
-	},
-	{
-		accessorKey: "active",
-		header: ({ column }) => {
-			return <ColumnHeader column={column} title="Active" />;
-		},
-		cell: ({ row }) => {
-			const user = row.original;
-			const color = user.emailVerificat != undefined ? "success" : "danger";
-			return (
-				<div className="flex flex-row items-center justify-center text-center">
-					<Chip variant="flat" color={color}>
-						{color == "danger" ? "Nu este activ" : "Activ"}
-					</Chip>
-				</div>
 			);
 		},
 	},
 	{
 		accessorKey: "telefon",
 		header: ({ column }) => {
-			return <ColumnHeader column={column} title="Telefon" />;
+			return <AntetColoana coloana={column} titlu="Telefon" />;
 		},
 		cell: ({ row }) => {
 			const user = row.original;
 			return (
-				<ColumnCell
-					filters={[
+				<CelulaColoana
+					filtre={[
 						{
-							page: "clientii",
-							label: "Telefon",
-							column: "telefon",
-							value: user.telefon + "" ?? "",
+							pagina: "clientii",
+							eticheta: "Telefon",
+							coloana: "telefon",
+							valoare: user.telefon + "" ?? "",
 						},
 					]}
-					data={user.telefon}
+					date={user.telefon}
 				/>
 			);
 		},
 	},
 	{
-		accessorKey: "parola",
-		header: ({ column }) => {
-			return <ColumnHeader column={column} title="Parola" />;
-		},
-		cell: ({ row }) => {
-			const user = row.original;
-			return <PasswordField user={user} />;
-		},
-	},
-	{
 		accessorKey: "creatPe",
 		header: ({ column }) => {
-			return <ColumnHeader column={column} title="Creat Pe" />;
+			return <AntetColoana coloana={column} titlu="Creat Pe" />;
 		},
 		cell: ({ row }) => {
 			const user = row.original;
-			const theDate = capitalizeFirstLetter(formatDateFull(user.creatPe));
+			const theDate = capitalizeazaPrimaLitera(
+				formateazaDataComplet(user.creatPe)
+			);
 			return (
-				<ColumnCell
-					filters={[
+				<CelulaColoana
+					filtre={[
 						{
-							page: "clientii",
-							label: "Adăugat Pee",
-							column: "creatPe",
-							value: formatDate(row.original.creatPe),
+							pagina: "clientii",
+							eticheta: "Adăugat Pee",
+							coloana: "creatPe",
+							valoare: formateazaData(row.original.creatPe),
 						},
 					]}
-					data={theDate}
+					date={theDate}
 				/>
 			);
 		},
@@ -230,27 +185,27 @@ export const columns: ColumnDef<User>[] = [
 	{
 		accessorKey: "bileteCumparate",
 		header: ({ column }) => {
-			return <ColumnHeader column={column} title="Bilete Cumpărate" />;
+			return <AntetColoana coloana={column} titlu="Bilete Cumpărate" />;
 		},
 		cell: ({ row }) => {
 			const user = row.original;
 			return (
-				<ColumnCell
-					filters={[
+				<CelulaColoana
+					filtre={[
 						{
-							page: "bilete",
-							label: "Bilete Client",
-							column: "codClient",
-							value: user.codClient + "" ?? "",
+							pagina: "bilete",
+							eticheta: "Bilete Client",
+							coloana: "codClient",
+							valoare: user.codClient + "" ?? "",
 						},
 						{
-							page: "bilete",
-							label: "Bilete Client",
-							column: "numeClient",
-							value: user.numeClient + "" ?? "",
+							pagina: "bilete",
+							eticheta: "Bilete Client",
+							coloana: "numeClient",
+							valoare: user.numeClient + "" ?? "",
 						},
 					]}
-					data={user.bileteCumparate?.length ?? 0}
+					date={user.bileteCumparate?.length ?? 0}
 				/>
 			);
 		},
@@ -258,27 +213,27 @@ export const columns: ColumnDef<User>[] = [
 	{
 		accessorKey: "platiiEfectuate",
 		header: ({ column }) => {
-			return <ColumnHeader column={column} title="Plății" />;
+			return <AntetColoana coloana={column} titlu="Plății" />;
 		},
 		cell: ({ row }) => {
 			const user = row.original;
 			return (
-				<ColumnCell
-					filters={[
+				<CelulaColoana
+					filtre={[
 						{
-							page: "platii",
-							label: "Plății Client",
-							column: "codClient",
-							value: user.codClient + "" ?? "",
+							pagina: "platii",
+							eticheta: "Plății Client",
+							coloana: "codClient",
+							valoare: user.codClient + "" ?? "",
 						},
 						{
-							page: "platii",
-							label: "Bilete Client",
-							column: "numeClient",
-							value: user.numeClient + "" ?? "",
+							pagina: "platii",
+							eticheta: "Bilete Client",
+							coloana: "numeClient",
+							valoare: user.numeClient + "" ?? "",
 						},
 					]}
-					data={user.platiiEfectuate?.length ?? 0}
+					date={user.platiiEfectuate?.length ?? 0}
 				/>
 			);
 		},

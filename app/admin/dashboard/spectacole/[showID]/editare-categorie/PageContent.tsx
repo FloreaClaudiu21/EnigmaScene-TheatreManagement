@@ -1,5 +1,5 @@
 "use client";
-import NewOrEditContent from "@/components/admin/newPage/NewEditContent";
+import NouEditareContinut from "@/components/admin/NouEditareContinut";
 import {
 	FormControl,
 	FormField,
@@ -8,10 +8,10 @@ import {
 	FormMessage,
 } from "@/components/ui/form";
 import { useToast } from "@/components/ui/use-toast";
-import { schemaCreareTipSpectacol } from "@/lib/schemas";
-import { TipSpectacol, TipuriTabel } from "@/lib/types";
-import { useLoadingScreen } from "@/services/StateProvider";
-import { update } from "@/services/admin/ControlProvider";
+import { schemaCreareTipSpectacol } from "@/lib/schemeFormulare";
+import { TipSpectacol, TipuriTabel } from "@/lib/tipuri";
+import { actualizare } from "@/services/backend/GeneralController";
+import { ecranIncarcare } from "@/services/general/FurnizorStare";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@nextui-org/react";
 import { PenIcon } from "lucide-react";
@@ -27,7 +27,7 @@ export default function AdminCategoryEdit({
 }) {
 	const router = useRouter();
 	const { toast } = useToast();
-	const loadingScreen = useLoadingScreen();
+	const loadingScreen = ecranIncarcare();
 	const form = useForm<z.infer<typeof schemaCreareTipSpectacol>>({
 		resolver: zodResolver(schemaCreareTipSpectacol),
 		defaultValues: {
@@ -35,14 +35,14 @@ export default function AdminCategoryEdit({
 		},
 	});
 	async function onSubmit(values: z.infer<typeof schemaCreareTipSpectacol>) {
-		loadingScreen.setLoading(true);
-		const data = await update(
-			TipuriTabel.SPECTACOL_CATEGORIE,
+		loadingScreen.setIncarcare(true);
+		const data = await actualizare(
+			TipuriTabel.CATEGORIE_SPECTACOL,
 			values,
 			category.codTipSpectacol
 		);
 		toast({
-			description: data.message,
+			description: data.mesaj,
 			title: "Editare Categorie Spectacol",
 			variant: data.ok ? "default" : "destructive",
 		});
@@ -51,15 +51,15 @@ export default function AdminCategoryEdit({
 			form.reset();
 			router.refresh();
 		}
-		loadingScreen.setLoading(false);
+		loadingScreen.setIncarcare(false);
 	}
 	return (
-		<NewOrEditContent
+		<NouEditareContinut
 			form={form}
 			onSubmit={onSubmit}
 			back_link="../../spectacole?tab=showsCategory"
-			title={`Editați categoria spectacolului cu codul de identificare #${category.codTipSpectacol}`}
-			loading={loadingScreen.loading}
+			titlu={`Editați categoria spectacolului cu codul de identificare #${category.codTipSpectacol}`}
+			loading={loadingScreen.incarcare}
 		>
 			<FormField
 				control={form.control}
@@ -83,6 +83,6 @@ export default function AdminCategoryEdit({
 					</FormItem>
 				)}
 			/>
-		</NewOrEditContent>
+		</NouEditareContinut>
 	);
 }

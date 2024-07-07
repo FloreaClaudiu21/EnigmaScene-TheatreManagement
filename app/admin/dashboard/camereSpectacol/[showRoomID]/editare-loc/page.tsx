@@ -1,10 +1,10 @@
 import { notFound } from "next/navigation";
 import React from "react";
-import { getShowRoomSeatById } from "@/services/admin/ControlProvider";
 import AdminShowRoomSeatEdit from "./PageContent";
-import { SalaSpectacol } from "@/lib/types";
 import { prisma } from "@/lib/prismaClient";
-import { isNumeric } from "@/lib/utils";
+import { obtineLocSalaSpectacolDupaId } from "@/services/backend/spectacole/obtineLocSalaSpectacolDupaId";
+import { esteNumeric } from "@/lib/metodeUtile";
+import { SalaSpectacol } from "@/lib/tipuri";
 
 export default async function AdminShowRoomSeatPageEdit({
 	params,
@@ -13,9 +13,9 @@ export default async function AdminShowRoomSeatPageEdit({
 }) {
 	let id = params.showRoomID;
 	if (!id) return notFound();
-	if (!isNumeric(id)) return notFound();
+	if (!esteNumeric(id)) return notFound();
 	id = parseInt(id);
-	const showRoomSeat = await getShowRoomSeatById(id);
+	const showRoomSeat = await obtineLocSalaSpectacolDupaId(id);
 	if (!showRoomSeat) return notFound();
 	const rooms: SalaSpectacol[] = await prisma.salaSpectacol.findMany({
 		include: {

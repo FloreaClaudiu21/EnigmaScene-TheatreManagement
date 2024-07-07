@@ -1,8 +1,8 @@
 import { notFound } from "next/navigation";
 import React from "react";
 import AdminSeasonEdit from "./PageContent";
-import { getSeasonById } from "@/services/admin/ControlProvider";
-import { isNumeric } from "@/lib/utils";
+import { obtineSezonSpectacolDupaId } from "@/services/backend/spectacole/obtineSezonSpectacolDupaId";
+import { esteNumeric } from "@/lib/metodeUtile";
 
 export default async function AdminShowSeasonEditPage({
 	params,
@@ -11,9 +11,9 @@ export default async function AdminShowSeasonEditPage({
 }) {
 	let id = params.showID;
 	if (!id) return notFound();
-	if (!isNumeric(id)) return notFound();
+	if (!esteNumeric(id)) return notFound();
 	id = parseInt(id);
-	const found = await getSeasonById(id);
+	const found = await obtineSezonSpectacolDupaId(id);
 	if (!found) {
 		return notFound();
 	}

@@ -1,13 +1,23 @@
 "use client";
 import Link from "next/link";
-import DropdownUser from "@/components/admin/header/DropdownMenuUser";
 import { usePathname } from "next/navigation";
 import { Image } from "@nextui-org/react";
-import { homeUrl } from "@/lib/utils";
 import HeaderMenuAdmin from "./headerMenu";
 import { useContext } from "react";
 import BreadcrumbHeader from "./BreadcrumbHeader";
 import { AuthContext } from "@/app/AuthContext";
+import { URLAcasa } from "@/lib/metodeUtile";
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuLabel,
+	DropdownMenuSeparator,
+	DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { signOut } from "next-auth/react";
+import { Button } from "@/components/ui/button";
+import { User2 } from "lucide-react";
 
 const HeaderComponent = () => {
 	const pathName = usePathname();
@@ -27,7 +37,7 @@ const HeaderComponent = () => {
 					</Link>
 				</div>
 				<div className="flex-1 flex-row flex gap-4">
-					<Link href={homeUrl(pathName) + "home"} className="hidden md:flex">
+					<Link href={URLAcasa(pathName) + "home"} className="hidden md:flex">
 						<Image
 							alt="Logo"
 							radius="none"
@@ -40,7 +50,44 @@ const HeaderComponent = () => {
 					<BreadcrumbHeader />
 				</div>
 				<div className="flex items-center gap-3 sm:gap-7">
-					<DropdownUser user={auth.user!} />
+					{auth.utilizator && (
+						<DropdownMenu>
+							<DropdownMenuTrigger asChild>
+								<div className="flex flex-row gap-4 justify-center place-items-center hover:cursor-pointer">
+									<span className="hidden text-right lg:block">
+										<span className="block text-sm font-medium text-foreground">
+											{auth.utilizator?.numeClient}
+										</span>
+										<span className="block text-xs text-red-300">
+											Administrator
+										</span>
+									</span>
+									<Button
+										size="icon"
+										variant="outline"
+										className="overflow-hidden rounded-full"
+									>
+										<User2 size={30} />
+									</Button>
+								</div>
+							</DropdownMenuTrigger>
+							<DropdownMenuContent align="end">
+								<DropdownMenuLabel>Contul Meu</DropdownMenuLabel>
+								<DropdownMenuItem className="text-red-500 font-semibold hover:text-red-800">
+									{auth.utilizator?.numeClient}
+								</DropdownMenuItem>
+								<DropdownMenuSeparator />
+								<DropdownMenuItem
+									onClick={async () => {
+										await signOut();
+									}}
+									className="group hover:cursor-pointer"
+								>
+									<span className="group-hover:text-red-500">Deconectare</span>
+								</DropdownMenuItem>
+							</DropdownMenuContent>
+						</DropdownMenu>
+					)}
 				</div>
 			</div>
 		</header>

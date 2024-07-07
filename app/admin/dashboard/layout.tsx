@@ -8,7 +8,7 @@ export default async function AdminPagesLayout({
 	children: React.ReactNode;
 }) {
 	return (
-		<div className="flex flex-row min-h-screen h-auto overflow-hidden">
+		<div className="flex flex-row min-h-screen h-auto overflow-y-auto">
 			<SidebarComponent />
 			<div className="relative flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
 				<HeaderComponent />

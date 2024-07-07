@@ -7,8 +7,7 @@
 		"build": "next build",
 		"start": "next start",
 		"lint": "next lint",
-		"postinstall": "prisma generate",
-		"fetch-exchange-rates": "ts-node jobs/fetchExchangeRates.ts"
+		"postinstall": "prisma generate"
 	},
 	"prisma": {
 		"seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
@@ -88,6 +87,7 @@
 		"react-to-pdf": "^1.0.1",
 		"react-to-print": "^2.15.1",
 		"recharts": "^2.12.6",
+		"socket.io": "^4.7.5",
 		"stripe": "^14.14.0",
 		"tailwind-merge": "^2.2.1",
 		"tailwindcss-animate": "^1.0.7",

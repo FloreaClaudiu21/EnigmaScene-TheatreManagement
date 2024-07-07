@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prismaClient";
 import React from "react";
 import AdminTicketNew from "./PageContent";
-import { Spectacol } from "@/lib/types";
+import { Spectacol } from "@/lib/tipuri";
 
 export default async function AdminTicketCreate() {
 	const spectacole = await prisma.spectacol.findMany({

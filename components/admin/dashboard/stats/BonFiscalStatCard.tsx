@@ -1,14 +1,14 @@
 import { prisma } from "@/lib/prismaClient";
 import React from "react";
 import GeneralStatCard from "./GeneralStatCard";
-import { PaintRollerIcon, StickyNoteIcon } from "lucide-react";
+import { StickyNoteIcon } from "lucide-react";
+import { BonFiscal } from "@/lib/tipuri";
 import {
-	formatDateFull,
-	formatNumber,
-	getRangeOption,
-} from "@/lib/rangeOptions";
-import { capitalizeFirstLetter } from "@/lib/utils";
-import { BonFiscal } from "@/lib/types";
+	formateazaDataComplet,
+	formateazaNumar,
+	obtineOptiuneInterval,
+} from "@/lib/intervaleOptiuni";
+import { capitalizeazaPrimaLitera } from "@/lib/metodeUtile";
 
 export default async function BonuriFiscaleStatCard({
 	searchParams,
@@ -17,7 +17,7 @@ export default async function BonuriFiscaleStatCard({
 }) {
 	let emiseBonuri: BonFiscal[] = [];
 	const queryKey = "fiscalReceipt";
-	const selectedRangeLabel = getRangeOption(searchParams, queryKey);
+	const selectedRangeLabel = obtineOptiuneInterval(searchParams, queryKey);
 	const bonuri: BonFiscal[] = await prisma.bonFiscal.findMany({
 		include: {
 			plata: true,
@@ -25,13 +25,13 @@ export default async function BonuriFiscaleStatCard({
 			spectacol: true,
 		},
 	});
-	if (selectedRangeLabel.label != "Toate zilele") {
+	if (selectedRangeLabel.eticheta != "Toate zilele") {
 		emiseBonuri = bonuri.filter((b) => {
 			const dateNow = new Date();
 			const dataCrearii = new Date(b.creatPe);
 			return (
-				dataCrearii >= (selectedRangeLabel.startDate ?? dateNow) &&
-				dataCrearii < (selectedRangeLabel.endDate ?? dateNow)
+				dataCrearii >= (selectedRangeLabel.dataInceput ?? dateNow) &&
+				dataCrearii < (selectedRangeLabel.dataSfarsit ?? dateNow)
 			);
 		});
 	}
@@ -43,13 +43,15 @@ export default async function BonuriFiscaleStatCard({
 			title="Bonuri Fiscale Emise"
 			selectedRangeLabel={selectedRangeLabel}
 			icon={<StickyNoteIcon className="h-6 w-6 text-muted-foreground" />}
-			subtitle={`Total bonuri fiscale: ${formatNumber(bonuri.length)}`}
+			subtitle={`Total bonuri fiscale: ${formateazaNumar(bonuri.length)}`}
 			body={
 				avM == 1
-					? formatNumber(avM) + " bon fiscal emis " + selectedRangeLabel.label1
-					: formatNumber(avM) +
+					? formateazaNumar(avM) +
+					  " bon fiscal emis " +
+					  selectedRangeLabel.eticheta1
+					: formateazaNumar(avM) +
 					  " bonuri fiscale emise " +
-					  selectedRangeLabel.label1
+					  selectedRangeLabel.eticheta1
 			}
 			bodyGeneralChart={emiseBonuri.map((b) => {
 				return {
@@ -76,8 +78,8 @@ export default async function BonuriFiscaleStatCard({
 						},
 						{
 							titlu: "Emis pe: ",
-							content: capitalizeFirstLetter(
-								formatDateFull(new Date(b.creatPe))
+							content: capitalizeazaPrimaLitera(
+								formateazaDataComplet(new Date(b.creatPe))
 							),
 						},
 					],

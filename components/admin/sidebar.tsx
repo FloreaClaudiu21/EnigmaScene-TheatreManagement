@@ -8,7 +8,6 @@ import {
 	DramaIcon,
 	FileArchiveIcon,
 	MoonIcon,
-	PaintRollerIcon,
 	PiggyBankIcon,
 	StickyNoteIcon,
 	SunIcon,
@@ -16,8 +15,8 @@ import {
 } from "lucide-react";
 import { Button, Tooltip } from "@nextui-org/react";
 import Link from "next/link";
-import { urlLink } from "@/lib/utils";
 import { useTheme } from "next-themes";
+import { linkURL } from "@/lib/metodeUtile";
 
 function SidebarLink({
 	url,
@@ -58,8 +57,8 @@ function SidebarLink({
 }
 
 export default function SidebarAdminComponent() {
-	const pathname = usePathname();
 	const theme = useTheme();
+	const pathname = usePathname();
 	return (
 		<aside className="fixed inset-y-0 left-0 hidden w-14 flex-col border-r bg-background md:flex z-[999]">
 			<nav className="flex flex-col items-center gap-4 px-2 sm:py-5">
@@ -68,56 +67,56 @@ export default function SidebarAdminComponent() {
 					include="dashboard"
 					pathName={pathname}
 					title="Dashboard"
-					url={urlLink(pathname)}
+					url={linkURL(pathname)}
 				/>
 				<SidebarLink
 					icon={<CircleUserIcon size={20} />}
 					include="clientii"
 					pathName={pathname}
 					title="Clienți"
-					url={urlLink(pathname) + "clientii"}
+					url={linkURL(pathname) + "clientii"}
 				/>
 				<SidebarLink
 					icon={<DramaIcon size={20} />}
 					include="spectacole"
 					pathName={pathname}
 					title="Spectacole"
-					url={urlLink(pathname) + "spectacole"}
+					url={linkURL(pathname) + "spectacole"}
 				/>
 				<SidebarLink
 					icon={<ArmchairIcon size={20} />}
 					include="camereSpectacol"
 					pathName={pathname}
 					title="Sălii Spectacole"
-					url={urlLink(pathname) + "camereSpectacol"}
+					url={linkURL(pathname) + "camereSpectacol"}
 				/>
 				<SidebarLink
 					icon={<TicketIcon size={20} />}
 					include="bilete"
 					pathName={pathname}
 					title="Bilete"
-					url={urlLink(pathname) + "bilete"}
+					url={linkURL(pathname) + "bilete"}
 				/>
 				<SidebarLink
 					icon={<PiggyBankIcon size={20} />}
 					include="platii"
 					pathName={pathname}
 					title="Plății"
-					url={urlLink(pathname) + "platii"}
+					url={linkURL(pathname) + "platii"}
 				/>
 				<SidebarLink
 					icon={<StickyNoteIcon size={20} />}
 					include="bonulFiscal"
 					pathName={pathname}
 					title="Bonuri Fiscale"
-					url={urlLink(pathname) + "bonulFiscal"}
+					url={linkURL(pathname) + "bonulFiscal"}
 				/>
 				<SidebarLink
 					icon={<FileArchiveIcon size={20} />}
 					include="facturi"
 					pathName={pathname}
 					title="Facturi Fiscale"
-					url={urlLink(pathname) + "facturi"}
+					url={linkURL(pathname) + "facturi"}
 				/>
 			</nav>
 			<nav className="mt-auto flex flex-col items-center gap-4 px-2 sm:py-5">

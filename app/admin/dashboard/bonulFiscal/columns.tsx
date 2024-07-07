@@ -1,12 +1,14 @@
 "use client";
+import AntetColoana from "@/components/admin/table/AntetColoana";
+import CelulaColoana, {
+	AplicaFiltru,
+} from "@/components/admin/table/CelulaColoana";
+import ModalViewFiscalReceipt from "@/components/bonuriFiscale/ButonVizualizareBon";
+import ModalViewInvoice from "@/components/facturaFiscala/ButonVizualizareFacturaFiscala";
+import { formateazaDataComplet } from "@/lib/intervaleOptiuni";
+import { capitalizeazaPrimaLitera, formateazaData } from "@/lib/metodeUtile";
+import { BonFiscal } from "@/lib/tipuri";
 import { ColumnDef } from "@tanstack/react-table";
-import ColumnHeader from "@/components/admin/table/ColumnHeader";
-import ColumnCell, { PushFilter } from "@/components/admin/table/ColumnCell";
-import ModalViewInvoice from "@/components/page/invoices/ViewInvoiceBtn";
-import ModalViewFiscalReceipt from "@/components/page/fiscalReceipts/ViewFiscalReceiptBtn";
-import { BonFiscal } from "@/lib/types";
-import { formatDateFull } from "@/lib/rangeOptions";
-import { capitalizeFirstLetter, formatDate } from "@/lib/utils";
 
 export const columnsReceipts: ColumnDef<BonFiscal>[] = [
 	{
@@ -24,21 +26,21 @@ export const columnsReceipts: ColumnDef<BonFiscal>[] = [
 	{
 		accessorKey: "codBonFiscal",
 		header: ({ column }) => {
-			return <ColumnHeader column={column} title="Cod Bon Fiscal" />;
+			return <AntetColoana coloana={column} titlu="Cod Bon Fiscal" />;
 		},
 		cell: ({ row }) => {
 			const user = row.original;
 			return (
-				<ColumnCell
-					filters={[
+				<CelulaColoana
+					filtre={[
 						{
-							page: "bonulFiscal",
-							label: "Cod Bon Fiscal",
-							column: "codBonFiscal",
-							value: user.codBonFiscal + "" ?? "",
+							pagina: "bonulFiscal",
+							eticheta: "Cod Bon Fiscal",
+							coloana: "codBonFiscal",
+							valoare: user.codBonFiscal + "" ?? "",
 						},
 					]}
-					data={user.codBonFiscal}
+					date={user.codBonFiscal}
 				/>
 			);
 		},
@@ -46,20 +48,20 @@ export const columnsReceipts: ColumnDef<BonFiscal>[] = [
 	{
 		accessorKey: "numarBonFiscal",
 		header: ({ column }) => {
-			return <ColumnHeader column={column} title="Numar Bon" />;
+			return <AntetColoana coloana={column} titlu="Numar Bon" />;
 		},
 		cell: ({ row: { original } }) => {
 			return (
-				<ColumnCell
-					filters={[
+				<CelulaColoana
+					filtre={[
 						{
-							page: "bonulFiscal",
-							label: "Numar Bon Fiscal",
-							column: "numarBonFiscal",
-							value: original.numarBonFiscal + "" ?? "",
+							pagina: "bonulFiscal",
+							eticheta: "Numar Bon Fiscal",
+							coloana: "numarBonFiscal",
+							valoare: original.numarBonFiscal + "" ?? "",
 						},
 					]}
-					data={original.numarBonFiscal}
+					date={original.numarBonFiscal}
 				/>
 			);
 		},
@@ -67,60 +69,60 @@ export const columnsReceipts: ColumnDef<BonFiscal>[] = [
 	{
 		accessorKey: "serieBonFiscal",
 		header: ({ column }) => {
-			return <ColumnHeader column={column} title="Serie Bon" />;
+			return <AntetColoana coloana={column} titlu="Serie Bon" />;
 		},
 		cell: ({ row: { original } }) => {
 			return (
-				<ColumnCell
-					filters={[
+				<CelulaColoana
+					filtre={[
 						{
-							page: "bonulFiscal",
-							label: "Serie Bon Fiscal",
-							column: "serieBonFiscal",
-							value: original.serieBonFiscal + "" ?? "",
+							pagina: "bonulFiscal",
+							eticheta: "Serie Bon Fiscal",
+							coloana: "serieBonFiscal",
+							valoare: original.serieBonFiscal + "" ?? "",
 						},
 					]}
-					data={original.serieBonFiscal}
+					date={original.serieBonFiscal}
 				/>
 			);
 		},
 	},
 	{
-		accessorKey: "codPlata",
+		accessorKey: "sumaPlatita",
 		header: ({ column }) => {
-			return <ColumnHeader column={column} title="Cod Plata & Suma Platită" />;
+			return <AntetColoana coloana={column} titlu="Cod Plata & Suma Platită" />;
 		},
 		cell: ({ row: { original } }) => {
 			let priceConverted = original.plata?.sumaPlatita ?? 0;
 			return (
-				<ColumnCell
-					data={
+				<CelulaColoana
+					date={
 						<>
-							<PushFilter
-								filters={[
+							<AplicaFiltru
+								filtre={[
 									{
-										column: "codPlata",
-										label: "Cod Plata",
-										page: "bonulFiscal",
-										value: original.codPlata + "" ?? "",
+										coloana: "codPlata",
+										eticheta: "Cod Plata",
+										pagina: "bonulFiscal",
+										valoare: original.codPlata + "" ?? "",
 									},
 								]}
 							>
 								{original.codPlata}
-							</PushFilter>
+							</AplicaFiltru>
 							-
-							<PushFilter
-								filters={[
+							<AplicaFiltru
+								filtre={[
 									{
-										column: "moneda",
-										page: "bonulFiscal",
-										label: "Moneda",
-										value: priceConverted.toFixed(2) ?? "",
+										coloana: "moneda",
+										pagina: "bonulFiscal",
+										eticheta: "Moneda",
+										valoare: priceConverted.toFixed(2) ?? "",
 									},
 								]}
 							>
 								{priceConverted.toFixed(2) + " RON"}
-							</PushFilter>
+							</AplicaFiltru>
 						</>
 					}
 				/>
@@ -128,40 +130,40 @@ export const columnsReceipts: ColumnDef<BonFiscal>[] = [
 		},
 	},
 	{
-		accessorKey: "codClient",
+		accessorKey: "numeClient",
 		header: ({ column }) => {
-			return <ColumnHeader column={column} title="Cod & Nume Client" />;
+			return <AntetColoana coloana={column} titlu="Cod & Nume Client" />;
 		},
 		cell: ({ row: { original } }) => {
 			return (
-				<ColumnCell
-					data={
+				<CelulaColoana
+					date={
 						<>
-							<PushFilter
-								filters={[
+							<AplicaFiltru
+								filtre={[
 									{
-										column: "codClient",
-										label: "Cod Client",
-										page: "bonulFiscal",
-										value: original.codClient + "" ?? "",
+										coloana: "codClient",
+										eticheta: "Cod Client",
+										pagina: "bonulFiscal",
+										valoare: original.codClient + "" ?? "",
 									},
 								]}
 							>
 								{original.codClient}
-							</PushFilter>
+							</AplicaFiltru>
 							-
-							<PushFilter
-								filters={[
+							<AplicaFiltru
+								filtre={[
 									{
-										column: "numeClient",
-										page: "bonulFiscal",
-										label: "Nume Client",
-										value: original.client?.numeClient ?? "",
+										coloana: "numeClient",
+										pagina: "bonulFiscal",
+										eticheta: "Nume Client",
+										valoare: original.client?.numeClient ?? "",
 									},
 								]}
 							>
 								{original.client?.numeClient}
-							</PushFilter>
+							</AplicaFiltru>
 						</>
 					}
 				/>
@@ -169,40 +171,40 @@ export const columnsReceipts: ColumnDef<BonFiscal>[] = [
 		},
 	},
 	{
-		accessorKey: "codSpectacol",
+		accessorKey: "titlu",
 		header: ({ column }) => {
-			return <ColumnHeader column={column} title="Cod & Nume Spectacol" />;
+			return <AntetColoana coloana={column} titlu="Cod & Nume Spectacol" />;
 		},
 		cell: ({ row: { original } }) => {
 			return (
-				<ColumnCell
-					data={
+				<CelulaColoana
+					date={
 						<>
-							<PushFilter
-								filters={[
+							<AplicaFiltru
+								filtre={[
 									{
-										column: "codSpectacol",
-										label: "Cod Spectacol",
-										page: "bonulFiscal",
-										value: original.codSpectacol + "" ?? "",
+										coloana: "codSpectacol",
+										eticheta: "Cod Spectacol",
+										pagina: "bonulFiscal",
+										valoare: original.codSpectacol + "" ?? "",
 									},
 								]}
 							>
 								{original.codSpectacol}
-							</PushFilter>
+							</AplicaFiltru>
 							-
-							<PushFilter
-								filters={[
+							<AplicaFiltru
+								filtre={[
 									{
-										column: "titlu",
-										page: "bonulFiscal",
-										label: "Titlu Spectacol",
-										value: original.spectacol?.titlu ?? "",
+										coloana: "titlu",
+										pagina: "bonulFiscal",
+										eticheta: "Titlu Spectacol",
+										valoare: original.spectacol?.titlu ?? "",
 									},
 								]}
 							>
 								{original.spectacol?.titlu}
-							</PushFilter>
+							</AplicaFiltru>
 						</>
 					}
 				/>
@@ -212,26 +214,26 @@ export const columnsReceipts: ColumnDef<BonFiscal>[] = [
 	{
 		accessorKey: "bileteVandute",
 		header: ({ column }) => {
-			return <ColumnHeader column={column} title="Bilete Vandute" />;
+			return <AntetColoana coloana={column} titlu="Bilete Vandute" />;
 		},
 		cell: ({ row: { original } }) => {
 			return (
-				<ColumnCell
-					filters={[
+				<CelulaColoana
+					filtre={[
 						{
-							page: "bilete",
-							label: "Bilete Vandute",
-							column: "codSpectacol",
-							value: original.codSpectacol + "",
+							pagina: "bilete",
+							eticheta: "Bilete Vandute",
+							coloana: "codSpectacol",
+							valoare: original.codSpectacol + "",
 						},
 						{
-							page: "bilete",
-							label: "Bilete Vandute",
-							column: "titlu",
-							value: original.spectacol?.titlu ?? "",
+							pagina: "bilete",
+							eticheta: "Bilete Vandute",
+							coloana: "titlu",
+							valoare: original.spectacol?.titlu ?? "",
 						},
 					]}
-					data={
+					date={
 						(original.bileteSpectacol?.length ?? 0) +
 						"/" +
 						original.spectacol?.salaSpectacol?.locuriSala?.length
@@ -243,20 +245,22 @@ export const columnsReceipts: ColumnDef<BonFiscal>[] = [
 	{
 		accessorKey: "creatPe",
 		header: ({ column }) => {
-			return <ColumnHeader column={column} title="Bon Emis Pe" />;
+			return <AntetColoana coloana={column} titlu="Bon Emis Pe" />;
 		},
 		cell: ({ row: { original } }) => {
 			return (
-				<ColumnCell
-					filters={[
+				<CelulaColoana
+					filtre={[
 						{
-							page: "bilete",
-							label: "Emis Pe",
-							column: "creatPe",
-							value: formatDate(original.creatPe),
+							pagina: "bilete",
+							eticheta: "Emis Pe",
+							coloana: "creatPe",
+							valoare: formateazaData(original.creatPe),
 						},
 					]}
-					data={capitalizeFirstLetter(formatDateFull(original.creatPe))}
+					date={capitalizeazaPrimaLitera(
+						formateazaDataComplet(original.creatPe)
+					)}
 				/>
 			);
 		},

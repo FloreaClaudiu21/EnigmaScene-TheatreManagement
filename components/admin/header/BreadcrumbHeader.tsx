@@ -6,7 +6,7 @@ import {
 	BreadcrumbPage,
 	BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { capitalizeFirstLetter, urlLink } from "@/lib/utils";
+import { capitalizeazaPrimaLitera, linkURL } from "@/lib/metodeUtile";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React from "react";
@@ -15,10 +15,10 @@ import { v4 as uuidv4 } from "uuid";
 export default function BreadcrumbHeader() {
 	const pathName = usePathname();
 	const pathNames = pathName.split("/");
-	let link = urlLink(pathName);
+	let link = linkURL(pathName);
 	return (
 		<Breadcrumb className="hidden md:flex">
-			<BreadcrumbList key={uuidv4()}>
+			<BreadcrumbList>
 				{pathNames.map((val: string, index: number) => {
 					if (index < 2) return <></>;
 					const isLast = index === pathNames.length - 1;
@@ -30,7 +30,7 @@ export default function BreadcrumbHeader() {
 							{!isLast ? (
 								<>
 									<BreadcrumbLink key={uuidv4()} asChild>
-										<Link href={link}>{capitalizeFirstLetter(val)}</Link>
+										<Link href={link}>{capitalizeazaPrimaLitera(val)}</Link>
 									</BreadcrumbLink>
 									<BreadcrumbSeparator />
 								</>
@@ -39,7 +39,7 @@ export default function BreadcrumbHeader() {
 									key={uuidv4()}
 									className="text-red-500 cursor-pointer"
 								>
-									{capitalizeFirstLetter(val)}
+									{capitalizeazaPrimaLitera(val)}
 								</BreadcrumbPage>
 							)}
 						</BreadcrumbItem>

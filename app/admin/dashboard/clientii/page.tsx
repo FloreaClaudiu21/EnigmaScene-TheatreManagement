@@ -1,11 +1,11 @@
 "use server";
 import { prisma } from "@/lib/prismaClient";
 import { Client, User } from "next-auth";
-import { decryptPassword } from "@/services/general/AuthProvider";
 import { columns } from "./columns";
-import DataTable from "@/components/admin/table/Table";
-import TabsPages from "@/components/admin/table/TabsPages";
-import { TipuriTabel } from "@/lib/types";
+import DataTable from "@/components/admin/table/GeneralTabel";
+import { decripteazaParola } from "@/services/auth/autentificare";
+import PaginiTab from "@/components/admin/table/PaginiTab";
+import { TipuriTabel } from "@/lib/tipuri";
 
 export default async function AdminClients() {
 	const clients: Client[] = await prisma.client.findMany({
@@ -20,16 +20,16 @@ export default async function AdminClients() {
 		},
 	});
 	const decClients = clients.map((v) => {
-		return { ...v, parola: decryptPassword(v.parola) } as User;
+		return { ...v, parola: decripteazaParola(v.parola) } as User;
 	});
 	return (
-		<TabsPages
-			defVal="all"
-			tabs={[
+		<PaginiTab
+			valoareDef="all"
+			taburi={[
 				{
-					name: "Toți Clienți",
-					value: "all",
-					content: (
+					nume: "Toți Clienți",
+					valoare: "all",
+					continut: (
 						<DataTable
 							title="Clienți"
 							data={decClients}

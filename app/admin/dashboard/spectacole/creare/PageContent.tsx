@@ -1,5 +1,4 @@
 "use client";
-import NewOrEditContent from "@/components/admin/newPage/NewEditContent";
 import {
 	FormControl,
 	FormField,
@@ -8,8 +7,6 @@ import {
 	FormMessage,
 } from "@/components/ui/form";
 import { useToast } from "@/components/ui/use-toast";
-import { useLoadingScreen } from "@/services/StateProvider";
-import { insert } from "@/services/admin/ControlProvider";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
 	Autocomplete,
@@ -25,25 +22,26 @@ import { z } from "zod";
 import { DatePicker } from "@nextui-org/date-picker";
 import { getLocalTimeZone, now } from "@internationalized/date";
 import { DateValue } from "@nextui-org/calendar";
-import { convertToLocalTime } from "@/lib/utils";
-import { SalaSpectacol, Sezon, TipSpectacol, TipuriTabel } from "@/lib/types";
-import { schemaCreareSpectacol } from "@/lib/schemas";
+import { schemaCreareSpectacol } from "@/lib/schemeFormulare";
 import { I18nProvider } from "@react-aria/i18n";
+import { SalaSpectacol, Sezon, TipSpectacol, TipuriTabel } from "@/lib/tipuri";
+import { ecranIncarcare } from "@/services/general/FurnizorStare";
+import { convertesteInTimpLocal } from "@/lib/metodeUtile";
+import { inserare } from "@/services/backend/GeneralController";
+import NouEditareContinut from "@/components/admin/NouEditareContinut";
 
 export default function AdminShowNew({
-	params,
 	showRooms,
 	seasons,
 	categories,
 }: {
-	params: any;
 	seasons: Sezon[];
 	showRooms: SalaSpectacol[];
 	categories: TipSpectacol[];
 }) {
 	const router = useRouter();
 	const { toast } = useToast();
-	const loadingScreen = useLoadingScreen();
+	const loadingScreen = ecranIncarcare();
 	const [valueEnd, setValueEnd] = useState<DateValue>(
 		now(getLocalTimeZone()).add({ hours: 1 })
 	);
@@ -53,8 +51,8 @@ export default function AdminShowNew({
 	const form = useForm<z.infer<typeof schemaCreareSpectacol>>({
 		resolver: zodResolver(schemaCreareSpectacol),
 		defaultValues: {
-			oraIncepere: convertToLocalTime(now(getLocalTimeZone())),
-			oraTerminare: convertToLocalTime(
+			oraIncepere: convertesteInTimpLocal(now(getLocalTimeZone())),
+			oraTerminare: convertesteInTimpLocal(
 				now(getLocalTimeZone()).add({ hours: 1 })
 			),
 			codSezon: seasons.length > 0 ? seasons[0].codSezon : undefined,
@@ -65,10 +63,10 @@ export default function AdminShowNew({
 		},
 	});
 	async function onSubmit(values: z.infer<typeof schemaCreareSpectacol>) {
-		loadingScreen.setLoading(true);
-		const data = await insert(TipuriTabel.SPECTACOL, values);
+		loadingScreen.setIncarcare(true);
+		const data = await inserare(TipuriTabel.SPECTACOL, values);
 		toast({
-			description: data.message,
+			description: data.mesaj,
 			title: "Înregistrare Spectacol",
 			variant: data.ok ? "default" : "destructive",
 		});
@@ -77,15 +75,15 @@ export default function AdminShowNew({
 			form.reset();
 			router.refresh();
 		}
-		loadingScreen.setLoading(false);
+		loadingScreen.setIncarcare(false);
 	}
 	return (
-		<NewOrEditContent
+		<NouEditareContinut
 			form={form}
 			onSubmit={onSubmit}
 			back_link="../spectacole?tab=showsAll"
-			title={"Adăugare un nou spectacol"}
-			loading={loadingScreen.loading}
+			titlu={"Adăugare un nou spectacol"}
+			loading={loadingScreen.incarcare}
 		>
 			<div className="flex flex-col md:flex-row gap-2">
 				<FormField
@@ -245,7 +243,7 @@ export default function AdminShowNew({
 										pageBehavior="single"
 										onChange={(e) => {
 											setValueStart(e);
-											field.onChange(convertToLocalTime(e));
+											field.onChange(convertesteInTimpLocal(e));
 										}}
 										minValue={now(getLocalTimeZone()).subtract({ minutes: 1 })}
 									/>
@@ -273,7 +271,7 @@ export default function AdminShowNew({
 										pageBehavior="single"
 										onChange={(e) => {
 											setValueEnd(e);
-											field.onChange(convertToLocalTime(e));
+											field.onChange(convertesteInTimpLocal(e));
 										}}
 										minValue={now(getLocalTimeZone()).subtract({ minutes: 1 })}
 									/>
@@ -401,6 +399,6 @@ export default function AdminShowNew({
 					</FormItem>
 				)}
 			/>
-		</NewOrEditContent>
+		</NouEditareContinut>
 	);
 }

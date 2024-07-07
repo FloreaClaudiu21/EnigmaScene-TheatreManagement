@@ -1,5 +1,5 @@
 "use client";
-import NewOrEditContent from "@/components/admin/newPage/NewEditContent";
+import NouEditareContinut from "@/components/admin/NouEditareContinut";
 import {
 	FormControl,
 	FormField,
@@ -8,10 +8,10 @@ import {
 	FormMessage,
 } from "@/components/ui/form";
 import { useToast } from "@/components/ui/use-toast";
-import { schemaCreareLocSalaSpectacol } from "@/lib/schemas";
-import { SalaSpectacol, TipuriTabel } from "@/lib/types";
-import { useLoadingScreen } from "@/services/StateProvider";
-import { insert } from "@/services/admin/ControlProvider";
+import { schemaCreareLocSalaSpectacol } from "@/lib/schemeFormulare";
+import { SalaSpectacol, TipuriTabel } from "@/lib/tipuri";
+import { inserare } from "@/services/backend/GeneralController";
+import { ecranIncarcare } from "@/services/general/FurnizorStare";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Autocomplete, AutocompleteItem, Input } from "@nextui-org/react";
 import { PenIcon } from "lucide-react";
@@ -27,7 +27,7 @@ export default function AdminShowRoomSeatCreate({
 }) {
 	const router = useRouter();
 	const { toast } = useToast();
-	const loadingScreen = useLoadingScreen();
+	const loadingScreen = ecranIncarcare();
 	const form = useForm<z.infer<typeof schemaCreareLocSalaSpectacol>>({
 		resolver: zodResolver(schemaCreareLocSalaSpectacol),
 		defaultValues: {
@@ -38,13 +38,13 @@ export default function AdminShowRoomSeatCreate({
 	async function onSubmit(
 		values: z.infer<typeof schemaCreareLocSalaSpectacol>
 	) {
-		loadingScreen.setLoading(true);
-		const data = await insert(TipuriTabel.SCAUN_CAMERA_SPECTACOL, {
+		loadingScreen.setIncarcare(true);
+		const data = await inserare(TipuriTabel.SCAUN_CAMERA_SPECTACOL, {
 			...values,
 			pretLoc: parseFloat(values.pretLoc),
 		});
 		toast({
-			description: data.message,
+			description: data.mesaj,
 			title: "Înregistrare locuri în sala de spectacole",
 			variant: data.ok ? "default" : "destructive",
 		});
@@ -53,15 +53,15 @@ export default function AdminShowRoomSeatCreate({
 			form.reset();
 			router.refresh();
 		}
-		loadingScreen.setLoading(false);
+		loadingScreen.setIncarcare(false);
 	}
 	return (
-		<NewOrEditContent
+		<NouEditareContinut
 			form={form}
 			onSubmit={onSubmit}
-			title={"Adăugare un nou loc în sala de spectacole"}
+			titlu={"Adăugare un nou loc în sala de spectacole"}
 			back_link="../camereSpectacol?tab=showsRoomSeats"
-			loading={loadingScreen.loading}
+			loading={loadingScreen.incarcare}
 		>
 			<div className="flex flex-col md:flex-row gap-2">
 				<FormField
@@ -190,6 +190,6 @@ export default function AdminShowRoomSeatCreate({
 					)}
 				/>
 			</div>
-		</NewOrEditContent>
+		</NouEditareContinut>
 	);
 }

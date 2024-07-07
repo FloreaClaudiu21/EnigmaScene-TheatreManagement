@@ -1,5 +1,5 @@
 "use client";
-import NewOrEditContent from "@/components/admin/newPage/NewEditContent";
+import NouEditareContinut from "@/components/admin/NouEditareContinut";
 import {
 	FormControl,
 	FormField,
@@ -8,10 +8,11 @@ import {
 	FormMessage,
 } from "@/components/ui/form";
 import { useToast } from "@/components/ui/use-toast";
-import { schemaCreareSezonSpectacol } from "@/lib/schemas";
-import { Sezon, TipuriTabel } from "@/lib/types";
-import { useLoadingScreen } from "@/services/StateProvider";
-import { update } from "@/services/admin/ControlProvider";
+import { schemaCreareSezonSpectacol } from "@/lib/schemeFormulare";
+import { Sezon, TipuriTabel } from "@/lib/tipuri";
+import { actualizare } from "@/services/backend/GeneralController";
+import { ecranIncarcare } from "@/services/general/FurnizorStare";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@nextui-org/react";
 import { PenIcon } from "lucide-react";
@@ -23,7 +24,7 @@ import { z } from "zod";
 export default function AdminSeasonEdit({ season }: { season: Sezon }) {
 	const router = useRouter();
 	const { toast } = useToast();
-	const loadingScreen = useLoadingScreen();
+	const loadingScreen = ecranIncarcare();
 	const form = useForm<z.infer<typeof schemaCreareSezonSpectacol>>({
 		resolver: zodResolver(schemaCreareSezonSpectacol),
 		defaultValues: {
@@ -31,14 +32,14 @@ export default function AdminSeasonEdit({ season }: { season: Sezon }) {
 		},
 	});
 	async function onSubmit(values: z.infer<typeof schemaCreareSezonSpectacol>) {
-		loadingScreen.setLoading(true);
-		const data = await update(
-			TipuriTabel.SPECTACOL_SEZON,
+		loadingScreen.setIncarcare(true);
+		const data = await actualizare(
+			TipuriTabel.SEZON_SPECTACOL,
 			values,
 			season.codSezon
 		);
 		toast({
-			description: data.message,
+			description: data.mesaj,
 			title: "Editare Sezon Spectacol",
 			variant: data.ok ? "default" : "destructive",
 		});
@@ -47,15 +48,15 @@ export default function AdminSeasonEdit({ season }: { season: Sezon }) {
 			form.reset();
 			router.refresh();
 		}
-		loadingScreen.setLoading(false);
+		loadingScreen.setIncarcare(false);
 	}
 	return (
-		<NewOrEditContent
+		<NouEditareContinut
 			form={form}
 			onSubmit={onSubmit}
 			back_link="../../spectacole?tab=showsSeasons"
-			title={`Editați sezonul spectacolului cu codul de identificare #${season.codSezon}`}
-			loading={loadingScreen.loading}
+			titlu={`Editați sezonul spectacolului cu codul de identificare #${season.codSezon}`}
+			loading={loadingScreen.incarcare}
 		>
 			<FormField
 				control={form.control}
@@ -79,6 +80,6 @@ export default function AdminSeasonEdit({ season }: { season: Sezon }) {
 					</FormItem>
 				)}
 			/>
-		</NewOrEditContent>
+		</NouEditareContinut>
 	);
 }

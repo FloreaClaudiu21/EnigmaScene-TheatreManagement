@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prismaClient";
+import { SalaSpectacol, Sezon, TipSpectacol } from "@/lib/tipuri";
 import React from "react";
 import AdminShowNew from "./PageContent";
-import { SalaSpectacol, Sezon, TipSpectacol } from "@/lib/types";
 
 export default async function PageCreateShow() {
 	const seasons: Sezon[] = await prisma.sezon.findMany({});

@@ -1,8 +1,8 @@
-import DataTable from "@/components/admin/table/Table";
-import TabsPages from "@/components/admin/table/TabsPages";
+import DataTable from "@/components/admin/table/GeneralTabel";
 import { prisma } from "@/lib/prismaClient";
-import { FacturaFiscala, TipuriTabel } from "@/lib/types";
 import { columnsInvoice } from "./columns";
+import { FacturaFiscala, TipuriTabel } from "@/lib/tipuri";
+import PaginiTab from "@/components/admin/table/PaginiTab";
 
 export default async function AdminInvoices() {
 	const invoices: FacturaFiscala[] = await prisma.facturaFiscala.findMany({
@@ -39,13 +39,13 @@ export default async function AdminInvoices() {
 		},
 	});
 	return (
-		<TabsPages
-			defVal="all"
-			tabs={[
+		<PaginiTab
+			valoareDef="all"
+			taburi={[
 				{
-					name: "Toate Facturile",
-					value: "all",
-					content: (
+					nume: "Toate Facturile",
+					valoare: "all",
+					continut: (
 						<DataTable
 							data={invoices}
 							title="Facturi Fiscale Emise"

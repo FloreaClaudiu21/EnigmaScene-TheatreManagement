@@ -1,10 +1,10 @@
-import DataTable from "@/components/admin/table/Table";
+import DataTable from "@/components/admin/table/GeneralTabel";
 import { prisma } from "@/lib/prismaClient";
-import TabsPages from "@/components/admin/table/TabsPages";
 import { columnsShow } from "./columnsShow";
 import { columnsSeason } from "./columnsSeason";
 import { columnsShowType } from "./columnsShowType";
-import { Sezon, Spectacol, TipSpectacol, TipuriTabel } from "@/lib/types";
+import { Sezon, Spectacol, TipSpectacol, TipuriTabel } from "@/lib/tipuri";
+import PaginiTab from "@/components/admin/table/PaginiTab";
 
 export default async function AdminShows() {
 	const seasons: Sezon[] = await prisma.sezon.findMany({});
@@ -26,13 +26,13 @@ export default async function AdminShows() {
 		},
 	});
 	return (
-		<TabsPages
-			defVal="showsAll"
-			tabs={[
+		<PaginiTab
+			valoareDef="showsAll"
+			taburi={[
 				{
-					name: "Toate Spectacolele",
-					value: "showsAll",
-					content: (
+					nume: "Toate Spectacolele",
+					valoare: "showsAll",
+					continut: (
 						<DataTable
 							title="Spectacole Disponibile"
 							data={shows}
@@ -60,15 +60,15 @@ export default async function AdminShows() {
 					),
 				},
 				{
-					name: "Sezoane",
-					value: "showsSeasons",
-					content: (
+					nume: "Sezoane",
+					valoare: "showsSeasons",
+					continut: (
 						<DataTable
 							data={seasons}
 							title="Sezoane Spectacole"
 							columns={columnsSeason}
 							showControlBtns={true}
-							type={TipuriTabel.SPECTACOL_SEZON}
+							type={TipuriTabel.SEZON_SPECTACOL}
 							create_link="spectacole/creare-sezon"
 							subtitle="Administrați sezoanele spectacolelor."
 							filters={[
@@ -80,15 +80,15 @@ export default async function AdminShows() {
 					),
 				},
 				{
-					name: "Categorii",
-					value: "showsCategory",
-					content: (
+					nume: "Categorii",
+					valoare: "showsCategory",
+					continut: (
 						<DataTable
 							data={categories}
 							showControlBtns={true}
 							title="Categorii Spectacole"
 							columns={columnsShowType}
-							type={TipuriTabel.SPECTACOL_CATEGORIE}
+							type={TipuriTabel.CATEGORIE_SPECTACOL}
 							create_link="spectacole/creare-categorie"
 							subtitle="Administrați categoriile spectacolelor."
 							filters={[

@@ -1,24 +1,24 @@
 "use client";
-import { ColumnDef } from "@tanstack/react-table";
-import ColumnHeader from "@/components/admin/table/ColumnHeader";
-import ColumnCell from "@/components/admin/table/ColumnCell";
+import AntetColoana from "@/components/admin/table/AntetColoana";
+import CelulaColoana from "@/components/admin/table/CelulaColoana";
+import CelulaColoanaActiuni from "@/components/admin/table/CelulaColoanaActiuni";
 import {
-	ColumnSelectCell,
-	ColumnSelectHeader,
-} from "@/components/admin/table/ColumnSelect";
-import ColumnCellActions from "@/components/admin/table/ColumnCellActions";
-import { Sezon, TipuriTabel } from "@/lib/types";
-import { formatDateFull } from "@/lib/rangeOptions";
-import { capitalizeFirstLetter, formatDate } from "@/lib/utils";
+	ColoanaSelecteazaCapTabel,
+	ColoanaSelecteazaRand,
+} from "@/components/admin/table/SelectareColoane";
+import { formateazaDataComplet } from "@/lib/intervaleOptiuni";
+import { capitalizeazaPrimaLitera, formateazaData } from "@/lib/metodeUtile";
+import { Sezon, TipuriTabel } from "@/lib/tipuri";
+import { ColumnDef } from "@tanstack/react-table";
 
 export const columnsSeason: ColumnDef<Sezon>[] = [
 	{
 		id: "select",
 		header: ({ table }) => {
-			return <ColumnSelectHeader table={table} />;
+			return <ColoanaSelecteazaCapTabel table={table} />;
 		},
 		cell: ({ row }) => {
-			return <ColumnSelectCell row={row} />;
+			return <ColoanaSelecteazaRand row={row} />;
 		},
 		enableSorting: false,
 	},
@@ -26,8 +26,8 @@ export const columnsSeason: ColumnDef<Sezon>[] = [
 		id: "actions",
 		cell: ({ row }) => {
 			return (
-				<ColumnCellActions
-					type={TipuriTabel.SPECTACOL_SEZON}
+				<CelulaColoanaActiuni
+					type={TipuriTabel.SEZON_SPECTACOL}
 					deleteId={row.original.codSezon}
 					link_edit={"spectacole/" + row.original.codSezon + "/editare-sezon"}
 				/>
@@ -38,21 +38,21 @@ export const columnsSeason: ColumnDef<Sezon>[] = [
 	{
 		accessorKey: "codSezon",
 		header: ({ column }) => {
-			return <ColumnHeader column={column} title="Cod Sezon" />;
+			return <AntetColoana coloana={column} titlu="Cod Sezon" />;
 		},
 		cell: ({ row }) => {
 			const user = row.original;
 			return (
-				<ColumnCell
-					filters={[
+				<CelulaColoana
+					filtre={[
 						{
-							page: "spectacole",
-							label: "Cod Sezon",
-							column: "codSezon",
-							value: user.codSezon + "" ?? "",
+							pagina: "spectacole",
+							eticheta: "Cod Sezon",
+							coloana: "codSezon",
+							valoare: user.codSezon + "" ?? "",
 						},
 					]}
-					data={user.codSezon}
+					date={user.codSezon}
 				/>
 			);
 		},
@@ -60,20 +60,20 @@ export const columnsSeason: ColumnDef<Sezon>[] = [
 	{
 		accessorKey: "numeSezon",
 		header: ({ column }) => {
-			return <ColumnHeader column={column} title="Nume Sezon" />;
+			return <AntetColoana coloana={column} titlu="Nume Sezon" />;
 		},
 		cell: ({ row: { original } }) => {
 			return (
-				<ColumnCell
-					filters={[
+				<CelulaColoana
+					filtre={[
 						{
-							page: "spectacole",
-							label: "Nume Sezon",
-							column: "numeSezon",
-							value: original.numeSezon + "" ?? "",
+							pagina: "spectacole",
+							eticheta: "Nume Sezon",
+							coloana: "numeSezon",
+							valoare: original.numeSezon + "" ?? "",
 						},
 					]}
-					data={original.numeSezon}
+					date={original.numeSezon}
 				/>
 			);
 		},
@@ -81,21 +81,21 @@ export const columnsSeason: ColumnDef<Sezon>[] = [
 	{
 		accessorKey: "creatPe",
 		header: ({ column }) => {
-			return <ColumnHeader column={column} title="Creat Pe" />;
+			return <AntetColoana coloana={column} titlu="Creat Pe" />;
 		},
 		cell: ({ row }) => {
 			const show = row.original;
 			return (
-				<ColumnCell
-					filters={[
+				<CelulaColoana
+					filtre={[
 						{
-							page: "spectacole",
-							label: "Adaugat Pe",
-							column: "creatPe",
-							value: formatDate(show.creatPe),
+							pagina: "spectacole",
+							eticheta: "Adaugat Pe",
+							coloana: "creatPe",
+							valoare: formateazaData(show.creatPe),
 						},
 					]}
-					data={capitalizeFirstLetter(formatDateFull(show.creatPe))}
+					date={capitalizeazaPrimaLitera(formateazaDataComplet(show.creatPe))}
 				/>
 			);
 		},

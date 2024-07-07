@@ -1,9 +1,9 @@
 import { prisma } from "@/lib/prismaClient";
-import { Plata } from "@/lib/types";
 import React from "react";
-import PaymentsContainerTable from "./PaymentsContainerTable";
+import { Plata } from "@/lib/tipuri";
+import PlatiTabelContainer from "./PlatiTabelContainer";
 
-export default async function RecentPaymentsTable() {
+export default async function PlatiRecenteTabel() {
 	const payments: Plata[] = await prisma.plata.findMany({
 		take: 10,
 		orderBy: {
@@ -14,5 +14,5 @@ export default async function RecentPaymentsTable() {
 			factura: true,
 		},
 	});
-	return <PaymentsContainerTable payments={payments} />;
+	return <PlatiTabelContainer platii={payments} />;
 }

@@ -1,5 +1,5 @@
 "use client";
-import NewOrEditContent from "@/components/admin/newPage/NewEditContent";
+import NouEditareContinut from "@/components/admin/NouEditareContinut";
 import {
 	FormControl,
 	FormField,
@@ -8,10 +8,10 @@ import {
 	FormMessage,
 } from "@/components/ui/form";
 import { useToast } from "@/components/ui/use-toast";
-import { schemaCreareLocSalaSpectacol } from "@/lib/schemas";
-import { LocSalaSpectacol, SalaSpectacol, TipuriTabel } from "@/lib/types";
-import { useLoadingScreen } from "@/services/StateProvider";
-import { update } from "@/services/admin/ControlProvider";
+import { schemaCreareLocSalaSpectacol } from "@/lib/schemeFormulare";
+import { LocSalaSpectacol, SalaSpectacol, TipuriTabel } from "@/lib/tipuri";
+import { actualizare } from "@/services/backend/GeneralController";
+import { ecranIncarcare } from "@/services/general/FurnizorStare";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Autocomplete, AutocompleteItem, Input } from "@nextui-org/react";
 import { PenIcon } from "lucide-react";
@@ -29,7 +29,7 @@ export default function AdminShowRoomSeatEdit({
 }) {
 	const router = useRouter();
 	const { toast } = useToast();
-	const loadingScreen = useLoadingScreen();
+	const loadingScreen = ecranIncarcare();
 	const form = useForm<z.infer<typeof schemaCreareLocSalaSpectacol>>({
 		resolver: zodResolver(schemaCreareLocSalaSpectacol),
 		defaultValues: {
@@ -43,8 +43,8 @@ export default function AdminShowRoomSeatEdit({
 	async function onSubmit(
 		values: z.infer<typeof schemaCreareLocSalaSpectacol>
 	) {
-		loadingScreen.setLoading(true);
-		const data = await update(
+		loadingScreen.setIncarcare(true);
+		const data = await actualizare(
 			TipuriTabel.SCAUN_CAMERA_SPECTACOL,
 			{
 				...values,
@@ -53,7 +53,7 @@ export default function AdminShowRoomSeatEdit({
 			showRoomSeat.codLocSala
 		);
 		toast({
-			description: data.message,
+			description: data.mesaj,
 			title: "Editare Locuri în Sală de Spectacole",
 			variant: data.ok ? "default" : "destructive",
 		});
@@ -62,15 +62,15 @@ export default function AdminShowRoomSeatEdit({
 			form.reset();
 			router.refresh();
 		}
-		loadingScreen.setLoading(false);
+		loadingScreen.setIncarcare(false);
 	}
 	return (
-		<NewOrEditContent
+		<NouEditareContinut
 			form={form}
 			onSubmit={onSubmit}
 			back_link="../../camereSpectacol?tab=showsRoomSeats"
-			title={`Editați locul din sala de spectacol cu codul de identificare #${showRoomSeat.codLocSala}`}
-			loading={loadingScreen.loading}
+			titlu={`Editați locul din sala de spectacol cu codul de identificare #${showRoomSeat.codLocSala}`}
+			loading={loadingScreen.incarcare}
 		>
 			<div className="flex flex-col md:flex-row gap-2">
 				<FormField
@@ -195,6 +195,6 @@ export default function AdminShowRoomSeatEdit({
 					)}
 				/>
 			</div>
-		</NewOrEditContent>
+		</NouEditareContinut>
 	);
 }

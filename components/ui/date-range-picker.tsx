@@ -3,7 +3,7 @@
 import * as React from "react";
 import { format } from "date-fns";
 import { DateRange } from "react-day-picker";
-import { cn } from "@/lib/utils";
+import { cn, formateazaData } from "@/lib/metodeUtile";
 import { Calendar } from "@/components/ui/calendar";
 import {
 	Popover,
@@ -12,7 +12,6 @@ import {
 } from "@/components/ui/popover";
 import { CalendarIcon } from "lucide-react";
 import { Button } from "./button";
-import { formatDate } from "@/lib/rangeOptions";
 
 export function DatePickerWithRange({
 	className,
@@ -41,10 +40,10 @@ export function DatePickerWithRange({
 						{date?.from ? (
 							date.to ? (
 								<span className="text-sm">
-									{formatDate(date.from)} - {formatDate(date.to)}
+									{formateazaData(date.from)} - {formateazaData(date.to)}
 								</span>
 							) : (
-								<span className="text-sm">{formatDate(date.from)}</span>
+								<span className="text-sm">{formateazaData(date.from)}</span>
 							)
 						) : (
 							<span className="text-sm">Alege o data</span>

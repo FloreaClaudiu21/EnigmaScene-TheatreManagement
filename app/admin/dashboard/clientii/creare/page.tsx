@@ -1,5 +1,5 @@
 "use client";
-import NewOrEditContent from "@/components/admin/newPage/NewEditContent";
+import NouEditareContinut from "@/components/admin/NouEditareContinut";
 import {
 	FormControl,
 	FormField,
@@ -8,64 +8,56 @@ import {
 	FormMessage,
 } from "@/components/ui/form";
 import { useToast } from "@/components/ui/use-toast";
-import { schemaCreareClient } from "@/lib/schemas";
-import { TipuriTabel, coduriTariRomanesti } from "@/lib/types";
-import { useLoadingScreen } from "@/services/StateProvider";
-import { insert } from "@/services/admin/ControlProvider";
+import { schemaCreareClient } from "@/lib/schemeFormulare";
+import { coduriTariRomanesti, TipuriTabel } from "@/lib/tipuri";
+import { inserare } from "@/services/backend/GeneralController";
+import { ecranIncarcare } from "@/services/general/FurnizorStare";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Autocomplete, AutocompleteItem, Input } from "@nextui-org/react";
-import {
-	EyeIcon,
-	EyeOffIcon,
-	MailIcon,
-	PhoneIcon,
-	SquareUserIcon,
-} from "lucide-react";
+import { MailIcon, PhoneIcon, SquareUserIcon } from "lucide-react";
 import { useRouter } from "next-nprogress-bar";
-import React, { useState } from "react";
+import React from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 export default function AdminClientNew() {
 	const router = useRouter();
 	const { toast } = useToast();
-	const loadingScreen = useLoadingScreen();
+	const loadingScreen = ecranIncarcare();
 	const form = useForm<z.infer<typeof schemaCreareClient>>({
 		resolver: zodResolver(schemaCreareClient),
 		defaultValues: {
 			termeni: true,
 		},
 	});
-	const [showPassRegister, setShowPassRegister] = useState(false);
-	const [showPassRegister2, setShowPassRegister2] = useState(false);
 	async function onSubmit(values: z.infer<typeof schemaCreareClient>) {
-		loadingScreen.setLoading(true);
-		const data = await insert(TipuriTabel.CLIENT, {
+		loadingScreen.setIncarcare(true);
+		const data = await inserare(TipuriTabel.CLIENT, {
 			email: values.email,
 			numeClient: values.numeClient,
-			parola: values.parola,
 			telefon: values.prefix + values.telefon,
 			dataNasterii: values.dataNasterii,
 		});
 		toast({
-			description: data.message,
+			description: data.mesaj,
 			title: "Inregistrare client",
 			variant: data.ok ? "default" : "destructive",
 		});
 		if (data.ok) {
-			router.push("../clients");
+			router.push("../clientii");
 			form.reset();
 			router.refresh();
 		}
-		loadingScreen.setLoading(false);
+		loadingScreen.setIncarcare(false);
 	}
 	return (
-		<NewOrEditContent
+		<NouEditareContinut
 			form={form}
 			onSubmit={onSubmit}
 			back_link="../clients"
-			title={"Adauga un client nou"}
-			loading={loadingScreen.loading}
+			titlu={"Adauga un client nou"}
+			loading={loadingScreen.incarcare}
 		>
 			<div className="flex flex-col md:flex-row gap-2">
 				<FormField
@@ -185,80 +177,6 @@ export default function AdminClientNew() {
 					</FormItem>
 				)}
 			/>
-			<div className="flex flex-col md:flex-row gap-2">
-				<FormField
-					name="parola"
-					control={form.control}
-					render={({ field }) => (
-						<FormItem className="w-full">
-							<FormLabel>Parola*</FormLabel>
-							<FormControl>
-								<Input
-									required
-									radius="md"
-									endContent={
-										!showPassRegister ? (
-											<EyeIcon
-												onClick={() => {
-													setShowPassRegister(true);
-												}}
-												className="text-2xl text-default-400 flex-shrink-0 hover:cursor-pointer"
-											/>
-										) : (
-											<EyeOffIcon
-												onClick={() => {
-													setShowPassRegister(false);
-												}}
-												className="text-2xl text-default-400 flex-shrink-0 hover:cursor-pointer"
-											/>
-										)
-									}
-									type={showPassRegister ? "text" : "password"}
-									variant="bordered"
-									{...field}
-								/>
-							</FormControl>
-							<FormMessage />
-						</FormItem>
-					)}
-				/>
-				<FormField
-					name="reParola"
-					control={form.control}
-					render={({ field }) => (
-						<FormItem className="w-full">
-							<FormLabel>Confirma Parola*</FormLabel>
-							<FormControl>
-								<Input
-									required
-									radius="md"
-									endContent={
-										!showPassRegister2 ? (
-											<EyeIcon
-												onClick={() => {
-													setShowPassRegister2(true);
-												}}
-												className="text-2xl text-default-400 flex-shrink-0 hover:cursor-pointer"
-											/>
-										) : (
-											<EyeOffIcon
-												onClick={() => {
-													setShowPassRegister2(false);
-												}}
-												className="text-2xl text-default-400 flex-shrink-0 hover:cursor-pointer"
-											/>
-										)
-									}
-									type={showPassRegister2 ? "text" : "password"}
-									variant="bordered"
-									{...field}
-								/>
-							</FormControl>
-							<FormMessage />
-						</FormItem>
-					)}
-				/>
-			</div>
-		</NewOrEditContent>
+		</NouEditareContinut>
 	);
 }

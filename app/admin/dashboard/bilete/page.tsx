@@ -1,8 +1,8 @@
-import DataTable from "@/components/admin/table/Table";
-import TabsPages from "@/components/admin/table/TabsPages";
 import { prisma } from "@/lib/prismaClient";
-import { BiletSpectacol, TipuriTabel } from "@/lib/types";
 import { columnsTicketsSold } from "./columnsTicketsSold";
+import { BiletSpectacol, TipuriTabel } from "@/lib/tipuri";
+import PaginiTab from "@/components/admin/table/PaginiTab";
+import GeneralTabel from "@/components/admin/table/GeneralTabel";
 
 export default async function AdminTickets() {
 	const ticketsSold: BiletSpectacol[] = await prisma.biletSpectacol.findMany({
@@ -12,14 +12,15 @@ export default async function AdminTickets() {
 		include: {
 			bonFiscal: {
 				include: {
+					plata: true,
 					bileteSpectacol: {
 						include: {
 							spectacol: true,
 							salaSpectacol: true,
 							locSalaSpectacol: true,
+							plata: true,
 						},
 					},
-
 					spectacol: true,
 				},
 			},
@@ -35,21 +36,27 @@ export default async function AdminTickets() {
 				},
 			},
 			client: true,
-			plata: true,
+			plata: {
+				include: {
+					bileteAsociate: true,
+					bonFiscal: true,
+					client: true,
+				},
+			},
 			locSalaSpectacol: true,
 			salaSpectacol: true,
 			spectacol: true,
 		},
 	});
 	return (
-		<TabsPages
-			defVal="ticketsAll"
-			tabs={[
+		<PaginiTab
+			valoareDef="ticketsAll"
+			taburi={[
 				{
-					name: "Toate Biletele Vandute",
-					value: "ticketsAll",
-					content: (
-						<DataTable
+					nume: "Toate Biletele Vandute",
+					valoare: "ticketsAll",
+					continut: (
+						<GeneralTabel
 							title="Biletele Vandute"
 							data={ticketsSold}
 							columns={columnsTicketsSold}

@@ -357,25 +357,32 @@ async function main() {
 				});
 			});
 		}
-		async saveToDatabase() {
-			const { count } = await prisma.rataDeSchimbValutar.deleteMany();
-			console.log("Deleted old exchange rates: " + count);
-			await prisma.rataDeSchimbValutar.createMany({
-				data: this.currency.map((line) => ({
-					moneda: line.name,
-					valuare: line.value,
-					multiplicator: line.multiplier,
-					data: new Date(this.date),
-				})),
-			});
-		}
+		// async saveToDatabase() {
+		// 	const { count } = await prisma.rataDeSchimbValutar.deleteMany();
+		// 	console.log("Deleted old exchange rates: " + count);
+		// 	await prisma.rataDeSchimbValutar.createMany({
+		// 		data: this.currency.map((line) => ({
+		// 			moneda: line.name,
+		// 			valuare: line.value,
+		// 			multiplicator: line.multiplier,
+		// 			data: new Date(this.date),
+		// 		})),
+		// 	});
+		// }
 	}
 
-	const encryptPassword = (password: string) => {
-		const cipher = crypto.createCipher(algorithm, secretKey);
-		let encryptedPassword = cipher.update(password, "utf-8", "hex");
-		encryptedPassword += cipher.final("hex");
-		return encryptedPassword;
+	const algorithm = "aes-256-cbc";
+	const secretKey = process.env.AUTH_SECRET ?? "";
+
+	const encryptPassword = (parola: string) => {
+		const cifru = crypto.createCipheriv(
+			algorithm,
+			secretKey,
+			Buffer.alloc(16, 0)
+		);
+		let parolaCriptata = cifru.update(parola, "utf-8", "hex");
+		parolaCriptata += cifru.final("hex");
+		return parolaCriptata;
 	};
 
 	const generateRandomBoolean = () => Math.random() < 0.5;
@@ -404,6 +411,7 @@ async function main() {
 	}
 
 	const generateClients = async (count: number) => {
+		await prisma.client.deleteMany();
 		const numClients = count;
 		const currentDate = new Date();
 		const startDate = new Date("2024-01-01");
@@ -649,7 +657,7 @@ async function main() {
 		const url = "https://www.bnr.ro/nbrfxrates.xml";
 		const cursInstance = new CursBNR();
 		await cursInstance.fetchAndParseXML(url);
-		await cursInstance.saveToDatabase();
+		// await cursInstance.saveToDatabase();
 	}
 
 	async function createRandomTickets() {
@@ -666,7 +674,6 @@ async function main() {
 				sezon: true,
 			},
 		});
-		const exchanges = await prisma.rataDeSchimbValutar.findMany();
 		for (let i = 0; i < numberOfTickets; i++) {
 			const spectacolAleatoriu =
 				spectacole[Math.floor(Math.random() * spectacole.length)];
@@ -689,12 +696,10 @@ async function main() {
 				(prev, current) => prev + current.pretLoc,
 				0
 			);
-			const randomRata = Math.floor(Math.random() * exchanges.length);
 			const payment = await prisma.plata.create({
 				data: {
 					tipPlata: generateRandomPaymentType(),
 					codClient: clientAleatoriu.codClient,
-					codRataDeSchimbValutar: exchanges[randomRata].codRataValutar,
 					sumaPlatita: pretTotal,
 					platitPe: creatPe,
 					starePlata: "ACCEPTATA",
@@ -754,9 +759,9 @@ async function main() {
 	}
 
 	//await createExchange();
-	//await generateClients(150);
+	await generateClients(50);
 	//await createShowRooms();
-	await createShowRoomSeats();
+	//await createShowRoomSeats();
 	//await createSeasonAndType();
 	//await createShows();
 	//await createRandomTickets();

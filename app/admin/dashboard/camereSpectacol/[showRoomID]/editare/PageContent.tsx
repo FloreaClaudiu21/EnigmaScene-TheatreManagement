@@ -1,5 +1,6 @@
 "use client";
-import NewOrEditContent from "@/components/admin/newPage/NewEditContent";
+
+import NouEditareContinut from "@/components/admin/NouEditareContinut";
 import {
 	FormControl,
 	FormField,
@@ -8,10 +9,11 @@ import {
 	FormMessage,
 } from "@/components/ui/form";
 import { useToast } from "@/components/ui/use-toast";
-import { schemaCreareSalaSpectacol } from "@/lib/schemas";
-import { SalaSpectacol, TipuriTabel } from "@/lib/types";
-import { useLoadingScreen } from "@/services/StateProvider";
-import { update } from "@/services/admin/ControlProvider";
+import { schemaCreareSalaSpectacol } from "@/lib/schemeFormulare";
+import { SalaSpectacol, TipuriTabel } from "@/lib/tipuri";
+import { actualizare } from "@/services/backend/GeneralController";
+import { ecranIncarcare } from "@/services/general/FurnizorStare";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@nextui-org/react";
 import { PenIcon } from "lucide-react";
@@ -27,7 +29,7 @@ export default function AdminShowRoomEdit({
 }) {
 	const router = useRouter();
 	const { toast } = useToast();
-	const loadingScreen = useLoadingScreen();
+	const loadingScreen = ecranIncarcare();
 	const form = useForm<z.infer<typeof schemaCreareSalaSpectacol>>({
 		resolver: zodResolver(schemaCreareSalaSpectacol),
 		defaultValues: {
@@ -36,14 +38,14 @@ export default function AdminShowRoomEdit({
 		},
 	});
 	async function onSubmit(values: z.infer<typeof schemaCreareSalaSpectacol>) {
-		loadingScreen.setLoading(true);
-		const data = await update(
+		loadingScreen.setIncarcare(true);
+		const data = await actualizare(
 			TipuriTabel.CAMERA_SPECTACOL,
 			values,
 			showRoom.codSalaSpectacol
 		);
 		toast({
-			description: data.message,
+			description: data.mesaj,
 			title: "Editare Sală de Spectacole",
 			variant: data.ok ? "default" : "destructive",
 		});
@@ -52,15 +54,15 @@ export default function AdminShowRoomEdit({
 			form.reset();
 			router.refresh();
 		}
-		loadingScreen.setLoading(false);
+		loadingScreen.setIncarcare(false);
 	}
 	return (
-		<NewOrEditContent
+		<NouEditareContinut
 			form={form}
 			onSubmit={onSubmit}
 			back_link="../../camereSpectacol?tab=roomsAll"
-			title={`Editați sala de spectacole cu codul de identificare #${showRoom.codSalaSpectacol}`}
-			loading={loadingScreen.loading}
+			titlu={`Editați sala de spectacole cu codul de identificare #${showRoom.codSalaSpectacol}`}
+			loading={loadingScreen.incarcare}
 		>
 			<div className="flex flex-col md:flex-row gap-2">
 				<FormField
@@ -107,6 +109,6 @@ export default function AdminShowRoomEdit({
 					)}
 				/>
 			</div>
-		</NewOrEditContent>
+		</NouEditareContinut>
 	);
 }

@@ -11,7 +11,7 @@ import {
 	DropdownMenuSubTrigger,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { RANGE_OPTIONS, setRange } from "@/lib/rangeOptions";
+import { OPTIUNI_INTERVAL, seteazaInterval } from "@/lib/intervaleOptiuni";
 import { subDays } from "date-fns";
 import { CalendarClockIcon } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
@@ -41,25 +41,25 @@ export default function ChartDateSelector({
 					variant={"default"}
 					className="justify-items-center ml-auto gap-1"
 				>
-					{selectedRange.label}
+					{selectedRange.eticheta}
 					<CalendarClockIcon className="h-4 w-4" />
 				</Button>
 			</DropdownMenuTrigger>
 			<DropdownMenuContent>
-				{Object.entries(RANGE_OPTIONS).map(([key, value]) => (
+				{Object.entries(OPTIUNI_INTERVAL).map(([key, value]) => (
 					<DropdownMenuItem
 						onClick={() =>
-							setRange(
+							seteazaInterval(
 								router,
 								pathname,
 								searchParams,
 								queryKey,
-								key as keyof typeof RANGE_OPTIONS
+								key as keyof typeof OPTIUNI_INTERVAL
 							)
 						}
 						key={key}
 					>
-						{value.label}
+						{value.eticheta}
 					</DropdownMenuItem>
 				))}
 				<DropdownMenuSeparator />
@@ -79,7 +79,7 @@ export default function ChartDateSelector({
 								<Button
 									onClick={() => {
 										if (dateRange == null) return;
-										setRange(
+										seteazaInterval(
 											router,
 											pathname,
 											searchParams,

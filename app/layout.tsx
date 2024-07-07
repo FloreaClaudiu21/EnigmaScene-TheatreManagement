@@ -5,8 +5,7 @@ import "@smastrom/react-rating/style.css";
 import "primereact/resources/themes/lara-light-cyan/theme.css";
 import { getServerSession } from "next-auth";
 import { AuthOption } from "./api/auth/authOptions";
-import AuthProvider from "./AuthContext";
-import { RaportDocument } from "@/components/page/raports/RaportDocument";
+import AutentificareProvider from "./AuthContext";
 
 const roboto = Roboto({
 	weight: "400",
@@ -40,7 +39,9 @@ export default async function RootLayout({
 	return (
 		<html lang="ro">
 			<body className={roboto.className}>
-				<AuthProvider session={session}>{children}</AuthProvider>
+				<AutentificareProvider session={session}>
+					{children}
+				</AutentificareProvider>
 			</body>
 		</html>
 	);

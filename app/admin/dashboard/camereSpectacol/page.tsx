@@ -1,9 +1,9 @@
-import DataTable from "@/components/admin/table/Table";
+import DataTable from "@/components/admin/table/GeneralTabel";
 import { prisma } from "@/lib/prismaClient";
-import { LocSalaSpectacol, SalaSpectacol, TipuriTabel } from "@/lib/types";
-import TabsPages from "@/components/admin/table/TabsPages";
 import { columnsShowRoom } from "./columnsShowRoom";
 import { columnsShowRoomSeat } from "./columnsShowRoomSeat";
+import { LocSalaSpectacol, SalaSpectacol, TipuriTabel } from "@/lib/tipuri";
+import PaginiTab from "@/components/admin/table/PaginiTab";
 
 export default async function AdminShowRooms() {
 	const showRoomsSeats: LocSalaSpectacol[] = await prisma.locSalaSpectacol.findMany(
@@ -26,13 +26,13 @@ export default async function AdminShowRooms() {
 		},
 	});
 	return (
-		<TabsPages
-			defVal="roomsAll"
-			tabs={[
+		<PaginiTab
+			valoareDef="roomsAll"
+			taburi={[
 				{
-					name: "Toate sălile",
-					value: "roomsAll",
-					content: (
+					nume: "Toate sălile",
+					valoare: "roomsAll",
+					continut: (
 						<DataTable
 							data={showRooms}
 							title="Sălii Spectacol"
@@ -49,9 +49,9 @@ export default async function AdminShowRooms() {
 					),
 				},
 				{
-					name: "Locuri în sălii",
-					value: "showsRoomSeats",
-					content: (
+					nume: "Locuri în sălii",
+					valoare: "showsRoomSeats",
+					continut: (
 						<DataTable
 							data={showRoomsSeats}
 							title="Locuri Sălii Spectacol"

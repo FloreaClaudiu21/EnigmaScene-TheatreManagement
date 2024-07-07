@@ -1,23 +1,23 @@
 "use client";
 import { useToast } from "@/components/ui/use-toast";
-import { useLoadingScreen } from "@/services/StateProvider";
-import { insert } from "@/services/admin/ControlProvider";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next-nprogress-bar";
 import React, { useCallback, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Client } from "next-auth";
-import ShowRoomPanel from "@/components/admin/dashboard/bilete/ShowRoomPanel";
+import ShowRoomPanel from "@/components/admin/dashboard/bilete/PanouSalaSpectacol";
 import TicketsCreateForm from "@/components/admin/dashboard/bilete/TicketsCreateForm";
+import { schemaCreareBiletSpectacol } from "@/lib/schemeFormulare";
 import {
 	AdresaFacturare,
 	BileteAchizitionate,
 	LocSalaSpectacol,
 	Spectacol,
 	TipuriTabel,
-} from "@/lib/types";
-import { schemaCreareBiletSpectacol } from "@/lib/schemas";
+} from "@/lib/tipuri";
+import { ecranIncarcare } from "@/services/general/FurnizorStare";
+import { inserare } from "@/services/backend/GeneralController";
 
 export default function AdminTicketNew({
 	spectacole,
@@ -28,7 +28,7 @@ export default function AdminTicketNew({
 }) {
 	const router = useRouter();
 	const { toast } = useToast();
-	const loadingScreen = useLoadingScreen();
+	const loadingScreen = ecranIncarcare();
 	const [generareFactura, setGenerareFactura] = useState(false);
 	const [locuriAlese, setLocuriAlese] = useState<LocSalaSpectacol[]>([]);
 	const [clientSelectat, setClientSelectat] = useState<Client | null>(
@@ -76,6 +76,7 @@ export default function AdminTicketNew({
 				: "nullnull",
 		},
 	});
+	console.log(form.getValues(), locuriAlese, costTotalLocuriRON);
 	async function onSubmit(values: z.infer<typeof schemaCreareBiletSpectacol>) {
 		if (locuriAlese.length <= 0) {
 			toast({
@@ -85,16 +86,16 @@ export default function AdminTicketNew({
 			});
 			return;
 		}
-		loadingScreen.setLoading(true);
+		loadingScreen.setIncarcare(true);
 		const otherValues = {
 			locuriAlese: locuriAlese,
 			numarLocuri: locuriAlese.length,
 			pretTotal: costTotalLocuriRON,
 		} as BileteAchizitionate;
 		values.bileteDetalii = otherValues;
-		const data = await insert(TipuriTabel.BILET, values);
+		const data = await inserare(TipuriTabel.BILET, values);
 		toast({
-			description: data.message,
+			description: data.mesaj,
 			title: "Înregistrare Vânzarea Biletelor",
 			variant: data.ok ? "default" : "destructive",
 		});
@@ -103,7 +104,7 @@ export default function AdminTicketNew({
 			form.reset();
 			router.refresh();
 		}
-		loadingScreen.setLoading(false);
+		loadingScreen.setIncarcare(false);
 	}
 	return (
 		<div className="flex flex-col md:flex-row min-h-full gap-4">

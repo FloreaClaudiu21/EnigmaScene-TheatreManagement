@@ -1,20 +1,17 @@
-import { NextAuthOptions } from "next-auth";
-import { User } from "next-auth";
+import { NextAuthOptions, User } from "next-auth";
 import LinkedInProvider from "next-auth/providers/linkedin";
 import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
-import {
-	LoginWithCredentials,
-	LoginWithProvider,
-	getClientByEmail,
-} from "@/services/general/AuthProvider";
-import {
-	createAccountProvider,
-	findAssociatedAccount,
-} from "@/services/general/AccountProviders";
-import { PartialClient, SignInProviderParams } from "@/lib/types";
 import { deleteCookie, getCookie, setCookie } from "cookies-next";
 import { cookies } from "next/headers";
+import {
+	autentificareCuCredentiale,
+	autentificareCuProvider,
+	creazaProviderCont,
+	gasesteContAsociat,
+} from "@/services/auth/autentificare";
+import { ParametriFurnizorAutentificare, PartialClient } from "@/lib/tipuri";
+import { obtineClientDupaEmail } from "@/services/backend/client/obtineClientDupaEmail";
 
 export const AuthOption: NextAuthOptions = {
 	providers: [
@@ -41,7 +38,7 @@ export const AuthOption: NextAuthOptions = {
 						if (!credentials?.email) {
 							throw Error("You must specify the email of the account!");
 						}
-						const data = await LoginWithProvider(credentials.email);
+						const data = await autentificareCuProvider(credentials.email);
 						return data as User;
 					} else {
 						if (!credentials?.email || !credentials?.password) {
@@ -49,13 +46,14 @@ export const AuthOption: NextAuthOptions = {
 								"You must specify the email and password of the account!"
 							);
 						}
-						const data = await LoginWithCredentials(
+						const data = await autentificareCuCredentiale(
 							credentials.email,
 							credentials.password
 						);
 						return data as User;
 					}
 				} catch (e) {
+					console.log(e);
 					if (e instanceof Error) {
 						throw Error(e.message);
 					} else {
@@ -100,7 +98,7 @@ export const AuthOption: NextAuthOptions = {
 							providerContCod: account.providerAccountId,
 							numeProvider: account.provider,
 						} as PartialClient;
-						const res = await findAssociatedAccount(partialClient);
+						const res = await gasesteContAsociat(partialClient);
 						if (res == null) {
 							token.user = partialClient;
 							token.firstTime = true;
@@ -109,7 +107,7 @@ export const AuthOption: NextAuthOptions = {
 							token.user = res as User;
 						}
 					} else {
-						const userFound = await getClientByEmail(user.email ?? "");
+						const userFound = await obtineClientDupaEmail(user.email ?? "");
 						if (userFound) {
 							token.user = userFound;
 						} else {
@@ -129,7 +127,7 @@ export const AuthOption: NextAuthOptions = {
 					session.user = token.user;
 				} else {
 					const user = token.user as User | undefined;
-					const userFound = await getClientByEmail(user?.email ?? "");
+					const userFound = await obtineClientDupaEmail(user?.email ?? "");
 					if (userFound) {
 						session.user = userFound;
 					} else {
@@ -145,9 +143,9 @@ export const AuthOption: NextAuthOptions = {
 		async signIn({ account, profile }) {
 			const signInParams = getCookie("signInProviderLinkParams", { cookies });
 			if (signInParams) {
-				const { linkWith, url } = JSON.parse(
+				const { linkCu, url } = JSON.parse(
 					signInParams
-				) as SignInProviderParams;
+				) as ParametriFurnizorAutentificare;
 				if (profile && account) {
 					const partialClient = {
 						codPartialClient: profile.id,
@@ -162,15 +160,15 @@ export const AuthOption: NextAuthOptions = {
 								? profile?.name?.split(" ")[1]
 								: "",
 					} as PartialClient;
-					const response = await createAccountProvider(
-						linkWith,
+					const response = await creazaProviderCont(
+						linkCu,
 						partialClient,
 						false
 					);
 					setCookie(
 						"signInProviderLinkParams",
 						JSON.stringify({
-							linkWith,
+							linkCu,
 							url,
 							response,
 						}),

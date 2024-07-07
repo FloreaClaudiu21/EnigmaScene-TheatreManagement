@@ -1,22 +1,24 @@
 "use client";
 import { ColumnDef } from "@tanstack/react-table";
-import ColumnHeader from "@/components/admin/table/ColumnHeader";
-import ColumnCell, { PushFilter } from "@/components/admin/table/ColumnCell";
-import {
-	ColumnSelectCell,
-	ColumnSelectHeader,
-} from "@/components/admin/table/ColumnSelect";
-import { BiletSpectacol, TipuriTabel } from "@/lib/types";
-import ColumnCellActions from "@/components/admin/table/ColumnCellActions";
-import ModalViewFiscalReceipt from "@/components/page/fiscalReceipts/ViewFiscalReceiptBtn";
-import ModalViewInvoice from "@/components/page/invoices/ViewInvoiceBtn";
-import ModalViewTicket from "@/components/page/ticket/ViewTicketBtn";
-import { formatDateFull } from "@/lib/rangeOptions";
 import { Checkbox } from "@nextui-org/react";
-import { verifyTicket } from "@/services/admin/ControlProvider";
 import { useOptimistic, useTransition } from "react";
 import { useToast } from "@/components/ui/use-toast";
-import { capitalizeFirstLetter, formatDate } from "@/lib/utils";
+import { BiletSpectacol, TipuriTabel } from "@/lib/tipuri";
+import { verificareBiletSpectacol } from "@/services/backend/bilete/verificareBiletSpectacol";
+import {
+	ColoanaSelecteazaCapTabel,
+	ColoanaSelecteazaRand,
+} from "@/components/admin/table/SelectareColoane";
+import ModalViewInvoice from "@/components/facturaFiscala/ButonVizualizareFacturaFiscala";
+import ModalViewFiscalReceipt from "@/components/bonuriFiscale/ButonVizualizareBon";
+import ModalViewTicket from "@/components/bileteSpectacol/ButonVizualizareBilet";
+import AntetColoana from "@/components/admin/table/AntetColoana";
+import CelulaColoana, {
+	AplicaFiltru,
+} from "@/components/admin/table/CelulaColoana";
+import { capitalizeazaPrimaLitera } from "@/lib/metodeUtile";
+import { formateazaData, formateazaDataComplet } from "@/lib/intervaleOptiuni";
+import CelulaColoanaActiuni from "@/components/admin/table/CelulaColoanaActiuni";
 
 const VerifyComponent = ({ bilet }: { bilet: BiletSpectacol }) => {
 	const { toast } = useToast();
@@ -25,10 +27,11 @@ const VerifyComponent = ({ bilet }: { bilet: BiletSpectacol }) => {
 	const verifyMethod = async () => {
 		if (isPending) return;
 		setChecked(!bilet.biletVerificat);
-		const response = await verifyTicket(bilet);
+		const response = await verificareBiletSpectacol(bilet);
 		if (!response.ok) {
 			toast({
 				title: "Verificare bilet la spectacol",
+				variant: "destructive",
 				description:
 					"A apărut o eroare necunoscută în timpul verificari biletului. Vă rugăm să încercați din nou mai târziu.",
 			});
@@ -51,10 +54,10 @@ export const columnsTicketsSold: ColumnDef<BiletSpectacol>[] = [
 	{
 		id: "select",
 		header: ({ table }) => {
-			return <ColumnSelectHeader table={table} />;
+			return <ColoanaSelecteazaCapTabel table={table} />;
 		},
 		cell: ({ row }) => {
-			return <ColumnSelectCell row={row} />;
+			return <ColoanaSelecteazaRand row={row} />;
 		},
 		enableSorting: false,
 	},
@@ -68,7 +71,7 @@ export const columnsTicketsSold: ColumnDef<BiletSpectacol>[] = [
 						<ModalViewFiscalReceipt receipt={original.bonFiscal} />
 						<ModalViewTicket ticket={original} />
 					</div>
-					<ColumnCellActions
+					<CelulaColoanaActiuni
 						deleteId={original.codBiletSpectacol}
 						type={TipuriTabel.BILET}
 						link_edit={"bilete/" + original.codBiletSpectacol + "/editare"}
@@ -81,7 +84,7 @@ export const columnsTicketsSold: ColumnDef<BiletSpectacol>[] = [
 	{
 		accessorKey: "verificareBilet",
 		header: ({ column }) => {
-			return <ColumnHeader column={column} title="Bilet Verificat" />;
+			return <AntetColoana coloana={column} titlu="Bilet Verificat" />;
 		},
 		cell: ({ row }) => {
 			const user = row.original;
@@ -91,21 +94,21 @@ export const columnsTicketsSold: ColumnDef<BiletSpectacol>[] = [
 	{
 		accessorKey: "codBiletSpectacol",
 		header: ({ column }) => {
-			return <ColumnHeader column={column} title="Cod Bilet Spectacol" />;
+			return <AntetColoana coloana={column} titlu="Cod Bilet Spectacol" />;
 		},
 		cell: ({ row }) => {
 			const user = row.original;
 			return (
-				<ColumnCell
-					filters={[
+				<CelulaColoana
+					filtre={[
 						{
-							page: "bilete",
-							label: "Cod Bilet Spectacol",
-							column: "codBiletSpectacol",
-							value: user.codBiletSpectacol + "" ?? "",
+							pagina: "bilete",
+							eticheta: "Cod Bilet Spectacol",
+							coloana: "codBiletSpectacol",
+							valoare: user.codBiletSpectacol + "" ?? "",
 						},
 					]}
-					data={user.codBiletSpectacol}
+					date={user.codBiletSpectacol}
 				/>
 			);
 		},
@@ -113,60 +116,60 @@ export const columnsTicketsSold: ColumnDef<BiletSpectacol>[] = [
 	{
 		accessorKey: "numarBilet",
 		header: ({ column }) => {
-			return <ColumnHeader column={column} title="Numar Bilet" />;
+			return <AntetColoana coloana={column} titlu="Numar Bilet" />;
 		},
 		cell: ({ row: { original } }) => {
 			return (
-				<ColumnCell
-					filters={[
+				<CelulaColoana
+					filtre={[
 						{
-							page: "bilete",
-							label: "Numar Bilet",
-							column: "numarBilet",
-							value: original.numarBilet + "" ?? "",
+							pagina: "bilete",
+							eticheta: "Numar Bilet",
+							coloana: "numarBilet",
+							valoare: original.numarBilet + "" ?? "",
 						},
 					]}
-					data={original.numarBilet}
+					date={original.numarBilet}
 				/>
 			);
 		},
 	},
 	{
-		accessorKey: "codPlata",
+		accessorKey: "pretVanzare",
 		header: ({ column }) => {
-			return <ColumnHeader column={column} title="Cod Plata & Preț Bilet" />;
+			return <AntetColoana coloana={column} titlu="Cod Plata & Preț Bilet" />;
 		},
 		cell: ({ row: { original } }) => {
 			let priceConverted = original.pretVanzare;
 			return (
-				<ColumnCell
-					data={
+				<CelulaColoana
+					date={
 						<>
-							<PushFilter
-								filters={[
+							<AplicaFiltru
+								filtre={[
 									{
-										column: "codPlata",
-										label: "Cod Plata",
-										page: "bilete",
-										value: original.codPlata + "" ?? "",
+										coloana: "codPlata",
+										eticheta: "Cod Plata",
+										pagina: "bilete",
+										valoare: original.codPlata + "" ?? "",
 									},
 								]}
 							>
 								{original.codPlata}
-							</PushFilter>
+							</AplicaFiltru>
 							-
-							<PushFilter
-								filters={[
+							<AplicaFiltru
+								filtre={[
 									{
-										column: "moneda",
-										page: "bilete",
-										label: "Moneda",
-										value: priceConverted.toFixed(2) ?? "",
+										coloana: "moneda",
+										pagina: "bilete",
+										eticheta: "Moneda",
+										valoare: priceConverted.toFixed(2) ?? "",
 									},
 								]}
 							>
 								{priceConverted.toFixed(2) + " RON"}
-							</PushFilter>
+							</AplicaFiltru>
 						</>
 					}
 				/>
@@ -174,40 +177,40 @@ export const columnsTicketsSold: ColumnDef<BiletSpectacol>[] = [
 		},
 	},
 	{
-		accessorKey: "codClient",
+		accessorKey: "numeClient",
 		header: ({ column }) => {
-			return <ColumnHeader column={column} title="Cod & Nume Client" />;
+			return <AntetColoana coloana={column} titlu="Cod & Nume Client" />;
 		},
 		cell: ({ row: { original } }) => {
 			return (
-				<ColumnCell
-					data={
+				<CelulaColoana
+					date={
 						<>
-							<PushFilter
-								filters={[
+							<AplicaFiltru
+								filtre={[
 									{
-										column: "codClient",
-										label: "Cod Client",
-										page: "bilete",
-										value: original.codClient + "" ?? "",
+										coloana: "codClient",
+										eticheta: "Cod Client",
+										pagina: "bilete",
+										valoare: original.codClient + "" ?? "",
 									},
 								]}
 							>
 								{original.codClient}
-							</PushFilter>
+							</AplicaFiltru>
 							-
-							<PushFilter
-								filters={[
+							<AplicaFiltru
+								filtre={[
 									{
-										column: "numeClient",
-										page: "bilete",
-										label: "Nume Client",
-										value: original.client?.numeClient ?? "",
+										coloana: "numeClient",
+										pagina: "bilete",
+										eticheta: "Nume Client",
+										valoare: original.client?.numeClient ?? "",
 									},
 								]}
 							>
 								{original.client?.numeClient}
-							</PushFilter>
+							</AplicaFiltru>
 						</>
 					}
 				/>
@@ -215,40 +218,40 @@ export const columnsTicketsSold: ColumnDef<BiletSpectacol>[] = [
 		},
 	},
 	{
-		accessorKey: "codSpectacol",
+		accessorKey: "numeSpectacol",
 		header: ({ column }) => {
-			return <ColumnHeader column={column} title="Cod & Nume Spectacol" />;
+			return <AntetColoana coloana={column} titlu="Cod & Nume Spectacol" />;
 		},
 		cell: ({ row: { original } }) => {
 			return (
-				<ColumnCell
-					data={
+				<CelulaColoana
+					date={
 						<>
-							<PushFilter
-								filters={[
+							<AplicaFiltru
+								filtre={[
 									{
-										column: "codSpectacol",
-										label: "Cod Spectacol",
-										page: "bilete",
-										value: original.codSpectacol + "" ?? "",
+										coloana: "codSpectacol",
+										eticheta: "Cod Spectacol",
+										pagina: "bilete",
+										valoare: original.codSpectacol + "" ?? "",
 									},
 								]}
 							>
 								{original.codSpectacol}
-							</PushFilter>
+							</AplicaFiltru>
 							-
-							<PushFilter
-								filters={[
+							<AplicaFiltru
+								filtre={[
 									{
-										column: "titlu",
-										page: "bilete",
-										label: "Titlu Spectacol",
-										value: original.spectacol?.titlu ?? "",
+										coloana: "titlu",
+										pagina: "bilete",
+										eticheta: "Titlu Spectacol",
+										valoare: original.spectacol?.titlu ?? "",
 									},
 								]}
 							>
 								{original.spectacol?.titlu}
-							</PushFilter>
+							</AplicaFiltru>
 						</>
 					}
 				/>
@@ -259,65 +262,65 @@ export const columnsTicketsSold: ColumnDef<BiletSpectacol>[] = [
 		accessorKey: "detaliiLoc",
 		header: ({ column }) => {
 			return (
-				<ColumnHeader column={column} title="Sala, Nr. Loc, Rand, Tip Loc" />
+				<AntetColoana coloana={column} titlu="Sala, Nr. Loc, Rand, Tip Loc" />
 			);
 		},
 		cell: ({ row: { original } }) => {
 			return (
-				<ColumnCell
-					data={
+				<CelulaColoana
+					date={
 						<>
-							<PushFilter
-								filters={[
+							<AplicaFiltru
+								filtre={[
 									{
-										column: "numarSala",
-										label: "Numar Sala",
-										page: "bilete",
-										value: original.salaSpectacol?.numarSala + "" ?? "",
+										coloana: "numarSala",
+										eticheta: "Numar Sala",
+										pagina: "bilete",
+										valoare: original.salaSpectacol?.numarSala + "" ?? "",
 									},
 								]}
 							>
 								{original.salaSpectacol?.numarSala}
-							</PushFilter>
+							</AplicaFiltru>
 							,
-							<PushFilter
-								filters={[
+							<AplicaFiltru
+								filtre={[
 									{
-										column: "numarLoc",
-										page: "bilete",
-										label: "Numar Loc",
-										value: original.locSalaSpectacol?.numarLoc ?? "",
+										coloana: "numarLoc",
+										pagina: "bilete",
+										eticheta: "Numar Loc",
+										valoare: original.locSalaSpectacol?.numarLoc ?? "",
 									},
 								]}
 							>
 								{original.locSalaSpectacol?.numarLoc}
-							</PushFilter>
+							</AplicaFiltru>
 							,
-							<PushFilter
-								filters={[
+							<AplicaFiltru
+								filtre={[
 									{
-										column: "rand",
-										label: "Rand Sala",
-										page: "bilete",
-										value: original.locSalaSpectacol?.rand + "" ?? "",
+										coloana: "rand",
+										eticheta: "Rand Sala",
+										pagina: "bilete",
+										valoare: original.locSalaSpectacol?.rand + "" ?? "",
 									},
 								]}
 							>
 								{original.locSalaSpectacol?.rand}
-							</PushFilter>
+							</AplicaFiltru>
 							,
-							<PushFilter
-								filters={[
+							<AplicaFiltru
+								filtre={[
 									{
-										column: "tipLoc",
-										page: "bilete",
-										label: "Tip Loc",
-										value: original.locSalaSpectacol?.tipLoc ?? "",
+										coloana: "tipLoc",
+										pagina: "bilete",
+										eticheta: "Tip Loc",
+										valoare: original.locSalaSpectacol?.tipLoc ?? "",
 									},
 								]}
 							>
 								{original.locSalaSpectacol?.tipLoc}
-							</PushFilter>
+							</AplicaFiltru>
 						</>
 					}
 				/>
@@ -327,21 +330,21 @@ export const columnsTicketsSold: ColumnDef<BiletSpectacol>[] = [
 	{
 		accessorKey: "creatPe",
 		header: ({ column }) => {
-			return <ColumnHeader column={column} title="Cumparat Pe" />;
+			return <AntetColoana coloana={column} titlu="Cumparat Pe" />;
 		},
 		cell: ({ row }) => {
 			const show = row.original;
 			return (
-				<ColumnCell
-					filters={[
+				<CelulaColoana
+					filtre={[
 						{
-							page: "bilete",
-							label: "Cumparat Pe",
-							column: "creatPe",
-							value: formatDate(show.creatPe),
+							pagina: "bilete",
+							eticheta: "Cumparat Pe",
+							coloana: "creatPe",
+							valoare: formateazaData(show.creatPe),
 						},
 					]}
-					data={capitalizeFirstLetter(formatDateFull(show.creatPe))}
+					date={capitalizeazaPrimaLitera(formateazaDataComplet(show.creatPe))}
 				/>
 			);
 		},

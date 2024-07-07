@@ -1,24 +1,26 @@
 "use client";
-import { ColumnDef } from "@tanstack/react-table";
-import ColumnHeader from "@/components/admin/table/ColumnHeader";
-import ColumnCell, { PushFilter } from "@/components/admin/table/ColumnCell";
+import AntetColoana from "@/components/admin/table/AntetColoana";
+import CelulaColoana, {
+	AplicaFiltru,
+} from "@/components/admin/table/CelulaColoana";
+import CelulaColoanaActiuni from "@/components/admin/table/CelulaColoanaActiuni";
 import {
-	ColumnSelectCell,
-	ColumnSelectHeader,
-} from "@/components/admin/table/ColumnSelect";
-import ColumnCellActions from "@/components/admin/table/ColumnCellActions";
-import { LocSalaSpectacol, TipuriTabel } from "@/lib/types";
-import { formatDateFull } from "@/lib/rangeOptions";
-import { capitalizeFirstLetter, formatDate } from "@/lib/utils";
+	ColoanaSelecteazaCapTabel,
+	ColoanaSelecteazaRand,
+} from "@/components/admin/table/SelectareColoane";
+import { formateazaDataComplet } from "@/lib/intervaleOptiuni";
+import { capitalizeazaPrimaLitera, formateazaData } from "@/lib/metodeUtile";
+import { LocSalaSpectacol, TipuriTabel } from "@/lib/tipuri";
+import { ColumnDef } from "@tanstack/react-table";
 
 export const columnsShowRoomSeat: ColumnDef<LocSalaSpectacol>[] = [
 	{
 		id: "select",
 		header: ({ table }) => {
-			return <ColumnSelectHeader table={table} />;
+			return <ColoanaSelecteazaCapTabel table={table} />;
 		},
 		cell: ({ row }) => {
-			return <ColumnSelectCell row={row} />;
+			return <ColoanaSelecteazaRand row={row} />;
 		},
 		enableSorting: false,
 	},
@@ -26,7 +28,7 @@ export const columnsShowRoomSeat: ColumnDef<LocSalaSpectacol>[] = [
 		id: "actions",
 		cell: ({ row }) => {
 			return (
-				<ColumnCellActions
+				<CelulaColoanaActiuni
 					type={TipuriTabel.SCAUN_CAMERA_SPECTACOL}
 					deleteId={row.original.codLocSala}
 					link_edit={
@@ -40,21 +42,21 @@ export const columnsShowRoomSeat: ColumnDef<LocSalaSpectacol>[] = [
 	{
 		accessorKey: "codLocSala",
 		header: ({ column }) => {
-			return <ColumnHeader column={column} title="Cod Loc Sala" />;
+			return <AntetColoana coloana={column} titlu="Cod Loc Sala" />;
 		},
 		cell: ({ row }) => {
 			const user = row.original;
 			return (
-				<ColumnCell
-					filters={[
+				<CelulaColoana
+					filtre={[
 						{
-							page: "camereSpectacol",
-							label: "Cod Loc Sala",
-							column: "codLocSala",
-							value: user.codLocSala + "" ?? "",
+							pagina: "camereSpectacol",
+							eticheta: "Cod Loc Sala",
+							coloana: "codLocSala",
+							valoare: user.codLocSala + "" ?? "",
 						},
 					]}
-					data={user.codLocSala}
+					date={user.codLocSala}
 				/>
 			);
 		},
@@ -62,20 +64,20 @@ export const columnsShowRoomSeat: ColumnDef<LocSalaSpectacol>[] = [
 	{
 		accessorKey: "numarLoc",
 		header: ({ column }) => {
-			return <ColumnHeader column={column} title="Numar Loc" />;
+			return <AntetColoana coloana={column} titlu="Numar Loc" />;
 		},
 		cell: ({ row: { original } }) => {
 			return (
-				<ColumnCell
-					filters={[
+				<CelulaColoana
+					filtre={[
 						{
-							page: "camereSpectacol",
-							label: "Numar Loc",
-							column: "numarLoc",
-							value: original.numarLoc ?? "",
+							pagina: "camereSpectacol",
+							eticheta: "Numar Loc",
+							coloana: "numarLoc",
+							valoare: original.numarLoc ?? "",
 						},
 					]}
-					data={original.numarLoc}
+					date={original.numarLoc}
 				/>
 			);
 		},
@@ -83,20 +85,20 @@ export const columnsShowRoomSeat: ColumnDef<LocSalaSpectacol>[] = [
 	{
 		accessorKey: "rand",
 		header: ({ column }) => {
-			return <ColumnHeader column={column} title="Rand Loc" />;
+			return <AntetColoana coloana={column} titlu="Rand Loc" />;
 		},
 		cell: ({ row: { original } }) => {
 			return (
-				<ColumnCell
-					filters={[
+				<CelulaColoana
+					filtre={[
 						{
-							page: "camereSpectacol",
-							label: "Rand Loc",
-							column: "rand",
-							value: original.rand ?? "",
+							pagina: "camereSpectacol",
+							eticheta: "Rand Loc",
+							coloana: "rand",
+							valoare: original.rand ?? "",
 						},
 					]}
-					data={original.rand}
+					date={original.rand}
 				/>
 			);
 		},
@@ -104,20 +106,20 @@ export const columnsShowRoomSeat: ColumnDef<LocSalaSpectacol>[] = [
 	{
 		accessorKey: "pretLoc",
 		header: ({ column }) => {
-			return <ColumnHeader column={column} title="Pret Loc (RON)" />;
+			return <AntetColoana coloana={column} titlu="Pret Loc (RON)" />;
 		},
 		cell: ({ row: { original } }) => {
 			return (
-				<ColumnCell
-					filters={[
+				<CelulaColoana
+					filtre={[
 						{
-							page: "camereSpectacol",
-							label: "Pret",
-							column: "pretLoc",
-							value: original.pretLoc + "" ?? "",
+							pagina: "camereSpectacol",
+							eticheta: "Pret",
+							coloana: "pretLoc",
+							valoare: original.pretLoc + "" ?? "",
 						},
 					]}
-					data={original.pretLoc}
+					date={original.pretLoc}
 				/>
 			);
 		},
@@ -125,59 +127,61 @@ export const columnsShowRoomSeat: ColumnDef<LocSalaSpectacol>[] = [
 	{
 		accessorKey: "tipLoc",
 		header: ({ column }) => {
-			return <ColumnHeader column={column} title="Tip Loc" />;
+			return <AntetColoana coloana={column} titlu="Tip Loc" />;
 		},
 		cell: ({ row: { original } }) => {
 			return (
-				<ColumnCell
-					filters={[
+				<CelulaColoana
+					filtre={[
 						{
-							page: "camereSpectacol",
-							label: "Tip Loc Sala",
-							column: "tipLoc",
-							value: original.tipLoc ?? "",
+							pagina: "camereSpectacol",
+							eticheta: "Tip Loc Sala",
+							coloana: "tipLoc",
+							valoare: original.tipLoc ?? "",
 						},
 					]}
-					data={original.tipLoc}
+					date={original.tipLoc}
 				/>
 			);
 		},
 	},
 	{
-		accessorKey: "codSalaSpectacol",
+		accessorKey: "numarSala",
 		header: ({ column }) => {
-			return <ColumnHeader column={column} title="Cod & Nume Sala Spectacol" />;
+			return (
+				<AntetColoana coloana={column} titlu="Cod & Nume Sala Spectacol" />
+			);
 		},
 		cell: ({ row: { original } }) => {
 			return (
-				<ColumnCell
-					data={
+				<CelulaColoana
+					date={
 						<>
-							<PushFilter
-								filters={[
+							<AplicaFiltru
+								filtre={[
 									{
-										column: "codSalaSpectacol",
-										label: "Cod Sala Spectacol",
-										page: "camereSpectacol",
-										value: original.codSalaSpectacol + "" ?? "",
+										coloana: "codSalaSpectacol",
+										eticheta: "Cod Sala Spectacol",
+										pagina: "camereSpectacol",
+										valoare: original.codSalaSpectacol + "" ?? "",
 									},
 								]}
 							>
 								{original.codSalaSpectacol}
-							</PushFilter>
+							</AplicaFiltru>
 							-
-							<PushFilter
-								filters={[
+							<AplicaFiltru
+								filtre={[
 									{
-										column: "numarSala",
-										page: "camereSpectacol",
-										label: "Numar Sala",
-										value: original.salaSpectacol?.numarSala + "" ?? "",
+										coloana: "numarSala",
+										pagina: "camereSpectacol",
+										eticheta: "Numar Sala",
+										valoare: original.salaSpectacol?.numarSala + "" ?? "",
 									},
 								]}
 							>
 								{original.salaSpectacol?.numarSala}
-							</PushFilter>
+							</AplicaFiltru>
 						</>
 					}
 				/>
@@ -187,20 +191,22 @@ export const columnsShowRoomSeat: ColumnDef<LocSalaSpectacol>[] = [
 	{
 		accessorKey: "createdAt",
 		header: ({ column }) => {
-			return <ColumnHeader column={column} title="Adăugat Pe" />;
+			return <AntetColoana coloana={column} titlu="Adăugat Pe" />;
 		},
 		cell: ({ row }) => {
 			return (
-				<ColumnCell
-					filters={[
+				<CelulaColoana
+					filtre={[
 						{
-							page: "camereSpectacol",
-							label: "Adăugat Pee",
-							column: "creatPe",
-							value: formatDate(row.original.creatPe),
+							pagina: "camereSpectacol",
+							eticheta: "Adăugat Pee",
+							coloana: "creatPe",
+							valoare: formateazaData(row.original.creatPe),
 						},
 					]}
-					data={capitalizeFirstLetter(formatDateFull(row.original.creatPe))}
+					date={capitalizeazaPrimaLitera(
+						formateazaDataComplet(row.original.creatPe)
+					)}
 				/>
 			);
 		},

@@ -1,8 +1,5 @@
 "use client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { formatNumber } from "@/lib/rangeOptions";
-import { ChartDataType, ChartTip } from "@/lib/types";
-import { isNumeric } from "@/lib/utils";
 import {
 	Bar,
 	BarChart,
@@ -17,6 +14,9 @@ import {
 	YAxis,
 } from "recharts";
 import ChartDateSelector from "./ChartDateSelector";
+import { TipDateDiagrama, TipDiagrama } from "@/lib/tipuri";
+import { esteNumeric } from "@/lib/metodeUtile";
+import { formateazaNumar } from "@/lib/intervaleOptiuni";
 
 export function ChartCardContainer({
 	title,
@@ -28,12 +28,12 @@ export function ChartCardContainer({
 }: {
 	title: string;
 	queryKey: string;
-	chartType: ChartTip;
-	chartData: ChartDataType | undefined;
+	chartType: TipDiagrama;
+	chartData: TipDateDiagrama | undefined;
 	selectedRangeLabel: any;
 	searchParams: any;
 }) {
-	const chartOptions = Object.values(ChartTip);
+	const chartOptions = Object.values(TipDiagrama);
 	const returnChart = (val: any) => {
 		const charType = chartType.toString();
 		if (val.toString() !== charType) return <></>;
@@ -42,17 +42,17 @@ export function ChartCardContainer({
 				<ResponsiveContainer width="100%" minHeight={300}>
 					<LineChart data={chartData?.data}>
 						<CartesianGrid stroke="hsl(var(--muted))" />
-						<XAxis dataKey="nameKey" stroke="hsl(var(--primary))" />
+						<XAxis dataKey="numeCheie" stroke="hsl(var(--primary))" />
 						<YAxis
 							stroke="hsl(var(--primary))"
 							tickFormatter={(value) =>
-								isNumeric(value) ? formatNumber(value) : value
+								esteNumeric(value) ? formateazaNumar(value) : value
 							}
 						/>
 						<Tooltip
 							formatter={(value) =>
-								isNumeric(value.toString())
-									? formatNumber(value as number) + " RON"
+								esteNumeric(value.toString())
+									? formateazaNumar(value as number) + " RON"
 									: value
 							}
 						/>
@@ -60,7 +60,7 @@ export function ChartCardContainer({
 							dot={false}
 							name={title}
 							type="monotone"
-							dataKey="dataKey"
+							dataKey="cheieDate"
 							stroke="hsl(var(--primary))"
 						/>
 					</LineChart>
@@ -71,22 +71,26 @@ export function ChartCardContainer({
 				<ResponsiveContainer width="100%" minHeight={300}>
 					<BarChart data={chartData?.data}>
 						<CartesianGrid stroke="hsl(var(--muted))" />
-						<XAxis dataKey="nameKey" stroke="hsl(var(--primary))" />
+						<XAxis dataKey="numeCheie" stroke="hsl(var(--primary))" />
 						<YAxis
 							stroke="hsl(var(--primary))"
 							tickFormatter={(value) =>
-								isNumeric(value) ? formatNumber(value) : value
+								esteNumeric(value) ? formateazaNumar(value) : value
 							}
 						/>
 						<Tooltip
 							cursor={{ fill: "hsl(var(--muted))" }}
 							formatter={(value) =>
-								isNumeric(value.toString())
-									? formatNumber(value as number)
+								esteNumeric(value.toString())
+									? formateazaNumar(value as number)
 									: value
 							}
 						/>
-						<Bar dataKey="dataKey" name={title} stroke="hsl(var(--primary))" />
+						<Bar
+							dataKey="cheieDate"
+							name={title}
+							stroke="hsl(var(--primary))"
+						/>
 					</BarChart>
 				</ResponsiveContainer>
 			);
@@ -97,16 +101,16 @@ export function ChartCardContainer({
 						<Tooltip
 							cursor={{ fill: "hsl(var(--muted))" }}
 							formatter={(value) =>
-								isNumeric(value.toString())
-									? formatNumber(value as number)
+								esteNumeric(value.toString())
+									? formateazaNumar(value as number)
 									: value
 							}
 						/>
 						<Pie
 							data={chartData?.data}
 							label={(item: any) => item.name + ""}
-							dataKey="dataKey"
-							nameKey="nameKey"
+							dataKey="cheieDate"
+							nameKey="numeCheie"
 							fill="hsl(var(--primary))"
 						/>
 					</PieChart>

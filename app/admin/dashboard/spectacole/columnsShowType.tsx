@@ -1,24 +1,24 @@
 "use client";
-import { ColumnDef } from "@tanstack/react-table";
-import ColumnHeader from "@/components/admin/table/ColumnHeader";
-import ColumnCell from "@/components/admin/table/ColumnCell";
+import AntetColoana from "@/components/admin/table/AntetColoana";
+import CelulaColoana from "@/components/admin/table/CelulaColoana";
+import CelulaColoanaActiuni from "@/components/admin/table/CelulaColoanaActiuni";
 import {
-	ColumnSelectCell,
-	ColumnSelectHeader,
-} from "@/components/admin/table/ColumnSelect";
-import ColumnCellActions from "@/components/admin/table/ColumnCellActions";
-import { TipSpectacol, TipuriTabel } from "@/lib/types";
-import { formatDateFull } from "@/lib/rangeOptions";
-import { capitalizeFirstLetter, formatDate } from "@/lib/utils";
+	ColoanaSelecteazaCapTabel,
+	ColoanaSelecteazaRand,
+} from "@/components/admin/table/SelectareColoane";
+import { formateazaDataComplet } from "@/lib/intervaleOptiuni";
+import { capitalizeazaPrimaLitera, formateazaData } from "@/lib/metodeUtile";
+import { TipSpectacol, TipuriTabel } from "@/lib/tipuri";
+import { ColumnDef } from "@tanstack/react-table";
 
 export const columnsShowType: ColumnDef<TipSpectacol>[] = [
 	{
 		id: "select",
 		header: ({ table }) => {
-			return <ColumnSelectHeader table={table} />;
+			return <ColoanaSelecteazaCapTabel table={table} />;
 		},
 		cell: ({ row }) => {
-			return <ColumnSelectCell row={row} />;
+			return <ColoanaSelecteazaRand row={row} />;
 		},
 		enableSorting: false,
 	},
@@ -26,8 +26,8 @@ export const columnsShowType: ColumnDef<TipSpectacol>[] = [
 		id: "actions",
 		cell: ({ row }) => {
 			return (
-				<ColumnCellActions
-					type={TipuriTabel.SPECTACOL_CATEGORIE}
+				<CelulaColoanaActiuni
+					type={TipuriTabel.CATEGORIE_SPECTACOL}
 					deleteId={row.original.codTipSpectacol}
 					link_edit={
 						"spectacole/" + row.original.codTipSpectacol + "/editare-categorie"
@@ -40,21 +40,21 @@ export const columnsShowType: ColumnDef<TipSpectacol>[] = [
 	{
 		accessorKey: "codTipSpectacol",
 		header: ({ column }) => {
-			return <ColumnHeader column={column} title="Cod Categorie Spectacol" />;
+			return <AntetColoana coloana={column} titlu="Cod Categorie Spectacol" />;
 		},
 		cell: ({ row }) => {
 			const user = row.original;
 			return (
-				<ColumnCell
-					filters={[
+				<CelulaColoana
+					filtre={[
 						{
-							page: "spectacole",
-							column: "codTipSpectacol",
-							label: "Cod Categorie Spectacol",
-							value: user.codTipSpectacol + "",
+							pagina: "spectacole",
+							coloana: "codTipSpectacol",
+							eticheta: "Cod Categorie Spectacol",
+							valoare: user.codTipSpectacol + "",
 						},
 					]}
-					data={user.codTipSpectacol}
+					date={user.codTipSpectacol}
 				/>
 			);
 		},
@@ -62,20 +62,20 @@ export const columnsShowType: ColumnDef<TipSpectacol>[] = [
 	{
 		accessorKey: "numeTip",
 		header: ({ column }) => {
-			return <ColumnHeader column={column} title="Nume Categorie" />;
+			return <AntetColoana coloana={column} titlu="Nume Categorie" />;
 		},
 		cell: ({ row: { original } }) => {
 			return (
-				<ColumnCell
-					filters={[
+				<CelulaColoana
+					filtre={[
 						{
-							page: "spectacole",
-							column: "numeTip",
-							label: "Nume Categorie Spectacol",
-							value: original.numeTip + "",
+							pagina: "spectacole",
+							coloana: "numeTip",
+							eticheta: "Nume Categorie Spectacol",
+							valoare: original.numeTip + "",
 						},
 					]}
-					data={original.numeTip}
+					date={original.numeTip}
 				/>
 			);
 		},
@@ -83,21 +83,21 @@ export const columnsShowType: ColumnDef<TipSpectacol>[] = [
 	{
 		accessorKey: "creatPe",
 		header: ({ column }) => {
-			return <ColumnHeader column={column} title="Creat Pe" />;
+			return <AntetColoana coloana={column} titlu="Creat Pe" />;
 		},
 		cell: ({ row }) => {
 			const show = row.original;
 			return (
-				<ColumnCell
-					filters={[
+				<CelulaColoana
+					filtre={[
 						{
-							page: "spectacole",
-							label: "Adaugat Pe",
-							column: "creatPe",
-							value: formatDate(show.creatPe),
+							pagina: "spectacole",
+							eticheta: "Adaugat Pe",
+							coloana: "creatPe",
+							valoare: formateazaData(show.creatPe),
 						},
 					]}
-					data={capitalizeFirstLetter(formatDateFull(show.creatPe))}
+					date={capitalizeazaPrimaLitera(formateazaDataComplet(show.creatPe))}
 				/>
 			);
 		},

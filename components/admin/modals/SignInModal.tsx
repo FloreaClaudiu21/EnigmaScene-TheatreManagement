@@ -1,5 +1,4 @@
 "use client";
-import { useLoadingScreen } from "@/services/StateProvider";
 import { useToast } from "../../ui/use-toast";
 import {
 	Button,
@@ -25,30 +24,31 @@ import {
 	FormMessage,
 } from "@/components/ui/form";
 import { EyeIcon, EyeOffIcon, MailIcon } from "lucide-react";
-import { getClientByEmail } from "@/services/general/AuthProvider";
 import { useContext, useEffect, useState } from "react";
-import { urlLink } from "@/lib/utils";
 import { usePathname } from "next/navigation";
-import { schemaLogareAdmin } from "@/lib/schemas";
+import { schemaLogareAdmin } from "@/lib/schemeFormulare";
 import { AuthContext } from "@/app/AuthContext";
+import { ecranIncarcare } from "@/services/general/FurnizorStare";
+import { linkURL } from "@/lib/metodeUtile";
+import { obtineClientDupaEmail } from "@/services/backend/client/obtineClientDupaEmail";
 
-export default function AdminSignInModal() {
+export default function AdminSignInFormular() {
 	const router = useRouter();
 	const { toast } = useToast();
 	const pathname = usePathname();
 	const { status } = useSession();
 	const auth = useContext(AuthContext);
-	const loadingScreen = useLoadingScreen();
+	const loadingScreen = ecranIncarcare();
 	const [showPassLogin, setShowPassLogin] = useState(false);
 	const loginForm = useForm<z.infer<typeof schemaLogareAdmin>>({
 		resolver: zodResolver(schemaLogareAdmin),
 	});
 	useEffect(() => {
 		if (status === "loading") return;
-		if (!auth.isLogged && !pathname.endsWith("/dashboard")) {
-			router.replace(urlLink(pathname));
+		if (!auth.esteLogat && !pathname.endsWith("/dashboard")) {
+			router.replace(linkURL(pathname));
 		}
-	}, [auth.isLogged]);
+	}, [auth.esteLogat]);
 	async function onLoginProvider(prov: string) {
 		deleteCookie("signInProviderLinkParams");
 		await signIn(prov, {
@@ -56,17 +56,7 @@ export default function AdminSignInModal() {
 		});
 	}
 	async function onSubmitLogin(values: z.infer<typeof schemaLogareAdmin>) {
-		loadingScreen.setLoading(true);
-		// const accountActive = await verifyAccountIsActivated(values.email);
-		// if (!accountActive.ok) {
-		// 	loadingScreen.setLoading(false);
-		// 	toast({
-		// 		variant: "destructive",
-		// 		title: "Account verfication",
-		// 		description: accountActive.message,
-		// 	});
-		// 	return;
-		// }
+		loadingScreen.setIncarcare(true);
 		const data = await signIn("credentials", {
 			redirect: false,
 			email: values.email,
@@ -74,7 +64,7 @@ export default function AdminSignInModal() {
 		});
 		if (data && data.ok) {
 			loginForm.reset();
-			const user = await getClientByEmail(values.email);
+			const user = await obtineClientDupaEmail(values.email);
 			if (!user?.utlizatorAdmin) {
 				toast({
 					variant: "destructive",
@@ -89,6 +79,7 @@ export default function AdminSignInModal() {
 				title: "Autentificare Membru: Accesează-ți Contul",
 				description: `Ai fost autentificat cu succes cu contul asociat adresei de email: ${values.email}.`,
 			});
+			router.push("../../clientii");
 			router.refresh();
 		} else {
 			toast({
@@ -97,13 +88,13 @@ export default function AdminSignInModal() {
 				description: data?.error,
 			});
 		}
-		loadingScreen.setLoading(false);
+		loadingScreen.setIncarcare(false);
 	}
 	return (
 		<Modal
 			radius="md"
 			backdrop="opaque"
-			isOpen={!auth.isLogged}
+			isOpen={!auth.esteLogat}
 			placement={"bottom-center"}
 			onOpenChange={() => {
 				document.body.style.overflowY = "auto";
@@ -117,7 +108,7 @@ export default function AdminSignInModal() {
 			<ModalContent>
 				{() => (
 					<>
-						<ModalHeader className="flex flex-col gap-1 text-center pb-1">
+						<ModalHeader className="flex flex-col gap-1 text-center pb-1 text-black">
 							<p>
 								Autentifică-te la{" "}
 								<span className="text-red-500">Teatrul EnigmaScene</span>

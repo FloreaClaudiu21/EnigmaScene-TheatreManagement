@@ -1,5 +1,4 @@
 import React, { useCallback, useMemo } from "react";
-import NewOrEditContent from "../../newPage/NewEditContent";
 import {
 	FormControl,
 	FormField,
@@ -17,19 +16,23 @@ import {
 } from "@nextui-org/react";
 import { Client } from "next-auth";
 import {
-	AdresaFacturare,
-	LocSalaSpectacol,
-	Spectacol,
-	coduriTariRomanesti,
-} from "@/lib/types";
-import {
 	MailIcon,
 	PenIcon,
 	PhoneIcon,
 	PlusIcon,
 	SquareUserIcon,
 } from "lucide-react";
-import { useAddAddressModal, useLoadingScreen } from "@/services/StateProvider";
+import {
+	AdresaFacturare,
+	coduriTariRomanesti,
+	LocSalaSpectacol,
+	Spectacol,
+} from "@/lib/tipuri";
+import {
+	ecranIncarcare,
+	formularCreareAdresa,
+} from "@/services/general/FurnizorStare";
+import NouEditareContinut from "../../NouEditareContinut";
 
 export default function TicketsCreateForm({
 	form,
@@ -58,8 +61,8 @@ export default function TicketsCreateForm({
 	setClientSelectat: any;
 	spectacole: Spectacol[];
 }) {
-	const loadingScreen = useLoadingScreen();
-	const addAddress = useAddAddressModal();
+	const loadingScreen = ecranIncarcare();
+	const addAddress = formularCreareAdresa();
 	const adreseFacturare = useCallback(
 		() => clientSelectat?.adreseFacturare ?? [],
 		[clientSelectat]
@@ -81,11 +84,11 @@ export default function TicketsCreateForm({
 	}, [locuriAlese]);
 	return (
 		<div className="flex flex-col gap-2 w-full md:w-1/2 h-full border-1 p-4 !mb-2 justify-center bg-gray-100 rounded-md">
-			<NewOrEditContent
+			<NouEditareContinut
 				form={form}
 				onSubmit={onSubmit}
-				loading={loadingScreen.loading}
-				title={"Adăugare bilete vandute"}
+				loading={loadingScreen.incarcare}
+				titlu={"Adăugare bilete vandute"}
 				back_link="../bilete?tab=ticketsAll"
 			>
 				<div className="flex flex-col md:flex-row gap-2">
@@ -345,8 +348,10 @@ export default function TicketsCreateForm({
 									variant="flat"
 									className="!mt-8"
 									onClick={() => {
-										addAddress.setVisible(true);
-										addAddress.setIsAdminPanel(clientSelectat?.codClient ?? 0);
+										addAddress.setVizibil(true);
+										addAddress.setEstePanouAdmin(
+											clientSelectat?.codClient ?? 0
+										);
 									}}
 								>
 									<PlusIcon size={20} />
@@ -458,7 +463,7 @@ export default function TicketsCreateForm({
 						</div>
 					</>
 				)}
-			</NewOrEditContent>
+			</NouEditareContinut>
 		</div>
 	);
 }

@@ -1,5 +1,6 @@
 "use client";
-import NewOrEditContent from "@/components/admin/newPage/NewEditContent";
+
+import NouEditareContinut from "@/components/admin/NouEditareContinut";
 import {
 	FormControl,
 	FormField,
@@ -8,17 +9,18 @@ import {
 	FormMessage,
 } from "@/components/ui/form";
 import { useToast } from "@/components/ui/use-toast";
-import { schemaCreareSpectacol } from "@/lib/schemas";
+import { convertesteInTimpLocal } from "@/lib/metodeUtile";
+import { schemaCreareSpectacol } from "@/lib/schemeFormulare";
 import {
 	SalaSpectacol,
 	Sezon,
 	Spectacol,
 	TipSpectacol,
 	TipuriTabel,
-} from "@/lib/types";
-import { convertToLocalTime } from "@/lib/utils";
-import { useLoadingScreen } from "@/services/StateProvider";
-import { update } from "@/services/admin/ControlProvider";
+} from "@/lib/tipuri";
+import { actualizare } from "@/services/backend/GeneralController";
+import { ecranIncarcare } from "@/services/general/FurnizorStare";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import { getLocalTimeZone, now, parseDateTime } from "@internationalized/date";
 import { DateValue } from "@nextui-org/calendar";
@@ -48,7 +50,7 @@ export default function AdminShowEditPage({
 }) {
 	const router = useRouter();
 	const { toast } = useToast();
-	const loadingScreen = useLoadingScreen();
+	const loadingScreen = ecranIncarcare();
 	const [valueEnd, setValueEnd] = useState<DateValue>(
 		parseDateTime(show.oraTerminare.split(".")[0])
 	);
@@ -62,10 +64,14 @@ export default function AdminShowEditPage({
 		},
 	});
 	async function onSubmit(values: z.infer<typeof schemaCreareSpectacol>) {
-		loadingScreen.setLoading(true);
-		const data = await update(TipuriTabel.SPECTACOL, values, show.codSpectacol);
+		loadingScreen.setIncarcare(true);
+		const data = await actualizare(
+			TipuriTabel.SPECTACOL,
+			values,
+			show.codSpectacol
+		);
 		toast({
-			description: data.message,
+			description: data.mesaj,
 			title: "Editare Spectacol",
 			variant: data.ok ? "default" : "destructive",
 		});
@@ -74,15 +80,15 @@ export default function AdminShowEditPage({
 			form.reset();
 			router.refresh();
 		}
-		loadingScreen.setLoading(false);
+		loadingScreen.setIncarcare(false);
 	}
 	return (
-		<NewOrEditContent
+		<NouEditareContinut
 			form={form}
 			onSubmit={onSubmit}
 			back_link="../../spectacole?tab=showsAll"
-			title={`Editați spectacolul cu codul de identificare #${show.codSpectacol}`}
-			loading={loadingScreen.loading}
+			titlu={`Editați spectacolul cu codul de identificare #${show.codSpectacol}`}
+			loading={loadingScreen.incarcare}
 		>
 			<div className="flex flex-col md:flex-row gap-2">
 				<FormField
@@ -241,7 +247,7 @@ export default function AdminShowEditPage({
 									pageBehavior="single"
 									onChange={(e) => {
 										setValueStart(e);
-										field.onChange(convertToLocalTime(e));
+										field.onChange(convertesteInTimpLocal(e));
 									}}
 									minValue={now(getLocalTimeZone()).subtract({ minutes: 1 })}
 								/>
@@ -267,7 +273,7 @@ export default function AdminShowEditPage({
 									pageBehavior="single"
 									onChange={(e) => {
 										setValueEnd(e);
-										field.onChange(convertToLocalTime(e));
+										field.onChange(convertesteInTimpLocal(e));
 									}}
 									minValue={now(getLocalTimeZone()).subtract({ minutes: 1 })}
 								/>
@@ -384,6 +390,6 @@ export default function AdminShowEditPage({
 					</FormItem>
 				)}
 			/>
-		</NewOrEditContent>
+		</NouEditareContinut>
 	);
 }

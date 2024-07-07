@@ -1,8 +1,8 @@
-import DataTable from "@/components/admin/table/Table";
-import TabsPages from "@/components/admin/table/TabsPages";
+import DataTable from "@/components/admin/table/GeneralTabel";
 import { prisma } from "@/lib/prismaClient";
 import { columnsPayments } from "./columns";
-import { Plata, TipuriTabel } from "@/lib/types";
+import { Plata, TipuriTabel } from "@/lib/tipuri";
+import PaginiTab from "@/components/admin/table/PaginiTab";
 
 export default async function AdminPayments() {
 	const payments: Plata[] = await prisma.plata.findMany({
@@ -11,7 +11,6 @@ export default async function AdminPayments() {
 		},
 		include: {
 			client: true,
-			rataDeSchimbValutar: true,
 			bonFiscal: {
 				include: {
 					spectacol: {
@@ -23,11 +22,7 @@ export default async function AdminPayments() {
 					},
 					client: true,
 					factura: true,
-					plata: {
-						include: {
-							rataDeSchimbValutar: true,
-						},
-					},
+					plata: true,
 					bileteSpectacol: {
 						include: {
 							salaSpectacol: true,
@@ -48,23 +43,19 @@ export default async function AdminPayments() {
 					},
 					bonFiscal: true,
 					client: true,
-					plata: {
-						include: {
-							rataDeSchimbValutar: true,
-						},
-					},
+					plata: true,
 				},
 			},
 		},
 	});
 	return (
-		<TabsPages
-			defVal="all"
-			tabs={[
+		<PaginiTab
+			valoareDef="all"
+			taburi={[
 				{
-					name: "Toate Plățile",
-					value: "all",
-					content: (
+					nume: "Toate Plățile",
+					valoare: "all",
+					continut: (
 						<DataTable
 							title="Plăți efectuate"
 							data={payments}

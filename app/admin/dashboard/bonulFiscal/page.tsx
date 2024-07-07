@@ -1,8 +1,8 @@
-import DataTable from "@/components/admin/table/Table";
-import TabsPages from "@/components/admin/table/TabsPages";
 import { prisma } from "@/lib/prismaClient";
-import { BonFiscal, TipuriTabel } from "@/lib/types";
 import { columnsReceipts } from "./columns";
+import { BonFiscal, TipuriTabel } from "@/lib/tipuri";
+import PaginiTab from "@/components/admin/table/PaginiTab";
+import GeneralTabel from "@/components/admin/table/GeneralTabel";
 
 export default async function AdminFiscalReceipts() {
 	const receipts: BonFiscal[] = await prisma.bonFiscal.findMany({
@@ -48,14 +48,14 @@ export default async function AdminFiscalReceipts() {
 		},
 	});
 	return (
-		<TabsPages
-			defVal="all"
-			tabs={[
+		<PaginiTab
+			valoareDef="all"
+			taburi={[
 				{
-					name: "Toate Bonurile Fiscale",
-					value: "all",
-					content: (
-						<DataTable
+					nume: "Toate Bonurile Fiscale",
+					valoare: "all",
+					continut: (
+						<GeneralTabel
 							data={receipts}
 							title="Bonuri Fiscale Emise"
 							showControlBtns={false}
