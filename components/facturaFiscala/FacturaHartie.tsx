@@ -7,6 +7,7 @@ const FacturaHartie: React.FC<{
   let sumaFactura = data.sumaPlatita;
   const pretFaraTVA = sumaFactura / 1.19;
   const sumaTVA = sumaFactura - pretFaraTVA;
+  console.log(data.bileteSpectacol);
   const bilete = data.bileteSpectacol ?? [];
   return (
     <>
@@ -146,8 +147,8 @@ const FacturaHartie: React.FC<{
                 </tr>
                 {bilete.map((bilet, index) => {
                   let priceConverted = bilet.locSalaSpectacol?.pretLoc ?? 0;
-                  const priceWithoutVAT = priceConverted / 1.19;
-                  const vatAmount = priceConverted - priceWithoutVAT;
+                  const pretFaraTVA2 = priceConverted / 1.19;
+                  const tva = priceConverted - pretFaraTVA2;
                   return (
                     <tr
                       key={bilet.codBiletSpectacol}
@@ -162,14 +163,10 @@ const FacturaHartie: React.FC<{
                       </td>
                       <td className="border-r-2 min-w-10">BUC</td>
                       <td className="border-r-2">1</td>
-                      <td className="border-r-2">
-                        {priceWithoutVAT.toFixed(2)}
-                      </td>
-                      <td className="border-r-2">
-                        {priceWithoutVAT.toFixed(2)}
-                      </td>
-                      <td className="border-r-2">{vatAmount.toFixed(2)}</td>
-                      <td>{(priceWithoutVAT + vatAmount).toFixed(2)}</td>
+                      <td className="border-r-2">{pretFaraTVA2.toFixed(2)}</td>
+                      <td className="border-r-2">{pretFaraTVA2.toFixed(2)}</td>
+                      <td className="border-r-2">{tva.toFixed(2)}</td>
+                      <td>{(pretFaraTVA2 + tva).toFixed(2)}</td>
                     </tr>
                   );
                 })}

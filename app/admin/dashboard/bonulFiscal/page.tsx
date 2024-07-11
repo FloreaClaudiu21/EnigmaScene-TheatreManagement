@@ -24,14 +24,6 @@ export default async function AdminFiscalReceipts() {
           sezon: true,
         },
       },
-      bileteSpectacol: {
-        include: {
-          client: true,
-          salaSpectacol: true,
-          locSalaSpectacol: true,
-          spectacol: true,
-        },
-      },
       factura: {
         include: {
           bileteSpectacol: {

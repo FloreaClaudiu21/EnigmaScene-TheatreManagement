@@ -27,17 +27,13 @@ export const columnsInvoice: ColumnDef<FacturaFiscala>[] = [
   {
     id: "actions",
     cell: ({ row: { original } }) => {
+      console.log(original);
       return (
         <div className="flex flex-row gap-2">
           <div className="flex flex-row gap-2 place-items-center">
             <ModalViewInvoice invoice={original} />
             <ModalViewFiscalReceipt receipt={original.bonFiscal} />
           </div>
-          <CelulaColoanaActiuni
-            deleteId={original.codFactura}
-            type={TipuriTabel.FACTURA_FISCALA}
-            link_edit={"facturi/" + original.codFactura + "/editare"}
-          />
         </div>
       );
     },
@@ -49,7 +45,7 @@ export const columnsInvoice: ColumnDef<FacturaFiscala>[] = [
       return <AntetColoana coloana={column} titlu="Numar Factura" />;
     },
     cell: ({ row: { original } }) => {
-      return <CelulaColoana date={original.numarFactura} />;
+      return <CelulaColoana date={"#" + original.numarFactura} />;
     },
   },
   {
@@ -109,15 +105,7 @@ export const columnsInvoice: ColumnDef<FacturaFiscala>[] = [
       return <CelulaColoana date={original.client?.numeClient} />;
     },
   },
-  {
-    accessorKey: "bileteVandute",
-    header: ({ column }) => {
-      return <AntetColoana coloana={column} titlu="Bilete Asociate" />;
-    },
-    cell: ({ row: { original } }) => {
-      return <CelulaColoana date={original.bileteSpectacol?.length ?? 0} />;
-    },
-  },
+
   {
     accessorKey: "adresaFacturare",
     header: ({ column }) => {

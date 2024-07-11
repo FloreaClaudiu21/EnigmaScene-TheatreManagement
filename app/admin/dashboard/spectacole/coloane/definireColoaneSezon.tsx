@@ -164,58 +164,6 @@ export const columnsShow: ColumnDef<Spectacol>[] = [
     },
   },
   {
-    accessorKey: "bileteVandute",
-    header: ({ column }) => {
-      return <AntetColoana coloana={column} titlu="Bilete Vandute" />;
-    },
-    cell: ({ row: { original } }) => {
-      const chartModel = formularGrafic();
-      const bilete = original.bileteVandute ?? [];
-      return (
-        <CelulaColoana
-          date={
-            <div
-              onClick={() => {
-                chartModel.setTitlu("Bilete vandute: " + bilete.length);
-                chartModel.setContinut(
-                  bilete.map((ticket: BiletSpectacol) => {
-                    let priceConverted = ticket.pretVanzare ?? 0;
-                    return {
-                      titlu: `Achiziționat de: ${ticket.client?.numeClient}`,
-                      content: [
-                        {
-                          titlu: "Număr bilet spectacol: ",
-                          content: ticket.numarBilet ?? "",
-                        },
-                        {
-                          titlu: "Preț bilet: ",
-                          content: priceConverted.toFixed(2) + " RON",
-                        },
-                        {
-                          titlu: "Achiziționat pe: ",
-                          content: capitalizeazaPrimaLitera(
-                            formateazaDataComplet(ticket.creatPe)
-                          ),
-                        },
-                      ],
-                    };
-                  })
-                );
-                chartModel.setVizibil(true);
-              }}
-            >
-              <span className="hover:cursor-pointer">
-                {bilete.length +
-                  "/" +
-                  (original.salaSpectacol?.locuriSala?.length ?? 0)}
-              </span>
-            </div>
-          }
-        />
-      );
-    },
-  },
-  {
     accessorKey: "creatPe",
     header: ({ column }) => {
       return <AntetColoana coloana={column} titlu="Adăugat Pe" />;

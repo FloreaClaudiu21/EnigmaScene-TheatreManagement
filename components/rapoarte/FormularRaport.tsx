@@ -62,7 +62,7 @@ const FormularRaport = () => {
                         className="p-0"
                         variant="bordered"
                         isDisabled={loading}
-                        defaultValue="Raport evidenta"
+                        defaultValue="Genereaza raport nou de evidenta"
                         classNames={{ inputWrapper: "h-10" }}
                       />
                       <Button

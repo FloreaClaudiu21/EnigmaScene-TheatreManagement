@@ -14,12 +14,6 @@ export default async function AdminShows() {
       creatPe: "desc",
     },
     include: {
-      bileteVandute: {
-        include: {
-          client: true,
-        },
-      },
-      bonuriFiscale: true,
       sezon: true,
       tipSpectacol: true,
       salaSpectacol: {
