@@ -97,12 +97,7 @@ export const columns: ColumnDef<User>[] = [
     },
     cell: ({ row }) => {
       const user = row.original;
-      return (
-        <CelulaColoana
-          date={user.email}
-          clasa={`${user.utlizatorAdmin && "font-bold underline"}`}
-        />
-      );
+      return <CelulaColoana date={user.email} />;
     },
   },
   {

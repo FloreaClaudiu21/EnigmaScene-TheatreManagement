@@ -13,7 +13,7 @@ export default function AntetColoana({
       <Button
         radius="md"
         variant="light"
-        className="font-bold text-md text-red-500"
+        className="font-bold text-lg text-red-500"
         onClick={() => coloana.toggleSorting(coloana.getIsSorted() === "asc")}
       >
         {titlu}

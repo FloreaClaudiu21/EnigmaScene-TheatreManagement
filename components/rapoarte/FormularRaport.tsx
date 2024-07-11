@@ -26,7 +26,7 @@ const FormularRaport = () => {
   }, [pdfTitle, formular]);
   return (
     <Modal
-      radius="md"
+      radius="lg"
       backdrop="opaque"
       isOpen={formular.vizibil}
       placement={"bottom-center"}

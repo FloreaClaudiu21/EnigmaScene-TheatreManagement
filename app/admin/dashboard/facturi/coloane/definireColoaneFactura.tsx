@@ -45,7 +45,7 @@ export const columnsInvoice: ColumnDef<FacturaFiscala>[] = [
       return <AntetColoana coloana={column} titlu="Numar Factura" />;
     },
     cell: ({ row: { original } }) => {
-      return <CelulaColoana date={"#" + original.numarFactura} />;
+      return <CelulaColoana date={original.numarFactura} />;
     },
   },
   {

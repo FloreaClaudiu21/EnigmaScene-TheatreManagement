@@ -26,10 +26,10 @@ const FacturaHartie: React.FC<{
         `}
       </style>
       <div className="flex flex-col w-[210mm] max-w-[210mm] min-h-[297mm] invoice-bg border-2 border-red-500">
-        <div className="flex flex-col h-[95.0mm] mx-8 my-2 mt-4 border-2 bg-white">
+        <div className="flex flex-col h-[95.0mm] mx-8 my-2 mt-4 border-2 bg-white rounded-md border-black">
           <div className="flex flex-row gap-2">
             <div className="flex flex-1 flex-col text-center">
-              <div className="flex flex-col border-2 w-[55%] text-xs m-1">
+              <div className="flex flex-col w-[85%] text-xs m-1">
                 <p className="text-lg font-bold">FACTURĂ</p>
                 <p>#{data.numarFactura}</p>
                 <p>Serie: nr. {data.serieFactura}</p>
@@ -50,9 +50,9 @@ const FacturaHartie: React.FC<{
           </div>
           <div className="flex flex-row gap-2">
             <div className="flex flex-col w-1/2 p-2 place-items-start">
-              <p className="font-bold text-sm">Furnizor</p>
+              <p className="font-bold text-sm">Furnizorul</p>
               <p className="font-bold text-md text-red-500">
-                SC ENIGMA SCENE SRL
+                S.C. ENIGMA SCENE S.R.L.
               </p>
               <p className="text-xs text-left">CIF: RO15608527</p>
               <p className="text-xs text-left">Reg. com.: J40/5967/2000</p>
@@ -81,7 +81,7 @@ const FacturaHartie: React.FC<{
             </div>
           </div>
         </div>
-        <div className="flex flex-1 mx-8 border-2 bg-white">
+        <div className="flex flex-1 mx-8 border-2 bg-white rounded-md border-black">
           <div className="flex flex-col w-full">
             <table className="invoice-table">
               <tr className="text-center break-normal place-items-center bg-red-500 text-white text-[13px] font-bold">
@@ -228,10 +228,6 @@ const FacturaHartie: React.FC<{
             </div>
           </div>
         </div>
-        <p className="text-xs text-gray-500 py-1 ml-8">
-          Factura este valabilă fără semnătură și ștampilă, conform Articolului
-          319 alineatul 29 din Legea 227/2015.
-        </p>
         <div className="pt-1 h-10 text-center text-sm font-semibold">
           Pagina 1 din 1
         </div>

@@ -542,7 +542,7 @@ export default function GeneralTabel({
                     colSpan={columns.length}
                     className="h-24 text-center text-sm"
                   >
-                    Nu au fost găsite rezultate.
+                    Fara rezultate.
                   </TableCell>
                 </TableRow>
               )}
