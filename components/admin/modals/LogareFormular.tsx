@@ -199,7 +199,7 @@ export default function AdminSignInFormular() {
                         />
                       }
                     >
-                      Logare cu cont Google
+                      Autentificare prin cont asociat GOOGLE
                     </Button>
                   </div>
                   <div className="flex flex-row justify-end gap-4 !mt-6">
