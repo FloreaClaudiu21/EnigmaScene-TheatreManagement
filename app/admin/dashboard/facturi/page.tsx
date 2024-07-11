@@ -1,6 +1,6 @@
 import DataTable from "@/components/admin/table/GeneralTabel";
 import { prisma } from "@/lib/prismaClient";
-import { columnsInvoice } from "./columns";
+import { columnsInvoice } from "./coloane/definireColoaneFactura";
 import { FacturaFiscala, TipuriTabel } from "@/lib/tipuri";
 import PaginiTab from "@/components/admin/table/PaginiTab";
 

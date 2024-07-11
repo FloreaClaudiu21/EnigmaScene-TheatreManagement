@@ -1,7 +1,7 @@
 import DataTable from "@/components/admin/table/GeneralTabel";
 import { prisma } from "@/lib/prismaClient";
-import { columnsShowRoom } from "./columnsShowRoom";
-import { columnsShowRoomSeat } from "./columnsShowRoomSeat";
+import { columnsShowRoom } from "./coloane/definireColoaneSalaSpectacol";
+import { columnsShowRoomSeat } from "./coloane/definireColoaneScauneSalaSpectacol";
 import { LocSalaSpectacol, SalaSpectacol, TipuriTabel } from "@/lib/tipuri";
 import PaginiTab from "@/components/admin/table/PaginiTab";
 
