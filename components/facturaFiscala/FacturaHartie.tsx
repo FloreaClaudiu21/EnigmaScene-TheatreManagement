@@ -30,12 +30,9 @@ const FacturaHartie: React.FC<{
           <div className="flex flex-row gap-2">
             <div className="flex flex-1 flex-col text-center">
               <div className="flex flex-col w-[85%] text-xs m-1">
-                <p className="text-lg font-bold">FACTURĂ</p>
-                <p>#{data.numarFactura}</p>
+                <p className="text-lg font-bold">FACTURĂ {data.numarFactura}</p>
                 <p>Serie: nr. {data.serieFactura}</p>
-                <p>Data: {data.dataIntocmiri.toLocaleDateString()}</p>
-                <p>Rată TVA: 19%</p>
-                <p>TVA la încasare</p>
+                <p>Data Emiterii: {data.dataIntocmiri.toLocaleDateString()}</p>
               </div>
             </div>
             <div className="p-2">
